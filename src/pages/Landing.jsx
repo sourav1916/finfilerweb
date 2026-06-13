@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, ShieldCheck, Clock, CheckCircle2, TrendingUp, Star, Sparkles } from 'lucide-react'
+import { ArrowRight, ShieldCheck, Clock, CheckCircle2, TrendingUp, Star, Sparkles, LayoutDashboard } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useAuth } from '../contexts/AuthContext'
 
 const features = [
   {
@@ -41,11 +42,13 @@ const itemVariants = {
 }
 
 export default function Landing() {
+  const { user } = useAuth()
+
   return (
     <div className="bg-white overflow-x-hidden">
 
       {/* ── Navbar ── */}
-      <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/80 backdrop-blur-xl">
+      <header className="fixed w-full top-0 z-50 border-b border-slate-100 bg-white/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 h-16">
           <Link to="/" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white">
@@ -61,12 +64,20 @@ export default function Landing() {
             <a href="#pricing" className="hover:text-indigo-600 transition">Pricing</a>
           </nav>
           <div className="flex items-center gap-2 sm:gap-3">
-            <Link to="/login" className="rounded-xl border border-slate-200 px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
-              Log in
-            </Link>
-            <Link to="/register" className="rounded-xl bg-indigo-600 px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-md shadow-indigo-200 transition hover:bg-indigo-700">
-              Get Started
-            </Link>
+            {user ? (
+              <Link to="/home" className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-md shadow-indigo-200 transition hover:bg-indigo-700">
+                <LayoutDashboard size={15} /> Go to Home
+              </Link>
+            ) : (
+              <>
+                <Link to="/login" className="rounded-xl border border-slate-200 px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                  Log in
+                </Link>
+                <Link to="/register" className="rounded-xl bg-indigo-600 px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-md shadow-indigo-200 transition hover:bg-indigo-700">
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -101,18 +112,29 @@ export default function Landing() {
           </motion.p>
 
           <motion.div variants={itemVariants} className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-            <Link to="/register">
-              <motion.span whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center gap-2 rounded-2xl bg-indigo-600 px-7 py-4 text-base font-bold text-white shadow-xl shadow-indigo-300/40 transition hover:bg-indigo-700">
-                Start Filing Free <ArrowRight size={18} />
-              </motion.span>
-            </Link>
-            <Link to="/login">
-              <motion.span whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-7 py-4 text-base font-semibold text-slate-700 transition hover:bg-slate-50">
-                Sign In
-              </motion.span>
-            </Link>
+            {user ? (
+              <Link to="/home">
+                <motion.span whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
+                  className="inline-flex items-center gap-2 rounded-2xl bg-indigo-600 px-7 py-4 text-base font-bold text-white shadow-xl shadow-indigo-300/40 transition hover:bg-indigo-700">
+                  <LayoutDashboard size={20} /> Go to Home
+                </motion.span>
+              </Link>
+            ) : (
+              <>
+                <Link to="/register">
+                  <motion.span whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
+                    className="inline-flex items-center gap-2 rounded-2xl bg-indigo-600 px-7 py-4 text-base font-bold text-white shadow-xl shadow-indigo-300/40 transition hover:bg-indigo-700">
+                    Start Filing Free <ArrowRight size={18} />
+                  </motion.span>
+                </Link>
+                <Link to="/login">
+                  <motion.span whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
+                    className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-7 py-4 text-base font-semibold text-slate-700 transition hover:bg-slate-50">
+                    Sign In
+                  </motion.span>
+                </Link>
+              </>
+            )}
           </motion.div>
 
           {/* Trust badges */}

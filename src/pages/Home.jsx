@@ -29,7 +29,7 @@ export default function Home() {
 
   return (
     <motion.div
-      className="mx-auto max-w-8xl py-8 px-4"
+      className="mx-auto"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -41,10 +41,10 @@ export default function Home() {
 
       {/* Stat cards */}
       <motion.div variants={itemVariants} className="mb-8 sm:mb-10 grid gap-4 sm:gap-6 sm:grid-cols-3">
-        <motion.div whileHover={{ y: -5 }} className="relative overflow-hidden rounded-3xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-white p-6 shadow-soft">
-          <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-indigo-100/50 blur-2xl"></div>
-          <div className="flex items-center gap-3 text-indigo-600">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
+        <motion.div whileHover={{ y: -5 }} className="relative overflow-hidden rounded-3xl border border-indigo-100 dark:border-indigo-900/60 bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-950/50 dark:to-slate-800/80 p-6 shadow-soft">
+          <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-indigo-100/50 dark:bg-indigo-700/20 blur-2xl"></div>
+          <div className="flex items-center gap-3 text-indigo-600 dark:text-indigo-400">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400">
               <DollarSign size={20} />
             </div>
             <span className="text-sm font-semibold">Est. Federal Refund</span>
@@ -52,10 +52,10 @@ export default function Home() {
           <p className="mt-4 font-display text-3xl font-bold text-primary-foreground">$3,240</p>
         </motion.div>
 
-        <motion.div whileHover={{ y: -5 }} className="relative overflow-hidden rounded-3xl border border-purple-100 bg-gradient-to-br from-purple-50 to-white p-6 shadow-soft">
-          <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-purple-100/50 blur-2xl"></div>
-          <div className="flex items-center gap-3 text-purple-600">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 text-purple-600">
+        <motion.div whileHover={{ y: -5 }} className="relative overflow-hidden rounded-3xl border border-purple-100 dark:border-purple-900/60 bg-gradient-to-br from-purple-50 to-white dark:from-purple-950/50 dark:to-slate-800/80 p-6 shadow-soft">
+          <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-purple-100/50 dark:bg-purple-700/20 blur-2xl"></div>
+          <div className="flex items-center gap-3 text-purple-600 dark:text-purple-400">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 dark:bg-purple-900/60 text-purple-600 dark:text-purple-400">
               <UploadCloud size={20} />
             </div>
             <span className="text-sm font-semibold">Documents Uploaded</span>
@@ -63,10 +63,10 @@ export default function Home() {
           <p className="mt-4 font-display text-3xl font-bold text-primary-foreground">6 of 8</p>
         </motion.div>
 
-        <motion.div whileHover={{ y: -5 }} className="relative overflow-hidden rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-6 shadow-soft">
-          <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-blue-100/50 blur-2xl"></div>
-          <div className="flex items-center gap-3 text-blue-600">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 text-blue-600">
+        <motion.div whileHover={{ y: -5 }} className="relative overflow-hidden rounded-3xl border border-blue-100 dark:border-blue-900/60 bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/50 dark:to-slate-800/80 p-6 shadow-soft">
+          <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-blue-100/50 dark:bg-blue-700/20 blur-2xl"></div>
+          <div className="flex items-center gap-3 text-blue-600 dark:text-blue-400">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-400">
               <Calendar size={20} />
             </div>
             <span className="text-sm font-semibold">Days to Deadline</span>
@@ -97,21 +97,21 @@ export default function Home() {
           </motion.button>
         </div>
 
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-slate-100 dark:divide-slate-700">
           {tasks.map((task, index) => (
             <motion.li
               key={task.id}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1 }}
-              whileHover={{ x: 5, backgroundColor: "rgba(248, 250, 252, 1)" }}
-              className="flex cursor-pointer items-start sm:items-center gap-3 sm:gap-4 rounded-xl px-2 sm:px-4 py-3 sm:py-4 transition-colors"
+              whileHover={{ x: 5 }}
+              className="flex cursor-pointer items-start sm:items-center gap-3 sm:gap-4 rounded-xl px-2 sm:px-4 py-3 sm:py-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/40"
             >
               <div className="mt-0.5 sm:mt-0">
                 {task.done ? (
                   <CheckCircle2 size={20} className="sm:w-6 sm:h-6 flex-shrink-0 text-indigo-500" />
                 ) : (
-                  <Circle size={20} className="sm:w-6 sm:h-6 flex-shrink-0 text-slate-300" />
+                  <Circle size={20} className="sm:w-6 sm:h-6 flex-shrink-0 text-slate-300 dark:text-slate-600" />
                 )}
               </div>
               <span className={`text-sm sm:text-base font-medium leading-tight sm:leading-normal ${task.done ? 'text-slate-400 line-through' : 'text-primary-foreground'}`}>

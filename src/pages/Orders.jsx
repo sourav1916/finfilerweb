@@ -74,7 +74,7 @@ export default function Orders() {
 
   return (
     <motion.div
-      className="mx-auto max-w-8xl py-6 sm:py-8 px-2 sm:px-4"
+      className="mx-auto"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
