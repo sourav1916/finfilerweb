@@ -1,6 +1,8 @@
 // src/contexts/ToastContext.jsx
-import React, { createContext, useContext, useRef } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
+import React, { createContext, useContext } from 'react';
+import toast, { Toaster, resolveValue } from 'react-hot-toast';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CheckCircle2, AlertCircle, X, Info } from 'lucide-react';
 
 const ToastContext = createContext();
 
@@ -55,12 +57,40 @@ export const ToastProvider = ({ children }) => {
   return (
     <ToastContext.Provider value={showToast}>
       {children}
-      <Toaster 
-        position="top-right"
-        toastOptions={{
-          duration: 3000,
-        }}
-      />
+      <Toaster position="top-right">
+        {(t) => (
+          <AnimatePresence>
+            {t.visible && (
+              <motion.div
+                layout
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 100 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+                className={`flex items-start gap-3 rounded-xl border px-4 py-3 text-sm shadow-xl pointer-events-auto min-w-[300px] ${
+                  t.type === 'error'
+                    ? 'border-red-200 bg-red-50 text-red-700'
+                    : t.type === 'success'
+                    ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                    : 'border-blue-200 bg-blue-50 text-blue-700'
+                }`}
+              >
+                {t.type === 'error' ? (
+                  <AlertCircle size={16} className="mt-0.5 flex-shrink-0" />
+                ) : t.type === 'success' ? (
+                  <CheckCircle2 size={16} className="mt-0.5 flex-shrink-0" />
+                ) : (
+                  <Info size={16} className="mt-0.5 flex-shrink-0" />
+                )}
+                <span className="flex-1 font-medium">{resolveValue(t.message, t)}</span>
+                <button onClick={() => toast.dismiss(t.id)} className="opacity-60 hover:opacity-100 transition-opacity">
+                  <X size={14} />
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        )}
+      </Toaster>
     </ToastContext.Provider>
   );
 };
