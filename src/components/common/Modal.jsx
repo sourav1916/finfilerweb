@@ -1,7 +1,15 @@
 import { useEffect } from 'react';
 import Button from './Button';
 
-const Modal = ({ isOpen, onClose, title, children, onConfirm, confirmText = 'Confirm' }) => {
+const sizeClasses = {
+  sm: 'max-w-sm',
+  md: 'max-w-md',
+  lg: 'max-w-lg',
+  xl: 'max-w-xl',
+  full: 'max-w-full',
+};
+
+const Modal = ({ isOpen, onClose, title, children, onConfirm, confirmText = 'Confirm', size = 'md' }) => {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -15,10 +23,12 @@ const Modal = ({ isOpen, onClose, title, children, onConfirm, confirmText = 'Con
 
   if (!isOpen) return null;
 
+  const sizeClass = sizeClasses[size] || sizeClasses.md;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="fixed inset-0 bg-black bg-opacity-50" onClick={onClose} />
-      <div className="relative bg-secondary rounded-lg shadow-xl max-w-md w-full mx-4 z-10 animate-fade-in">
+      <div className={`relative bg-secondary rounded-lg shadow-xl ${sizeClass} w-full mx-4 z-10 animate-fade-in`}>
         <div className="flex justify-between items-center p-4 border-b">
           <h3 className="text-xl font-semibold">{title}</h3>
           <button
