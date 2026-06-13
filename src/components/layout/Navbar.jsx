@@ -43,7 +43,7 @@ const Navbar = ({
               <button
                 onClick={toggleSidebar}
                 className={`w-10 h-10 flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none flex-shrink-0
-                  ${isSidebarOpen ? 'text-gray-600' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}`}
+                  ${isSidebarOpen ? 'text-secondary-foreground' : 'text-secondary-foreground hover:text-primary-foreground hover:bg-secondary'}`}
                 aria-label="Toggle menu"
               >
                 {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

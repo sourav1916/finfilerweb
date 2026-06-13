@@ -110,7 +110,7 @@ const ActionMenu = ({ actions = [], activeId, onToggle, menuId, trigger }) => {
         zIndex: 9999,
         width: `${menuWidth}px`,
       }}
-      className="overflow-hidden rounded-xl border border-gray-100 bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl ring-1 ring-black/5"
+      className="overflow-hidden rounded-xl border border-border bg-secondary/95 p-1.5 shadow-2xl backdrop-blur-xl ring-1 ring-black/5"
     >
       {actions.map((action, index) => (
         <button
@@ -127,7 +127,7 @@ const ActionMenu = ({ actions = [], activeId, onToggle, menuId, trigger }) => {
             transition-all duration-150
             ${action.disabled
               ? 'cursor-not-allowed opacity-50 text-gray-400'
-              : `hover:bg-blue-50 hover:pl-4 ${action.className || 'text-gray-700 hover:text-blue-600'}`
+              : `hover:bg-blue-50 hover:pl-4 ${action.className || 'text-primary-foreground hover:text-blue-600'}`
             }
           `}
         >
@@ -145,8 +145,8 @@ const ActionMenu = ({ actions = [], activeId, onToggle, menuId, trigger }) => {
         {trigger || (
           <button
             type="button"
-            className="flex h-8 w-8 items-center justify-center rounded-xl border border-gray-200
-                       bg-white text-gray-500 transition-all hover:border-blue-300
+            className="flex h-8 w-8 items-center justify-center rounded-xl border border-border
+                       bg-secondary text-secondary-foreground transition-all hover:border-blue-300
                        hover:text-blue-600 hover:shadow-sm active:scale-95"
           >
             <FaEllipsisV size={14} />

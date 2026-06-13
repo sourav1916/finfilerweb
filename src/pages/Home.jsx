@@ -35,8 +35,8 @@ export default function Home() {
       animate="visible"
     >
       <motion.div variants={itemVariants} className="mb-8 sm:mb-10 flex flex-col gap-1 sm:gap-2">
-        <h1 className="font-display text-2xl sm:text-4xl font-bold tracking-tight text-slate-900">Welcome back, Asha</h1>
-        <p className="text-sm sm:text-lg text-slate-500">Your tax return is currently being processed by our experts.</p>
+        <h1 className="font-display text-2xl sm:text-4xl font-bold tracking-tight text-primary-foreground">Welcome back, Asha</h1>
+        <p className="text-sm sm:text-lg text-secondary-foreground">Your tax return is currently being processed by our experts.</p>
       </motion.div>
 
       {/* Stat cards */}
@@ -49,7 +49,7 @@ export default function Home() {
             </div>
             <span className="text-sm font-semibold">Est. Federal Refund</span>
           </div>
-          <p className="mt-4 font-display text-3xl font-bold text-slate-900">$3,240</p>
+          <p className="mt-4 font-display text-3xl font-bold text-primary-foreground">$3,240</p>
         </motion.div>
 
         <motion.div whileHover={{ y: -5 }} className="relative overflow-hidden rounded-3xl border border-purple-100 bg-gradient-to-br from-purple-50 to-white p-6 shadow-soft">
@@ -60,7 +60,7 @@ export default function Home() {
             </div>
             <span className="text-sm font-semibold">Documents Uploaded</span>
           </div>
-          <p className="mt-4 font-display text-3xl font-bold text-slate-900">6 of 8</p>
+          <p className="mt-4 font-display text-3xl font-bold text-primary-foreground">6 of 8</p>
         </motion.div>
 
         <motion.div whileHover={{ y: -5 }} className="relative overflow-hidden rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-6 shadow-soft">
@@ -71,20 +71,20 @@ export default function Home() {
             </div>
             <span className="text-sm font-semibold">Days to Deadline</span>
           </div>
-          <p className="mt-4 font-display text-3xl font-bold text-slate-900">32 Days</p>
+          <p className="mt-4 font-display text-3xl font-bold text-primary-foreground">32 Days</p>
         </motion.div>
       </motion.div>
 
       {/* Tasks */}
-      <motion.div variants={itemVariants} className="rounded-2xl sm:rounded-3xl border border-slate-200 bg-white p-5 sm:p-8 shadow-soft">
+      <motion.div variants={itemVariants} className="rounded-2xl sm:rounded-3xl border border-border bg-secondary p-5 sm:p-8 shadow-soft">
         <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
+            <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-secondary text-primary-foreground">
               <FileText size={20} className="sm:w-6 sm:h-6" />
             </div>
             <div>
-              <h2 className="text-lg sm:text-xl font-bold text-slate-900">Required Actions</h2>
-              <p className="text-xs sm:text-sm text-slate-500">Please complete these to finalize your return</p>
+              <h2 className="text-lg sm:text-xl font-bold text-primary-foreground">Required Actions</h2>
+              <p className="text-xs sm:text-sm text-secondary-foreground">Please complete these to finalize your return</p>
             </div>
           </div>
           <motion.button
@@ -114,7 +114,7 @@ export default function Home() {
                   <Circle size={20} className="sm:w-6 sm:h-6 flex-shrink-0 text-slate-300" />
                 )}
               </div>
-              <span className={`text-sm sm:text-base font-medium leading-tight sm:leading-normal ${task.done ? 'text-slate-400 line-through' : 'text-slate-700'}`}>
+              <span className={`text-sm sm:text-base font-medium leading-tight sm:leading-normal ${task.done ? 'text-slate-400 line-through' : 'text-primary-foreground'}`}>
                 {task.title}
               </span>
             </motion.li>

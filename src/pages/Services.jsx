@@ -141,7 +141,7 @@ export default function Services() {
       label: 'Purchase Service',
       icon: <DollarSign size={14} />,
       onClick: () => handlePurchase(service),
-      className: 'text-slate-700 hover:text-slate-800 font-semibold',
+      className: 'text-primary-foreground hover:text-primary-foreground font-semibold',
     }
   ];
 
@@ -171,7 +171,7 @@ export default function Services() {
               <Icon size={16} />
             </div>
             <div>
-              <p className="font-semibold text-slate-800 truncate max-w-[200px] sm:max-w-[300px]">{row.name}</p>
+              <p className="font-semibold text-primary-foreground truncate max-w-[200px] sm:max-w-[300px]">{row.name}</p>
               <p className="text-[10px] text-slate-400">ID: {row.service_id}</p>
             </div>
           </div>
@@ -182,7 +182,7 @@ export default function Services() {
       key: 'type',
       label: 'Type',
       render: (row) => (
-        <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600 capitalize">
+        <span className="inline-flex items-center rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground capitalize">
           {row.type}
         </span>
       )
@@ -191,7 +191,7 @@ export default function Services() {
       key: 'base_price',
       label: 'Base Price',
       render: (row) => (
-        <span className="text-slate-600 font-medium">
+        <span className="text-secondary-foreground font-medium">
           {formatCurrency(row.base_price)}
         </span>
       )
@@ -200,7 +200,7 @@ export default function Services() {
       key: 'tax_value',
       label: 'Tax (Rate)',
       render: (row) => (
-        <span className="text-slate-600 font-medium">
+        <span className="text-secondary-foreground font-medium">
           {formatCurrency(row.tax_value)} ({row.tax_rate}%)
         </span>
       )
@@ -231,14 +231,14 @@ export default function Services() {
   ];
 
   const summarySlot = (
-    <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-1.5 w-full sm:w-72 shadow-sm focus-within:border-indigo-500 transition">
+    <div className="flex items-center gap-2 rounded-xl border border-border bg-secondary px-3 py-1.5 w-full sm:w-72 shadow-sm focus-within:border-indigo-500 transition">
       <Search size={14} className="text-slate-400" />
       <input
         type="text"
         placeholder="Search services..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className="w-full bg-transparent text-xs text-slate-900 outline-none placeholder:text-slate-400"
+        className="w-full bg-transparent text-xs text-primary-foreground outline-none placeholder:text-slate-400"
       />
     </div>
   );
@@ -268,10 +268,10 @@ export default function Services() {
         {loading ? (
           <AdminSkeleton />
         ) : error ? (
-          <div className="flex flex-col items-center justify-center py-16 bg-white border border-slate-200 rounded-2xl shadow-sm text-center px-4">
+          <div className="flex flex-col items-center justify-center py-16 bg-secondary border border-border rounded-2xl shadow-sm text-center px-4">
             <AlertCircle className="mb-4 text-red-500 h-12 w-12" />
-            <h3 className="text-lg font-bold text-slate-800 mb-2">Error Loading Services</h3>
-            <p className="text-slate-500 text-sm max-w-md mb-6">{error}</p>
+            <h3 className="text-lg font-bold text-primary-foreground mb-2">Error Loading Services</h3>
+            <p className="text-secondary-foreground text-sm max-w-md mb-6">{error}</p>
             <button
               onClick={fetchServices}
               className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm px-4 py-2 rounded-xl transition"
@@ -280,10 +280,10 @@ export default function Services() {
             </button>
           </div>
         ) : filteredServices.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 bg-white border border-slate-200 rounded-2xl shadow-sm text-center px-4">
+          <div className="flex flex-col items-center justify-center py-16 bg-secondary border border-border rounded-2xl shadow-sm text-center px-4">
             <AlertCircle className="mb-4 text-slate-300 h-12 w-12" />
-            <h3 className="text-lg font-bold text-slate-800 mb-1">No Services Found</h3>
-            <p className="text-slate-500 text-sm">We couldn't find any services matching your selection.</p>
+            <h3 className="text-lg font-bold text-primary-foreground mb-1">No Services Found</h3>
+            <p className="text-secondary-foreground text-sm">We couldn't find any services matching your selection.</p>
           </div>
         ) : viewMode === 'table' ? (
           <ManagementTable
@@ -347,14 +347,14 @@ export default function Services() {
                     ) : null
                   }
                 >
-                  <div className="mt-3 space-y-2 border-t border-slate-100 pt-3 text-xs text-slate-600">
+                  <div className="mt-3 space-y-2 border-t border-border pt-3 text-xs text-secondary-foreground">
                     <div className="flex justify-between">
                       <span className="text-slate-400">Base Price</span>
-                      <span className="font-semibold text-slate-700">{formatCurrency(service.base_price)}</span>
+                      <span className="font-semibold text-primary-foreground">{formatCurrency(service.base_price)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-400">Tax ({service.tax_rate}%)</span>
-                      <span className="font-semibold text-slate-700">+{formatCurrency(service.tax_value)}</span>
+                      <span className="font-semibold text-primary-foreground">+{formatCurrency(service.tax_value)}</span>
                     </div>
                     {service.discount_value > 0 && (
                       <div className="flex justify-between text-emerald-600 font-medium">
@@ -383,14 +383,14 @@ export default function Services() {
         ) : selectedDetails ? (
           <div className="space-y-4">
             {/* Price breakdown */}
-            <div className="bg-slate-50 border border-slate-200/60 rounded-xl p-4 space-y-2.5 text-xs text-slate-700">
+            <div className="bg-primary border border-border/60 rounded-xl p-4 space-y-2.5 text-xs text-primary-foreground">
               <div className="flex justify-between">
                 <span className="text-slate-400">Base Price</span>
-                <span className="font-semibold text-slate-800">{formatCurrency(selectedDetails.base_price)}</span>
+                <span className="font-semibold text-primary-foreground">{formatCurrency(selectedDetails.base_price)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-400">Tax Value ({selectedDetails.tax_rate}%)</span>
-                <span className="font-semibold text-slate-800">+{formatCurrency(selectedDetails.tax_value)}</span>
+                <span className="font-semibold text-primary-foreground">+{formatCurrency(selectedDetails.tax_value)}</span>
               </div>
               {selectedDetails.discount_value > 0 && (
                 <div className="flex justify-between text-emerald-600 font-semibold">
@@ -398,7 +398,7 @@ export default function Services() {
                   <span>-{formatCurrency(selectedDetails.discount_value)}</span>
                 </div>
               )}
-              <div className="border-t border-slate-200/80 pt-2.5 flex justify-between font-bold text-sm text-indigo-600">
+              <div className="border-t border-border/80 pt-2.5 flex justify-between font-bold text-sm text-indigo-600">
                 <span>Total Fees</span>
                 <span>{formatCurrency(selectedDetails.fees)}</span>
               </div>
@@ -414,16 +414,16 @@ export default function Services() {
                   {selectedDetails.required_documents.map((doc) => (
                     <div 
                       key={doc.required_id} 
-                      className="border border-slate-100 rounded-xl p-3 bg-white hover:bg-slate-50 transition shadow-sm"
+                      className="border border-border rounded-xl p-3 bg-secondary hover:bg-primary transition shadow-sm"
                     >
                       <div className="flex justify-between items-start gap-2 mb-1">
-                        <span className="font-bold text-slate-800 text-xs">{doc.name}</span>
+                        <span className="font-bold text-primary-foreground text-xs">{doc.name}</span>
                         {doc.is_required ? (
                           <span className="inline-flex shrink-0 items-center rounded-full bg-red-50 border border-red-100 px-2 py-0.5 text-[9px] font-bold text-red-600">
                             Required
                           </span>
                         ) : (
-                          <span className="inline-flex shrink-0 items-center rounded-full bg-slate-100 border border-slate-200 px-2 py-0.5 text-[9px] font-bold text-slate-500">
+                          <span className="inline-flex shrink-0 items-center rounded-full bg-secondary border border-border px-2 py-0.5 text-[9px] font-bold text-secondary-foreground">
                             Optional
                           </span>
                         )}
@@ -432,15 +432,15 @@ export default function Services() {
                         <p className="text-[10px] text-slate-400 leading-normal mb-1.5">{doc.description}</p>
                       )}
                       <div className="flex flex-wrap gap-x-2 text-[9px] text-slate-400 font-medium">
-                        <span>Formats: <span className="font-semibold text-slate-500">{doc.accept_extensions.join(', ').toUpperCase()}</span></span>
+                        <span>Formats: <span className="font-semibold text-secondary-foreground">{doc.accept_extensions.join(', ').toUpperCase()}</span></span>
                         <span>·</span>
-                        <span>Max Size: <span className="font-semibold text-slate-500">{formatBytes(doc.max_size)}</span></span>
+                        <span>Max Size: <span className="font-semibold text-secondary-foreground">{formatBytes(doc.max_size)}</span></span>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-slate-400 italic bg-slate-50/50 rounded-xl p-3 text-center">
+                <p className="text-xs text-slate-400 italic bg-primary/50 rounded-xl p-3 text-center">
                   No documents required for this service.
                 </p>
               )}

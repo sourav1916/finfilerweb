@@ -72,24 +72,24 @@ const ServerUnreachable = () => {
         </div>
 
         {/* Error Message */}
-        <h1 className="text-3xl font-bold text-gray-800 mb-3">
+        <h1 className="text-3xl font-bold text-primary-foreground mb-3">
           Server Unreachable
         </h1>
-        <p className="text-gray-600 mb-4">
+        <p className="text-secondary-foreground mb-4">
           Unable to connect to the server. This could be due to:
         </p>
         
         {/* Reasons List */}
-        <div className="bg-white/50 rounded-xl p-4 mb-6 text-left space-y-2">
-          <div className="flex items-center gap-2 text-sm text-gray-600">
+        <div className="bg-secondary/50 rounded-xl p-4 mb-6 text-left space-y-2">
+          <div className="flex items-center gap-2 text-sm text-secondary-foreground">
             <Globe className="w-4 h-4 text-red-500" />
             <span>Network connectivity issues</span>
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-600">
+          <div className="flex items-center gap-2 text-sm text-secondary-foreground">
             <Server className="w-4 h-4 text-red-500" />
             <span>Server is down or under maintenance</span>
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-600">
+          <div className="flex items-center gap-2 text-sm text-secondary-foreground">
             <AlertTriangle className="w-4 h-4 text-red-500" />
             <span>Firewall or proxy blocking the connection</span>
           </div>
@@ -108,7 +108,7 @@ const ServerUnreachable = () => {
           
           <button
             onClick={() => navigate('/dashboard')}
-            className="w-full flex items-center justify-center gap-2 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all duration-200"
+            className="w-full flex items-center justify-center gap-2 px-6 py-3 border border-gray-300 text-primary-foreground rounded-xl hover:bg-primary transition-all duration-200"
           >
             <Home className="w-4 h-4" />
             Go to Dashboard
@@ -116,8 +116,8 @@ const ServerUnreachable = () => {
         </div>
 
         {/* Help Text */}
-        <div className="mt-8 p-4 bg-white/50 rounded-xl">
-          <p className="text-sm text-gray-600">
+        <div className="mt-8 p-4 bg-secondary/50 rounded-xl">
+          <p className="text-sm text-secondary-foreground">
             If the problem persists, please check your internet connection or contact your system administrator.
           </p>
           <button 

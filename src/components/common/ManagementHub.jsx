@@ -7,7 +7,7 @@ function joinClasses(...classes) {
 }
 
 const accentStyles = {
-  slate: 'from-slate-600 to-slate-800 text-slate-700 border-slate-200',
+  slate: 'from-slate-600 to-slate-800 text-primary-foreground border-border',
   blue: 'from-blue-600 to-indigo-600 text-blue-700 border-blue-200',
   green: 'from-green-600 to-emerald-600 text-green-700 border-green-200',
   emerald: 'from-emerald-600 to-teal-600 text-emerald-700 border-emerald-200',
@@ -56,7 +56,7 @@ export default function ManagementHub({
           initial={{ opacity: 0, y: -14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="mb-4 rounded-lg border border-slate-200 bg-white/90 p-2.5 shadow-sm shadow-slate-200/40 backdrop-blur md:p-3"
+          className="mb-4 rounded-lg border border-border bg-secondary/90 p-2.5 shadow-sm shadow-slate-200/40 backdrop-blur md:p-3"
         >
           <div className="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
@@ -68,8 +68,8 @@ export default function ManagementHub({
                   {eyebrow}
                 </div>
               )}
-              {title && <h1 className="mt-1 text-lg font-bold text-slate-900 md:text-xl">{title}</h1>}
-              {description && <p className="mt-0.5 text-xs text-slate-500">{description}</p>}
+              {title && <h1 className="mt-1 text-lg font-bold text-primary-foreground md:text-xl">{title}</h1>}
+              {description && <p className="mt-0.5 text-xs text-secondary-foreground">{description}</p>}
             </div>
 
             {(summary || actions || onRefresh) && (
@@ -112,8 +112,8 @@ export default function ManagementHub({
                       isActive
                         ? activeButtonStyles[accent] || activeButtonStyles.slate
                         : disabled
-                          ? 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400'
-                          : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+                          ? 'cursor-not-allowed border-border bg-secondary text-slate-400'
+                          : 'border-border bg-secondary text-secondary-foreground hover:border-slate-300 hover:bg-primary'
                     )}
                   >
                     {Icon && <Icon size={13} />}

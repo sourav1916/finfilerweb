@@ -82,13 +82,13 @@ export default function Orders() {
       {/* Header */}
       <motion.div variants={itemVariants} className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl sm:text-4xl font-bold tracking-tight text-slate-900">My Orders</h1>
-          <p className="mt-1 sm:mt-2 text-sm sm:text-lg text-slate-500">Track all your service orders and their status.</p>
+          <h1 className="font-display text-2xl sm:text-4xl font-bold tracking-tight text-primary-foreground">My Orders</h1>
+          <p className="mt-1 sm:mt-2 text-sm sm:text-lg text-secondary-foreground">Track all your service orders and their status.</p>
         </div>
         <motion.button
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.97 }}
-          className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 w-full sm:w-auto justify-center"
+          className="flex items-center gap-2 rounded-xl border border-border bg-secondary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary w-full sm:w-auto justify-center"
         >
           <Filter size={16} /> Filter
         </motion.button>
@@ -109,7 +109,7 @@ export default function Orders() {
               <Icon size={18} />
             </div>
             <p className={`text-xl sm:text-3xl font-bold text-${color}-700`}>{value}</p>
-            <p className="text-xs text-slate-500 mt-0.5">{label}</p>
+            <p className="text-xs text-secondary-foreground mt-0.5">{label}</p>
           </div>
         ))}
       </motion.div>
@@ -122,7 +122,7 @@ export default function Orders() {
             onClick={() => setActiveFilter(tab)}
             className={`flex-shrink-0 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${activeFilter === tab
                 ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200'
-                : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                : 'bg-secondary border border-border text-secondary-foreground hover:bg-primary'
               }`}
           >
             {tab}
@@ -131,11 +131,11 @@ export default function Orders() {
       </motion.div>
 
       {/* Order List */}
-      <motion.div variants={itemVariants} className="rounded-2xl sm:rounded-3xl border border-slate-200 bg-white overflow-hidden shadow-soft">
+      <motion.div variants={itemVariants} className="rounded-2xl sm:rounded-3xl border border-border bg-secondary overflow-hidden shadow-soft">
         {filtered.length === 0 ? (
           <div className="py-16 text-center">
             <AlertCircle className="mx-auto mb-3 text-slate-300" size={40} />
-            <p className="text-slate-500 font-medium">No orders found for this filter.</p>
+            <p className="text-secondary-foreground font-medium">No orders found for this filter.</p>
           </div>
         ) : (
           <ul className="divide-y divide-slate-100">
@@ -153,13 +153,13 @@ export default function Orders() {
                     <span className={`inline-block w-2.5 h-2.5 rounded-full ${order.statusDot} mt-1.5`}></span>
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm sm:text-base font-semibold text-slate-900 truncate">{order.service}</p>
+                    <p className="text-sm sm:text-base font-semibold text-primary-foreground truncate">{order.service}</p>
                     <p className="text-xs text-slate-400">{order.id} · {order.date} · CPA: {order.cpa}</p>
                   </div>
                 </div>
                 <div className="flex items-center justify-between sm:justify-end gap-4 pl-5 sm:pl-0">
                   <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${order.statusColor}`}>{order.status}</span>
-                  <span className="text-base font-bold text-slate-900 min-w-[56px] text-right">{order.amount}</span>
+                  <span className="text-base font-bold text-primary-foreground min-w-[56px] text-right">{order.amount}</span>
                   <ChevronRight size={18} className="text-slate-300 flex-shrink-0" />
                 </div>
               </motion.li>

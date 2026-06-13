@@ -43,8 +43,8 @@ export default function FundsBusiness() {
       {/* Header */}
       <motion.div variants={itemVariants} className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl sm:text-4xl font-bold tracking-tight text-slate-900">Funds & Business</h1>
-          <p className="mt-1 sm:mt-2 text-sm sm:text-lg text-slate-500">Financial overview, accounts, and business income summary.</p>
+          <h1 className="font-display text-2xl sm:text-4xl font-bold tracking-tight text-primary-foreground">Funds & Business</h1>
+          <p className="mt-1 sm:mt-2 text-sm sm:text-lg text-secondary-foreground">Financial overview, accounts, and business income summary.</p>
         </div>
         <motion.button
           whileHover={{ scale: 1.04 }}
@@ -66,31 +66,31 @@ export default function FundsBusiness() {
             <div className={`mb-3 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-${color}-100 text-${color}-600`}>
               <Icon size={18} />
             </div>
-            <p className="text-lg sm:text-2xl font-bold text-slate-900">{value}</p>
-            <p className="text-xs text-slate-500 mt-0.5 leading-tight">{label}</p>
+            <p className="text-lg sm:text-2xl font-bold text-primary-foreground">{value}</p>
+            <p className="text-xs text-secondary-foreground mt-0.5 leading-tight">{label}</p>
           </motion.div>
         ))}
       </motion.div>
 
       {/* Linked Accounts */}
       <motion.div variants={itemVariants} className="mb-6 sm:mb-8">
-        <h2 className="text-lg sm:text-xl font-bold text-slate-900 mb-4">Linked Accounts</h2>
+        <h2 className="text-lg sm:text-xl font-bold text-primary-foreground mb-4">Linked Accounts</h2>
         <div className="grid gap-3 sm:gap-4 sm:grid-cols-3">
           {accounts.map((acc) => (
             <motion.div
               key={acc.label}
               whileHover={{ y: -4 }}
-              className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-soft cursor-pointer group transition"
+              className="rounded-2xl border border-border bg-secondary p-4 sm:p-5 shadow-soft cursor-pointer group transition"
             >
               <div className="flex items-center justify-between mb-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100">
-                  <DollarSign size={18} className="text-slate-600" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary">
+                  <DollarSign size={18} className="text-secondary-foreground" />
                 </div>
                 <ChevronRight size={16} className="text-slate-300 group-hover:text-indigo-500 transition" />
               </div>
-              <p className="text-xs text-slate-500 mb-0.5">{acc.bank}</p>
-              <p className="font-semibold text-slate-800 text-sm mb-2">{acc.label}</p>
-              <p className="text-xl sm:text-2xl font-bold text-slate-900">{acc.balance}</p>
+              <p className="text-xs text-secondary-foreground mb-0.5">{acc.bank}</p>
+              <p className="font-semibold text-primary-foreground text-sm mb-2">{acc.label}</p>
+              <p className="text-xl sm:text-2xl font-bold text-primary-foreground">{acc.balance}</p>
               <div className={`mt-2 flex items-center gap-1 text-xs font-semibold ${acc.positive ? 'text-emerald-600' : 'text-red-500'}`}>
                 {acc.positive ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
                 {acc.change} this month
@@ -102,8 +102,8 @@ export default function FundsBusiness() {
 
       {/* Recent Transactions */}
       <motion.div variants={itemVariants}>
-        <h2 className="text-lg sm:text-xl font-bold text-slate-900 mb-4">Recent Transactions</h2>
-        <div className="rounded-2xl sm:rounded-3xl border border-slate-200 bg-white overflow-hidden shadow-soft">
+        <h2 className="text-lg sm:text-xl font-bold text-primary-foreground mb-4">Recent Transactions</h2>
+        <div className="rounded-2xl sm:rounded-3xl border border-border bg-secondary overflow-hidden shadow-soft">
           <ul className="divide-y divide-slate-100">
             {transactions.map((tx, index) => (
               <motion.li
@@ -115,11 +115,11 @@ export default function FundsBusiness() {
                 className="flex items-center justify-between px-4 sm:px-5 py-3.5 sm:py-4 cursor-pointer transition-colors"
               >
                 <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                  <div className={`flex-shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-xl flex items-center justify-center ${tx.positive ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'}`}>
+                  <div className={`flex-shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-xl flex items-center justify-center ${tx.positive ? 'bg-emerald-50 text-emerald-600' : 'bg-secondary text-secondary-foreground'}`}>
                     {tx.positive ? <ArrowDownRight size={18} /> : <ArrowUpRight size={18} />}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-slate-800 truncate">{tx.desc}</p>
+                    <p className="text-sm font-semibold text-primary-foreground truncate">{tx.desc}</p>
                     <p className="text-xs text-slate-400">{tx.date} · <span className="text-indigo-500">{tx.category}</span></p>
                   </div>
                 </div>

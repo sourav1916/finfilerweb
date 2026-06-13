@@ -5,43 +5,43 @@ import { FaSpinner } from 'react-icons/fa';
 const toneClasses = {
   slate: {
     solid: 'bg-slate-700 text-white hover:bg-slate-800 shadow-slate-200',
-    soft: 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100',
-    outline: 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50',
+    soft: 'bg-primary text-primary-foreground border-border hover:bg-secondary',
+    outline: 'bg-secondary text-primary-foreground border-border hover:bg-primary',
   },
   blue: {
     solid: 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200',
     soft: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100',
-    outline: 'bg-white text-blue-700 border-blue-200 hover:bg-blue-50',
+    outline: 'bg-secondary text-blue-700 border-blue-200 hover:bg-blue-50',
   },
   green: {
     solid: 'bg-green-600 text-white hover:bg-green-700 shadow-green-200',
     soft: 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100',
-    outline: 'bg-white text-green-700 border-green-200 hover:bg-green-50',
+    outline: 'bg-secondary text-green-700 border-green-200 hover:bg-green-50',
   },
   emerald: {
     solid: 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-200',
     soft: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100',
-    outline: 'bg-white text-emerald-700 border-emerald-200 hover:bg-emerald-50',
+    outline: 'bg-secondary text-emerald-700 border-emerald-200 hover:bg-emerald-50',
   },
   indigo: {
     solid: 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200',
     soft: 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100',
-    outline: 'bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50',
+    outline: 'bg-secondary text-indigo-700 border-indigo-200 hover:bg-indigo-50',
   },
   violet: {
     solid: 'bg-violet-600 text-white hover:bg-violet-700 shadow-violet-200',
     soft: 'bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100',
-    outline: 'bg-white text-violet-700 border-violet-200 hover:bg-violet-50',
+    outline: 'bg-secondary text-violet-700 border-violet-200 hover:bg-violet-50',
   },
   amber: {
     solid: 'bg-amber-600 text-white hover:bg-amber-700 shadow-amber-200',
     soft: 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100',
-    outline: 'bg-white text-amber-700 border-amber-200 hover:bg-amber-50',
+    outline: 'bg-secondary text-amber-700 border-amber-200 hover:bg-amber-50',
   },
   rose: {
     solid: 'bg-rose-600 text-white hover:bg-rose-700 shadow-rose-200',
     soft: 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100',
-    outline: 'bg-white text-rose-700 border-rose-200 hover:bg-rose-50',
+    outline: 'bg-secondary text-rose-700 border-rose-200 hover:bg-rose-50',
   },
 };
 

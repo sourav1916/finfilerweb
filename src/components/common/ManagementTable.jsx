@@ -68,7 +68,7 @@ export default function ManagementTable({
   const visibleColumns = getResponsiveColumns();
   const densityClasses = compact ? 'px-3 py-3' : 'px-4 lg:px-6 py-4';
   const cardAccentMap = {
-    slate: 'border-slate-200 shadow-slate-200/50',
+    slate: 'border-border shadow-slate-200/50',
     blue: 'border-blue-100 shadow-blue-100/50',
     green: 'border-green-100 shadow-green-100/50',
     emerald: 'border-emerald-100 shadow-emerald-100/50',
@@ -88,12 +88,12 @@ export default function ManagementTable({
       ref={containerRef}
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
-      className={joinClasses('overflow-hidden rounded-xl bg-white w-full', cardClass, containerClassName, className)}
+      className={joinClasses('overflow-hidden rounded-xl bg-secondary w-full', cardClass, containerClassName, className)}
     >
       <div className={joinClasses('w-full overflow-x-auto', tableClassName)}>
-        <table className="w-full text-left text-sm text-gray-700">
+        <table className="w-full text-left text-sm text-primary-foreground">
           {showHeader && (
-            <thead className={joinClasses('hidden sm:table-header-group bg-gradient-to-r from-gray-100 to-gray-200 text-xs uppercase text-gray-600', headerClassName)}>
+            <thead className={joinClasses('hidden sm:table-header-group bg-gradient-to-r from-gray-100 to-gray-200 text-xs uppercase text-secondary-foreground', headerClassName)}>
               <tr>
                 {visibleColumns.map((column) => (
                   <th
@@ -125,7 +125,7 @@ export default function ManagementTable({
                   onClick={onRowClick ? () => onRowClick(row, index) : undefined}
                   className={joinClasses(
                     'align-middle text-left transition-all duration-200',
-                    onRowClick && 'cursor-pointer hover:bg-slate-50',
+                    onRowClick && 'cursor-pointer hover:bg-primary',
                     rowClassName
                   )}
                 >

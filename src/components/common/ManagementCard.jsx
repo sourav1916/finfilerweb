@@ -28,7 +28,7 @@ export default function ManagementCard({
   hoverable = true,
 }) {
   const accentMap = {
-    slate: 'border-slate-200 shadow-slate-100',
+    slate: 'border-border shadow-slate-100',
     blue: 'border-blue-100 shadow-blue-100',
     green: 'border-green-100 shadow-green-100',
     emerald: 'border-emerald-100 shadow-emerald-100',
@@ -41,7 +41,7 @@ export default function ManagementCard({
   const cardBody = (
     <div
       className={joinClasses(
-        'rounded-lg border bg-white p-2.5 shadow-sm transition-all duration-300',
+        'rounded-lg border bg-secondary p-2.5 shadow-sm transition-all duration-300',
         accentMap[accent] || accentMap.slate,
         hoverable && 'hover:-translate-y-0.5 hover:shadow-md',
         onClick && 'cursor-pointer',
@@ -58,10 +58,10 @@ export default function ManagementCard({
               </p>
             )}
             <div className="flex items-center gap-1.5">
-              {icon && <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-slate-50 text-slate-600">{icon}</span>}
+              {icon && <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary text-secondary-foreground">{icon}</span>}
               <div className="min-w-0">
-                {title && <h3 className="truncate text-[13px] font-bold text-slate-900">{title}</h3>}
-                {subtitle && <p className="text-[11px] text-slate-500">{subtitle}</p>}
+                {title && <h3 className="truncate text-[13px] font-bold text-primary-foreground">{title}</h3>}
+                {subtitle && <p className="text-[11px] text-secondary-foreground">{subtitle}</p>}
               </div>
             </div>
           </div>
@@ -84,7 +84,7 @@ export default function ManagementCard({
       <div className={bodyClassName}>{children}</div>
 
       {footer && (
-        <div className={joinClasses('mt-2 flex items-center justify-between gap-1.5 border-t border-slate-100 pt-2', footerClassName)}>
+        <div className={joinClasses('mt-2 flex items-center justify-between gap-1.5 border-t border-border pt-2', footerClassName)}>
           {footer}
         </div>
       )}
