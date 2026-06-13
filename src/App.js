@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ToastProvider } from "./contexts/ToastContext";
 
+import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import MainLayout from "./components/layout/Main";
 import Landing from "./pages/Landing";
@@ -34,7 +35,7 @@ function App() {
             <Route path="/server-error" element={<ServerUnreachable />} />
 
             {/* Protected Routes inside MainLayout */}
-            <Route element={<MainLayout />}>
+            <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
               <Route path="home" element={<Home />} />
               <Route path="dashboard" element={<Home />} />
               <Route path="services" element={<Services />} />

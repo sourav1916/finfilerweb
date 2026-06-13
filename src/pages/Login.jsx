@@ -2,10 +2,11 @@ import { useState, useRef, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   Lock, ArrowRight, ShieldCheck, FileText, CheckCircle2,
-  Loader2, AlertCircle, X, Phone, RotateCcw, ChevronLeft
+  Loader2, Phone, RotateCcw, ChevronLeft
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { apiCall } from '../utils/apiCall'
+import { useToast } from '../contexts/ToastContext'
 
 /* ─── Animation variants ─── */
 const containerVariants = {
@@ -20,28 +21,6 @@ const slideVariants = {
   enter: (dir) => ({ x: dir > 0 ? 40 : -40, opacity: 0 }),
   center: { x: 0, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 28 } },
   exit: (dir) => ({ x: dir > 0 ? -40 : 40, opacity: 0, transition: { duration: 0.18 } })
-}
-
-/* ─── Toast ─── */
-function Toast({ message, type, onClose }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: -10, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -10, scale: 0.96 }}
-      className={`flex items-start gap-3 rounded-xl border px-4 py-3 text-sm shadow-lg ${
-        type === 'error'
-          ? 'border-red-200 bg-red-50 text-red-700'
-          : 'border-emerald-200 bg-emerald-50 text-emerald-700'
-      }`}
-    >
-      {type === 'error'
-        ? <AlertCircle size={16} className="mt-0.5 flex-shrink-0" />
-        : <CheckCircle2 size={16} className="mt-0.5 flex-shrink-0" />}
-      <span className="flex-1">{message}</span>
-      <button onClick={onClose} className="opacity-60 hover:opacity-100"><X size={14} /></button>
-    </motion.div>
-  )
 }
 
 /* ─── OTP Input (6 boxes) ─── */
@@ -102,6 +81,7 @@ function OtpInput({ value, onChange }) {
 /* ─── Main Component ─── */
 export default function Login() {
   const navigate = useNavigate()
+  const toast = useToast()
 
   const [step, setStep] = useState(1)        // 1 = send OTP, 2 = verify OTP
   const [direction, setDirection] = useState(1)
@@ -111,7 +91,6 @@ export default function Login() {
   const [otp, setOtp] = useState('')
 
   const [loading, setLoading] = useState(false)
-  const [toast, setToast] = useState(null)
 
   // Resend OTP countdown
   const [resendTimer, setResendTimer] = useState(0)
@@ -121,8 +100,11 @@ export default function Login() {
   const float2 = { animate: { y: [0, 12, 0], transition: { duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 } } }
 
   const showToast = (message, type = 'error') => {
-    setToast({ message, type })
-    setTimeout(() => setToast(null), 5000)
+    if (type === 'error') {
+      toast.error(message)
+    } else {
+      toast.success(message)
+    }
   }
 
   const startResendTimer = (seconds = 30) => {
@@ -145,7 +127,6 @@ export default function Login() {
     if (!password) return showToast('Password is required.')
 
     setLoading(true)
-    setToast(null)
     try {
       const res = await apiCall('/auth/login-send-otp', 'POST', {
         mobile: mobile.trim(),
@@ -177,7 +158,6 @@ export default function Login() {
     if (otp.replace(/\D/g, '').length < 6) return showToast('Please enter the complete 6-digit OTP.')
 
     setLoading(true)
-    setToast(null)
     try {
       const res = await apiCall('/auth/login-verify-otp', 'POST', {
         mobile: mobile.trim(),
@@ -217,7 +197,6 @@ export default function Login() {
   const handleResend = async () => {
     if (resendTimer > 0) return
     setLoading(true)
-    setToast(null)
     try {
       const res = await apiCall('/auth/login-send-otp', 'POST', { mobile: mobile.trim(), password })
       if (res.status === 200) {
@@ -238,7 +217,6 @@ export default function Login() {
     setDirection(-1)
     setStep(1)
     setOtp('')
-    setToast(null)
     clearInterval(timerRef.current)
   }
 
@@ -332,21 +310,6 @@ export default function Login() {
               )}
             </AnimatePresence>
           </motion.div>
-
-          {/* Toast */}
-          <AnimatePresence>
-            {toast && (
-              <motion.div
-                key="toast"
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                className="mb-4"
-              >
-                <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
-              </motion.div>
-            )}
-          </AnimatePresence>
 
           {/* ── Step 1: Credentials ── */}
           <AnimatePresence mode="wait" custom={direction}>

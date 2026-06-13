@@ -20,14 +20,18 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
+    const mobile = localStorage.getItem("mobile");
     const userData = localStorage.getItem("user");
 
-    if (token && userData) {
-      setUser(JSON.parse(userData));
-    } else if (token && username) {
-      // Fallback to create userData from username if user object doesn't exist
-      const userData = { username };
-      setUser(userData);
+    if (token) {
+      if (userData) {
+        setUser(JSON.parse(userData));
+      } else {
+        // Fallback: create a user object with whatever info we have
+        setUser({ token, username, mobile });
+      }
+    } else {
+      setUser(null);
     }
 
     setLoading(false);
