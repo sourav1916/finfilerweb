@@ -5,11 +5,7 @@ const AuthContext = createContext();
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-
-  if (!context) {
-    throw new Error("useAuth must be used within AuthProvider");
-  }
-
+  if (!context) throw new Error("useAuth must be used within AuthProvider");
   return context;
 };
 
@@ -29,21 +25,16 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem("token");
-      
+
       if (!token) {
         setUser(null);
         setLoading(false);
         return;
       }
 
-      // Attempt to load from localStorage first for fast render
       const userData = localStorage.getItem("user");
       if (userData) {
-        try {
-          setUser({ token, ...JSON.parse(userData) });
-        } catch (e) {
-          // Ignore
-        }
+        try { setUser({ token, ...JSON.parse(userData) }); } catch (e) { /* ignore */ }
       } else {
         setUser({ token });
       }
@@ -63,9 +54,7 @@ export const AuthProvider = ({ children }) => {
             clearSession();
           }
         } else {
-          if (response.status !== 401) {
-             clearSession();
-          }
+          if (response.status !== 401) clearSession();
         }
       } catch (error) {
         console.error("Server unreachable:", error);
@@ -81,25 +70,16 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (userData) => {
-    // userData matches the "data" object from the successful login response
-    if (userData.token) {
-      localStorage.setItem("token", userData.token);
-    }
-    if (userData.username) {
-      localStorage.setItem("username", userData.username);
-    }
-    if (userData.mobile) {
-      localStorage.setItem("mobile", userData.mobile);
-    }
-    if (userData.user_type) {
-      localStorage.setItem("user_type", userData.user_type);
-    }
-    
+    if (userData.token) localStorage.setItem("token", userData.token);
+    if (userData.username) localStorage.setItem("username", userData.username);
+    if (userData.mobile) localStorage.setItem("mobile", userData.mobile);
+    if (userData.user_type) localStorage.setItem("user_type", userData.user_type);
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
   };
 
-  const logout = async () => {
+  // payload: {} for current session only, { logout_all: true } for all devices
+  const logout = async (payload = {}) => {
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -108,7 +88,8 @@ export const AuthProvider = ({ children }) => {
     }
 
     try {
-      const response = await apiCall("/accounts/logout", "POST");
+      const body = Object.keys(payload).length > 0 ? payload : undefined;
+      const response = await apiCall("/accounts/logout", "POST", body);
       if (response && !response.ok) {
         console.error("Logout API call failed with status:", response.status);
       }
@@ -119,16 +100,8 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        login,
-        logout,
-      }}
-    >
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
