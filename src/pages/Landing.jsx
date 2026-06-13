@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, ShieldCheck, FileText, Clock, CheckCircle2, TrendingUp, Star, Sparkles, Users, BarChart3 } from 'lucide-react'
+import { ArrowRight, ShieldCheck, Clock, CheckCircle2, TrendingUp, Star, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 const features = [
@@ -279,9 +279,9 @@ export default function Landing() {
           </div>
           <p className="text-xs text-slate-400">© 2025 finfiler. All rights reserved. IRS Authorized E-file Provider.</p>
           <div className="flex gap-5 text-xs text-slate-500">
-            <a href="#" className="hover:text-indigo-600">Privacy</a>
-            <a href="#" className="hover:text-indigo-600">Terms</a>
-            <a href="#" className="hover:text-indigo-600">Contact</a>
+            <Link to="/" className="hover:text-indigo-600">Privacy</Link>
+            <Link to="/" className="hover:text-indigo-600">Terms</Link>
+            <Link to="/" className="hover:text-indigo-600">Contact</Link>
           </div>
         </div>
       </footer>

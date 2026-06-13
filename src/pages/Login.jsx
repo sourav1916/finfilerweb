@@ -7,6 +7,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion'
 import { apiCall } from '../utils/apiCall'
 import { useToast } from '../contexts/ToastContext'
+import { useAuth } from '../contexts/AuthContext'
 
 /* ─── Animation variants ─── */
 const containerVariants = {
@@ -82,6 +83,7 @@ function OtpInput({ value, onChange }) {
 export default function Login() {
   const navigate = useNavigate()
   const toast = useToast()
+  const { login } = useAuth()
 
   const [step, setStep] = useState(1)        // 1 = send OTP, 2 = verify OTP
   const [direction, setDirection] = useState(1)
@@ -166,16 +168,12 @@ export default function Login() {
       })
 
       if (res.status === 200) {
-        // Try to read token from response body or headers
-        let token = res.headers.get('token') || res.headers.get('x-token')
         try {
-          const data = await res.json()
-          if (data?.token) token = data.token
-          if (data?.username) localStorage.setItem('username', data.username)
+          const body = await res.json()
+          if (body.success && body.data) {
+            login(body.data)
+          }
         } catch (_) {}
-
-        if (token) localStorage.setItem('token', token)
-        localStorage.setItem('mobile', mobile.trim())
 
         showToast('Login successful! Redirecting…', 'success')
         setTimeout(() => navigate('/home'), 1500)

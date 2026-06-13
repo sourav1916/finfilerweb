@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import apiCall from "../utils/apiCall";
+import { apiCall } from "../utils/apiCall";
 
 const AuthContext = createContext();
 
@@ -19,16 +19,17 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const username = localStorage.getItem("username");
-    const mobile = localStorage.getItem("mobile");
     const userData = localStorage.getItem("user");
 
     if (token) {
       if (userData) {
-        setUser(JSON.parse(userData));
+        try {
+          setUser(JSON.parse(userData));
+        } catch (e) {
+          setUser(null);
+        }
       } else {
-        // Fallback: create a user object with whatever info we have
-        setUser({ token, username, mobile });
+        setUser({ token });
       }
     } else {
       setUser(null);
@@ -37,85 +38,52 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const sendOtp = async (email, password) => {
-    const response = await apiCall("/auth/login/send-otp", "POST", {
-      email,
-      password,
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || "Failed to send OTP");
+  const login = (userData) => {
+    // userData matches the "data" object from the successful login response
+    if (userData.token) {
+      localStorage.setItem("token", userData.token);
     }
-
-    return data;
-  };
-
-  const login = async (email, password, otp) => {
-    const response = await apiCall("/auth/login", "POST", {
-      email,
-      password,
-      otp,
-    });
-
-    const data = await response.json();
-
-    if (!response.ok || !data.success) {
-      throw new Error(data.message || "Login failed");
+    if (userData.username) {
+      localStorage.setItem("username", userData.username);
     }
-
-    const userData = {
-      email,
-      username: data.username || email.split('@')[0],
-    };
-
-    // Store in localStorage
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("username", userData.username);
+    if (userData.mobile) {
+      localStorage.setItem("mobile", userData.mobile);
+    }
+    if (userData.user_type) {
+      localStorage.setItem("user_type", userData.user_type);
+    }
+    
     localStorage.setItem("user", JSON.stringify(userData));
-
     setUser(userData);
-
-    return data;
   };
 
   const logout = async () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      // No token, just clean up locally
-      localStorage.removeItem("token");
-      localStorage.removeItem("username");
-      localStorage.removeItem("user");
-      setUser(null);
+      clearSession();
       return;
     }
 
     try {
       const response = await apiCall("/auth/logout", "POST");
-
-      if (!response.ok) {
+      if (response && !response.ok) {
         console.error("Logout API call failed with status:", response.status);
-        // Continue with local cleanup even if API call fails
       }
-
-      // Clear local storage and state
-      localStorage.removeItem("token");
-      localStorage.removeItem("username");
-      localStorage.removeItem("user");
-      setUser(null);
     } catch (error) {
       console.error("Logout failed:", error);
-      // Still clear local data even if API call fails
-      localStorage.removeItem("token");
-      localStorage.removeItem("username");
-      localStorage.removeItem("user");
-      setUser(null);
-      
-      // Optionally re-throw if you want to handle the error in the component
-      // throw new Error("Failed to logout. Please try again.");
+    } finally {
+      clearSession();
     }
+  };
+
+  const clearSession = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("mobile");
+    localStorage.removeItem("user_type");
+    localStorage.removeItem("user");
+    setUser(null);
   };
 
   return (
@@ -123,7 +91,6 @@ export const AuthProvider = ({ children }) => {
       value={{
         user,
         loading,
-        sendOtp,
         login,
         logout,
       }}
