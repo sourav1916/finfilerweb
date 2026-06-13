@@ -11,6 +11,7 @@ import {
   Moon,
 } from 'lucide-react';
 import { ThemeContext } from '../../contexts/ThemeContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Navbar = ({
   toggleSidebar,
@@ -21,6 +22,7 @@ const Navbar = ({
   const [openDropdown, setOpenDropdown] = useState(false);
   const navigate = useNavigate();
   const { theme, toggleTheme } = useContext(ThemeContext);
+  const { user } = useAuth();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -80,19 +82,23 @@ const Navbar = ({
               >
                 {/* Avatar */}
                 <div className="relative">
-                  <div className="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center shadow-md bg-gradient-to-br from-blue-500 to-indigo-600">
-                    <span className="text-white font-bold text-sm">A</span>
-                  </div>
+                  {user?.image ? (
+                    <img src={user.image} alt="Profile" className="w-9 h-9 rounded-lg object-cover shadow-md" />
+                  ) : (
+                    <div className="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center shadow-md bg-gradient-to-br from-blue-500 to-indigo-600">
+                      <span className="text-white font-bold text-sm uppercase">{user?.first_name ? user.first_name.charAt(0) : 'U'}</span>
+                    </div>
+                  )}
                   {/* Online dot */}
                   <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-400 border-2 border-white rounded-full"></div>
                 </div>
 
                 <div className="hidden md:block text-left">
-                  <p className="text-sm font-semibold text-primary-foreground">
-                    Asha
+                  <p className="text-sm font-semibold text-primary-foreground capitalize">
+                    {user?.first_name || 'User'}
                   </p>
-                  <p className="text-xs text-secondary-foreground">
-                    Pro User
+                  <p className="text-xs text-secondary-foreground capitalize">
+                    {user?.user_type || 'User'}
                   </p>
                 </div>
 
@@ -106,12 +112,16 @@ const Navbar = ({
                   <div className="absolute right-0 mt-2 w-56 bg-nav rounded-xl shadow-xl border border-border overflow-hidden z-50">
                     {/* Mobile user info */}
                     <div className="md:hidden p-4 border-b border-border bg-secondary flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg overflow-hidden bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
-                        <span className="text-white font-bold">A</span>
-                      </div>
+                      {user?.image ? (
+                        <img src={user.image} alt="Profile" className="w-10 h-10 rounded-lg object-cover" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-lg overflow-hidden bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                          <span className="text-white font-bold uppercase">{user?.first_name ? user.first_name.charAt(0) : 'U'}</span>
+                        </div>
+                      )}
                       <div>
-                        <p className="font-semibold text-primary-foreground">Asha</p>
-                        <p className="text-xs text-secondary-foreground">Pro User</p>
+                        <p className="font-semibold text-primary-foreground capitalize">{user?.first_name || 'User'}</p>
+                        <p className="text-xs text-secondary-foreground capitalize">{user?.user_type || 'User'}</p>
                       </div>
                     </div>
 

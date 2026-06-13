@@ -17,25 +17,67 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userData = localStorage.getItem("user");
+  const clearSession = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("mobile");
+    localStorage.removeItem("user_type");
+    localStorage.removeItem("user");
+    setUser(null);
+  };
 
-    if (token) {
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem("token");
+      
+      if (!token) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+
+      // Attempt to load from localStorage first for fast render
+      const userData = localStorage.getItem("user");
       if (userData) {
         try {
-          setUser(JSON.parse(userData));
+          setUser({ token, ...JSON.parse(userData) });
         } catch (e) {
-          setUser(null);
+          // Ignore
         }
       } else {
         setUser({ token });
       }
-    } else {
-      setUser(null);
-    }
 
-    setLoading(false);
+      try {
+        const response = await apiCall("/accounts", "GET");
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success && result.data) {
+            const fetchedUser = { token, ...result.data };
+            setUser(fetchedUser);
+            localStorage.setItem("user", JSON.stringify(result.data));
+            if (result.data.username) localStorage.setItem("username", result.data.username);
+            if (result.data.mobile) localStorage.setItem("mobile", result.data.mobile);
+            if (result.data.user_type) localStorage.setItem("user_type", result.data.user_type);
+          } else {
+            clearSession();
+          }
+        } else {
+          if (response.status !== 401) {
+             clearSession();
+          }
+        }
+      } catch (error) {
+        console.error("Server unreachable:", error);
+        if (window.location.pathname !== "/server-error") {
+          window.location.href = "/server-error";
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
   }, []);
 
   const login = (userData) => {
@@ -77,14 +119,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const clearSession = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
-    localStorage.removeItem("mobile");
-    localStorage.removeItem("user_type");
-    localStorage.removeItem("user");
-    setUser(null);
-  };
 
   return (
     <AuthContext.Provider
