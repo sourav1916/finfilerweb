@@ -20,12 +20,6 @@ import Pagination from "../components/common/PaginationComponent";
 import FirmFormModal from "../components/firms/FirmFormModal";
 import DocumentUploadModal from "../components/documents/DocumentUploadModal";
 
-const fileIconMap = {
-  pdf: { icon: FileText, color: "text-red-500 bg-red-50 dark:bg-red-950/40" },
-  image: { icon: Image, color: "text-blue-500 bg-blue-50 dark:bg-blue-950/40" },
-  doc: { icon: File, color: "text-emerald-500 bg-emerald-50 dark:bg-emerald-950/40" },
-};
-
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
@@ -53,6 +47,29 @@ const getFileType = (fileName = "") => {
   if (["jpg", "jpeg", "png", "gif", "webp"].includes(extension)) return "image";
   if (extension === "pdf") return "pdf";
   return "doc";
+};
+
+const getFileExtension = (fileName = "") => {
+  const extension = fileName.split(".").pop()?.toLowerCase() || "";
+  return extension || "file";
+};
+
+const thumbStyleMap = {
+  pdf: {
+    icon: FileText,
+    iconWrap: "bg-red-100 text-red-600",
+    surface: "bg-gradient-to-br from-red-50 to-red-100/60 dark:from-red-950/40 dark:to-secondary",
+  },
+  image: {
+    icon: Image,
+    iconWrap: "bg-blue-100 text-blue-600",
+    surface: "bg-gradient-to-br from-blue-50 to-indigo-100/60 dark:from-blue-950/40 dark:to-secondary",
+  },
+  doc: {
+    icon: File,
+    iconWrap: "bg-emerald-100 text-emerald-600",
+    surface: "bg-gradient-to-br from-emerald-50 to-teal-100/60 dark:from-emerald-950/40 dark:to-secondary",
+  },
 };
 
 const truncateFileName = (fileName = "", maxBaseLength = 28) => {
@@ -90,19 +107,125 @@ const downloadDocument = async (doc, toast) => {
   }
 };
 
-function DocumentListSkeleton() {
+function DocumentThumbnail({ doc }) {
+  const fileName = doc.file_name || doc.name || "";
+  const fileType = getFileType(fileName);
+  const extension = getFileExtension(fileName);
+  const style = thumbStyleMap[fileType] || thumbStyleMap.doc;
+  const Icon = style.icon;
+  const [imageFailed, setImageFailed] = useState(false);
+
+  if (fileType === "image" && doc.file_url && !imageFailed) {
+    return (
+      <img
+        src={resolveMediaUrl(doc.file_url)}
+        alt={doc.name}
+        className="h-full w-full object-cover"
+        loading="lazy"
+        onError={() => setImageFailed(true)}
+      />
+    );
+  }
+
   return (
-    <ul className="divide-y divide-border">
-      {Array.from({ length: 5 }).map((_, index) => (
-        <li key={index} className="flex animate-pulse items-center gap-4 px-4 py-4 sm:px-5">
-          <div className="h-11 w-11 rounded-xl bg-border" />
-          <div className="flex-1 space-y-2">
-            <div className="h-4 w-48 rounded bg-border" />
-            <div className="h-3 w-32 rounded bg-border" />
-          </div>
-        </li>
+    <div className={`flex h-full w-full flex-col items-center justify-center gap-2 ${style.surface}`}>
+      <div className={`flex h-14 w-14 items-center justify-center rounded-2xl shadow-sm ${style.iconWrap}`}>
+        <Icon size={28} />
+      </div>
+      <span className="rounded-full bg-secondary/80 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-secondary-foreground">
+        {extension}
+      </span>
+    </div>
+  );
+}
+
+function DocumentCard({
+  doc,
+  index,
+  downloadingId,
+  deletingId,
+  onDownload,
+  onDelete,
+}) {
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05 }}
+      whileHover={{ y: -4 }}
+      className="group overflow-hidden rounded-2xl border border-border bg-secondary shadow-soft transition hover:border-indigo-200 hover:shadow-md"
+    >
+      <div className="relative aspect-[4/3] overflow-hidden border-b border-border bg-primary">
+        <DocumentThumbnail doc={doc} />
+        <div className="absolute inset-0 flex items-end justify-end gap-2 bg-gradient-to-t from-black/50 via-transparent to-transparent p-3 opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100">
+          <button
+            type="button"
+            onClick={() => onDownload(doc)}
+            disabled={downloadingId === doc.document_id}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/95 text-indigo-600 shadow-sm transition hover:bg-white disabled:opacity-60"
+            title="Download"
+          >
+            {downloadingId === doc.document_id ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Download size={16} />
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => onDelete(doc.document_id)}
+            disabled={deletingId === doc.document_id}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/95 text-red-500 shadow-sm transition hover:bg-white disabled:opacity-60"
+            title="Delete"
+          >
+            {deletingId === doc.document_id ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Trash2 size={16} />
+            )}
+          </button>
+        </div>
+      </div>
+
+      <div className="p-4">
+        <p className="truncate text-sm font-semibold text-primary-foreground" title={doc.name}>
+          {truncateFileName(doc.name, 32)}
+        </p>
+        <p className="mt-1 text-xs text-secondary-foreground">{formatBytes(doc.size)}</p>
+        {doc.firm_name && (
+          <Link
+            to={`/firms/${doc.firm_id}`}
+            className="mt-2 inline-block truncate text-xs font-medium text-indigo-600 transition hover:text-indigo-700"
+            title={doc.firm_name}
+          >
+            {doc.firm_name}
+          </Link>
+        )}
+      </div>
+    </motion.article>
+  );
+}
+
+function DocumentCardSkeleton() {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-border bg-secondary animate-pulse">
+      <div className="aspect-[4/3] bg-border" />
+      <div className="space-y-2 p-4">
+        <div className="h-4 w-3/4 rounded bg-border" />
+        <div className="h-3 w-1/3 rounded bg-border" />
+        <div className="h-3 w-1/2 rounded bg-border" />
+      </div>
+    </div>
+  );
+}
+
+function DocumentGridSkeleton() {
+  return (
+    <div className="grid gap-4 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-3 xl:grid-cols-4">
+      {Array.from({ length: 8 }).map((_, index) => (
+        <DocumentCardSkeleton key={index} />
       ))}
-    </ul>
+    </div>
   );
 }
 
@@ -317,19 +440,16 @@ export default function Documents() {
         </div>
       </motion.div>
 
-      <motion.div
-        variants={itemVariants}
-        className="overflow-hidden rounded-2xl border border-border bg-secondary shadow-soft sm:rounded-3xl"
-      >
+      <motion.div variants={itemVariants}>
         {loading && documents.length === 0 ? (
-          <DocumentListSkeleton />
+          <DocumentGridSkeleton />
         ) : error ? (
-          <div className="py-16 text-center">
+          <div className="rounded-2xl border border-border bg-secondary py-16 text-center shadow-soft sm:rounded-3xl">
             <AlertCircle className="mx-auto mb-3 text-red-400" size={40} />
             <p className="font-medium text-red-500">{error}</p>
           </div>
         ) : documents.length === 0 ? (
-          <div className="py-16 text-center">
+          <div className="rounded-2xl border border-border bg-secondary py-16 text-center shadow-soft sm:rounded-3xl">
             <AlertCircle className="mx-auto mb-3 text-slate-300" size={40} />
             <p className="mb-4 font-medium text-secondary-foreground">No documents found.</p>
             <button
@@ -342,79 +462,19 @@ export default function Documents() {
             </button>
           </div>
         ) : (
-          <ul className="divide-y divide-border">
-            {documents.map((doc, index) => {
-              const fileType = getFileType(doc.file_name || doc.name);
-              const { icon: FileIcon, color } = fileIconMap[fileType] || fileIconMap.doc;
-
-              return (
-                <motion.li
-                  key={doc.document_id}
-                  initial={{ opacity: 0, x: -16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.06 }}
-                  whileHover={{ backgroundColor: "rgba(248,250,252,0.6)" }}
-                  className="group flex items-center gap-3 px-4 py-3 transition-colors sm:gap-4 sm:px-5 sm:py-4"
-                >
-                  <div
-                    className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl sm:h-11 sm:w-11 ${color}`}
-                  >
-                    <FileIcon size={18} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p
-                      className="truncate text-sm font-semibold text-primary-foreground"
-                      title={doc.name}
-                    >
-                      {truncateFileName(doc.name, 40)}
-                    </p>
-                    <p className="text-xs text-slate-400">
-                      {formatBytes(doc.size)}
-                      {doc.firm_name && (
-                        <>
-                          {" · "}
-                          <Link
-                            to={`/firms/${doc.firm_id}`}
-                            className="text-indigo-600 transition hover:text-indigo-700"
-                          >
-                            {doc.firm_name}
-                          </Link>
-                        </>
-                      )}
-                    </p>
-                  </div>
-                  <div className="flex gap-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
-                    <button
-                      type="button"
-                      onClick={() => handleDownload(doc)}
-                      disabled={downloadingId === doc.document_id}
-                      className="rounded-lg p-2 text-indigo-500 transition hover:bg-indigo-50 disabled:opacity-60"
-                      title="Download"
-                    >
-                      {downloadingId === doc.document_id ? (
-                        <Loader2 size={15} className="animate-spin" />
-                      ) : (
-                        <Download size={15} />
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(doc.document_id)}
-                      disabled={deletingId === doc.document_id}
-                      className="rounded-lg p-2 text-red-400 transition hover:bg-red-50 disabled:opacity-60"
-                      title="Delete"
-                    >
-                      {deletingId === doc.document_id ? (
-                        <Loader2 size={15} className="animate-spin" />
-                      ) : (
-                        <Trash2 size={15} />
-                      )}
-                    </button>
-                  </div>
-                </motion.li>
-              );
-            })}
-          </ul>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {documents.map((doc, index) => (
+              <DocumentCard
+                key={doc.document_id}
+                doc={doc}
+                index={index}
+                downloadingId={downloadingId}
+                deletingId={deletingId}
+                onDownload={handleDownload}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
         )}
       </motion.div>
 
