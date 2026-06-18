@@ -1,6 +1,7 @@
 // src/pages/NotFound.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { clientRoute } from '../constants/routes';
 import { Home, AlertCircle, ArrowLeft } from 'lucide-react';
 
 const NotFound = () => {
@@ -28,7 +29,7 @@ const NotFound = () => {
         {/* Action Buttons */}
         <div className="space-y-3">
           <button
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate(clientRoute('/home'))}
             className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-md hover:shadow-lg"
           >
             <Home className="w-4 h-4" />
@@ -46,7 +47,7 @@ const NotFound = () => {
 
         {/* Help Text */}
         <p className="text-sm text-secondary-foreground mt-8">
-          Need assistance? <button onClick={() => navigate('/settings')} className="text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 font-semibold">Contact Support</button>
+          Need assistance? <button onClick={() => navigate(clientRoute('/support'))} className="text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 font-semibold">Contact Support</button>
         </p>
       </div>
     </div>

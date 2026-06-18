@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
+import { clientRoute } from "../constants/routes";
 import { motion } from "framer-motion";
 import {
   File,
@@ -198,7 +199,7 @@ function DocumentCard({
         <p className="mt-1 text-xs text-secondary-foreground">{formatBytes(doc.size)}</p>
         {doc.firm_name && (
           <Link
-            to={`/firms/${doc.firm_id}`}
+            to={clientRoute(`/firms/${doc.firm_id}`)}
             className="mt-2 inline-block truncate text-xs font-medium text-indigo-600 transition hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
             title={doc.firm_name}
           >

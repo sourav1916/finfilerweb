@@ -1,3 +1,5 @@
+import { clientRoute } from '../constants/routes';
+
 const API_BASE = process.env.REACT_APP_API_BASE || 'https://server.finfiler.com/api';
 export const APP_ENV = process.env.REACT_APP_ENV || process.env.NODE_ENV;
 export const IS_DEVELOPMENT = APP_ENV === 'development';
@@ -75,8 +77,8 @@ export const apiCall = async (endpoint, method = 'GET', body = null) => {
       localStorage.removeItem('username');
 
       // Redirect to login page if not already there
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
+      if (window.location.pathname !== clientRoute('/login')) {
+        window.location.href = clientRoute('/login');
       }
     }
 

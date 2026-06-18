@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { clientRoute } from "../constants/routes";
 import { motion } from "framer-motion";
 import {
   Search,
@@ -199,7 +200,7 @@ export default function Services() {
   }, [fetchServices]);
 
   const handleSelectService = (serviceId) => {
-    navigate(`/services/${serviceId}`);
+    navigate(clientRoute(`/services/${serviceId}`));
   };
 
   return (

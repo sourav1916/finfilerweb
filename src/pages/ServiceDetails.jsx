@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { clientRoute } from "../constants/routes";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -266,7 +267,7 @@ export default function ServiceDetails() {
         return;
       }
 
-      navigate(`/services/${service.service_id}/order`);
+      navigate(clientRoute(`/services/${service.service_id}/order`));
     } catch (err) {
       console.error("Order check failed:", err);
       toast.error(err.message || "Could not start order. Please try again.");
@@ -277,7 +278,7 @@ export default function ServiceDetails() {
 
   const handleFirmCreated = () => {
     setFirmModalOpen(false);
-    navigate(`/services/${service.service_id}/order`);
+    navigate(clientRoute(`/services/${service.service_id}/order`));
   };
 
   if (loading) {
@@ -299,7 +300,7 @@ export default function ServiceDetails() {
           {error || "This service could not be loaded."}
         </p>
         <Link
-          to="/services"
+          to={clientRoute("/services")}
           className="mt-6 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700"
         >
           <ArrowLeft size={16} /> Back to Services

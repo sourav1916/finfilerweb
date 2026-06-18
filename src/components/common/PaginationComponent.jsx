@@ -1,276 +1,263 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
-import { 
-    FaChevronLeft, 
-    FaChevronRight, 
-    FaAngleDoubleLeft, 
-    FaAngleDoubleRight,
-    FaLevelDownAlt 
-} from 'react-icons/fa';
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from 'lucide-react';
 import SelectField from './SelectField';
 
 const Pagination = ({
-    currentPage,
-    totalItems,
-    itemsPerPage,
-    onPageChange,
-    onLimitChange,
-    availableLimits = [10, 20, 50, 100],
-    className = '',
-    showInfo = true,
+  currentPage,
+  totalItems,
+  itemsPerPage,
+  onPageChange,
+  onLimitChange,
+  availableLimits = [10, 20, 50, 100],
+  className = '',
+  showInfo = true,
 }) => {
-    const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
-    const startItem = totalItems === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
-    const endItem = Math.min(currentPage * itemsPerPage, totalItems);
-    
-    const [jumpPage, setJumpPage] = useState('');
+  const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+  const startItem = totalItems === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
+  const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
-    useEffect(() => {
-        setJumpPage(String(currentPage));
-    }, [currentPage]);
+  const [jumpPage, setJumpPage] = useState('');
 
-    const handleJump = (e) => {
-        e.preventDefault();
-        const page = Number.parseInt(jumpPage, 10);
-        if (page && page >= 1 && page <= totalPages) {
-            onPageChange(page);
-        } else {
-            setJumpPage(String(currentPage));
+  useEffect(() => {
+    setJumpPage(String(currentPage));
+  }, [currentPage]);
+
+  const handleJump = (e) => {
+    e.preventDefault();
+    const page = Number.parseInt(jumpPage, 10);
+    if (page >= 1 && page <= totalPages) {
+      onPageChange(page);
+    } else {
+      setJumpPage(String(currentPage));
+    }
+  };
+
+  const getPageNumbers = () => {
+    const delta = 1;
+    const range = [];
+    const rangeWithDots = [];
+    let last;
+
+    for (let i = 1; i <= totalPages; i += 1) {
+      if (
+        i === 1 ||
+        i === totalPages ||
+        (i >= currentPage - delta && i <= currentPage + delta)
+      ) {
+        range.push(i);
+      }
+    }
+
+    range.forEach((i) => {
+      if (last) {
+        if (i - last === 2) {
+          rangeWithDots.push(last + 1);
+        } else if (i - last !== 1) {
+          rangeWithDots.push('...');
         }
-    };
-
-    const getPageNumbers = () => {
-        const delta = 2;
-        const range = [];
-        const rangeWithDots = [];
-        let l;
-
-        for (let i = 1; i <= totalPages; i++) {
-            if (i === 1 || i === totalPages || (i >= currentPage - delta && i <= currentPage + delta)) {
-                range.push(i);
-            }
-        }
-
-        range.forEach((i) => {
-            if (l) {
-                if (i - l === 2) {
-                    rangeWithDots.push(l + 1);
-                } else if (i - l !== 1) {
-                    rangeWithDots.push('...');
-                }
-            }
-            rangeWithDots.push(i);
-            l = i;
-        });
-
-        return rangeWithDots;
-    };
-
-    if (totalItems === 0) return null;
-
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`w-full lg:flex lg:justify-between lg:items-center bg-secondary rounded-xl border border-border mt-6 p-3 sm:p-4 ${className}`.trim()}
-        >
-            {/* ── ROW 1 (mobile): Info + Page controls side by side ── */}
-            <div className="flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
-
-                {/* Showing X–Y of Z — hidden on very small if needed, but kept visible */}
-                {showInfo && (
-                    <p className="text-xs sm:text-sm text-secondary-foreground font-medium whitespace-nowrap shrink-0">
-                        Showing{' '}
-                        <span className="text-primary-foreground font-semibold">{startItem}–{endItem}</span>
-                        {' '}of{' '}
-                        <span className="text-primary-foreground font-semibold">{totalItems}</span>
-                    </p>
-                )}
-
-                {/* Page number buttons */}
-                <div className="flex items-center justify-center flex-wrap gap-1 mt-2 sm:mt-0">
-                    <button
-                        onClick={() => onPageChange(1)}
-                        disabled={currentPage === 1}
-                        className="p-1.5 rounded-lg border border-border text-secondary-foreground hover:bg-primary hover:text-indigo-600 dark:hover:text-indigo-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                        title="First Page"
-                    >
-                        <FaAngleDoubleLeft size={11} />
-                    </button>
-
-                    <button
-                        onClick={() => onPageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        className="p-1.5 rounded-lg border border-border text-secondary-foreground hover:bg-primary hover:text-indigo-600 dark:hover:text-indigo-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                        title="Previous Page"
-                    >
-                        <FaChevronLeft size={11} />
-                    </button>
-
-                    <div className="flex items-center gap-0.5 px-0.5">
-                        {getPageNumbers().map((page, idx) =>
-                            page === '...' ? (
-                                <span key={`dots-${idx}`} className="px-1 text-secondary-foreground text-xs">...</span>
-                            ) : (
-                                <button
-                                    key={page}
-                                    onClick={() => onPageChange(page)}
-                                    className={`
-                                        min-w-[28px] h-7 sm:min-w-[36px] sm:h-9 rounded-lg text-xs sm:text-sm font-bold transition-all
-                                        ${currentPage === page
-                                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
-                                            : 'text-secondary-foreground hover:bg-secondary hover:text-indigo-600'
-                                        }
-                                    `}
-                                >
-                                    {page}
-                                </button>
-                            )
-                        )}
-                    </div>
-
-                    <button
-                        onClick={() => onPageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                        className="p-1.5 rounded-lg border border-border text-secondary-foreground hover:bg-primary hover:text-indigo-600 dark:hover:text-indigo-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                        title="Next Page"
-                    >
-                        <FaChevronRight size={11} />
-                    </button>
-
-                    <button
-                        onClick={() => onPageChange(totalPages)}
-                        disabled={currentPage === totalPages}
-                        className="p-1.5 rounded-lg border border-border text-secondary-foreground hover:bg-primary hover:text-indigo-600 dark:hover:text-indigo-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                        title="Last Page"
-                    >
-                        <FaAngleDoubleRight size={11} />
-                    </button>
-                </div>
-            </div>
-
-            {/* ── ROW 2 (mobile): Show limit + Go to ── */}
-            <div className="flex items-center justify-between gap-2 mt-2 pt-2 border-t border-border sm:mt-0 sm:pt-0 sm:border-0 sm:hidden">
-
-                {/* Show limit */}
-                {onLimitChange && (
-                    <div className="flex items-center gap-1.5">
-                        <span className="text-xs text-secondary-foreground font-medium">Show:</span>
-                        <div className="relative min-w-[80px]">
-                            <SelectField
-                                value={{ value: itemsPerPage, label: String(itemsPerPage) }}
-                                onChange={(selectedOption) => onLimitChange(Number(selectedOption.value))}
-                                options={availableLimits.map(limit => ({ value: limit, label: String(limit) }))}
-                                menuPlacement="auto"
-                            />
-                        </div>
-                    </div>
-                )}
-
-                {/* Go to page */}
-                <div className="flex items-center gap-1.5">
-                    <span className="text-xs text-secondary-foreground font-medium">Go to:</span>
-                    <form onSubmit={handleJump} className="relative group">
-                        <input
-                            type="text"
-                            inputMode="numeric"
-                            value={jumpPage}
-                            onChange={(e) => {
-                                const val = e.target.value.replace(/[^0-9]/g, '');
-                                setJumpPage(val);
-                            }}
-                            className="w-14 bg-secondary border border-border rounded-lg px-2 py-1 pr-7 text-xs font-bold text-primary-foreground focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all text-center"
-                        />
-                        <button
-                            type="submit"
-                            className="absolute right-1 top-1/2 -translate-y-1/2 p-0.5 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-all opacity-0 group-focus-within:opacity-100"
-                        >
-                            <FaLevelDownAlt size={8} className="rotate-90" />
-                        </button>
-                    </form>
-                    <span className="text-xs text-secondary-foreground">of <span className="text-primary-foreground font-bold">{totalPages}</span></span>
-                </div>
-            </div>
-
-            {/* ── Desktop layout (sm+): original single row ── */}
-            <div className="hidden sm:flex items-center justify-between gap-4 mt-3 pt-3 border-t border-border lg:mt-0 lg:pt-0">
-                {onLimitChange && (
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm text-secondary-foreground font-medium">Show:</span>
-                        <div className="relative min-w-[90px]">
-                            <SelectField
-                                value={{ value: itemsPerPage, label: String(itemsPerPage) }}
-                                onChange={(selectedOption) => onLimitChange(Number(selectedOption.value))}
-                                options={availableLimits.map(limit => ({ value: limit, label: String(limit) }))}
-                                menuPlacement="auto"
-                            />
-                        </div>
-                    </div>
-                )}
-                <div className="flex items-center gap-2">
-                    <span className="text-sm text-secondary-foreground font-medium">Go to:</span>
-                    <form onSubmit={handleJump} className="relative group">
-                        <input
-                            type="text"
-                            inputMode="numeric"
-                            value={jumpPage}
-                            onChange={(e) => {
-                                const val = e.target.value.replace(/[^0-9]/g, '');
-                                setJumpPage(val);
-                            }}
-                            placeholder="Page No"
-                            className="w-full bg-secondary border border-border rounded-lg px-3 py-1.5 pr-10 text-sm font-bold text-primary-foreground focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all text-center"
-                        />
-                        <button
-                            type="submit"
-                            className="absolute right-1 top-1/2 -translate-y-1/2 p-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-all opacity-0 group-focus-within:opacity-100"
-                        >
-                            <FaLevelDownAlt size={10} className="rotate-90" />
-                        </button>
-                    </form>
-                    <span className="text-sm text-secondary-foreground font-medium">of <span className="text-primary-foreground font-bold">{totalPages}</span> pages</span>
-                </div>
-            </div>
-        </motion.div>
-    );
-};
-
-// Hook — unchanged
-export const usePagination = (initialPage = 1, initialLimit = 10) => {
-    const [pagination, setPagination] = useState({
-        page: initialPage,
-        limit: initialLimit,
-        total: 0,
-        total_pages: 1,
-        is_last_page: true
+      }
+      rangeWithDots.push(i);
+      last = i;
     });
 
-    const updatePagination = useCallback((data) => {
-        setPagination(prev => {
-            const page = data.page || prev.page;
-            const limit = data.limit || prev.limit;
-            const total = data.total ?? prev.total;
-            const total_pages = data.total_pages || Math.ceil(total / limit) || 1;
-            return {
-                page, limit, total, total_pages,
-                is_last_page: data.is_last_page ?? (page >= total_pages)
-            };
-        });
-    }, []);
+    return rangeWithDots;
+  };
 
-    const goToPage = useCallback((page) => {
-        setPagination(prev => ({ ...prev, page }));
-    }, []);
+  if (totalItems === 0) return null;
 
-    const changeLimit = useCallback((limit) => {
-        setPagination(prev => ({ ...prev, limit, page: 1 }));
-    }, []);
+  const navBtnClass =
+    'inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-primary text-secondary-foreground transition hover:border-indigo-500/40 hover:bg-indigo-500/5 hover:text-indigo-600 disabled:pointer-events-none disabled:opacity-35 dark:hover:text-indigo-400';
 
-    const resetPagination = useCallback(() => {
-        setPagination({ page: initialPage, limit: initialLimit, total: 0, total_pages: 1, is_last_page: true });
-    }, [initialPage, initialLimit]);
+  const pageBtnClass = (active) =>
+    `inline-flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-sm font-semibold transition ${
+      active
+        ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/25'
+        : 'text-secondary-foreground hover:bg-secondary hover:text-indigo-600 dark:hover:text-indigo-400'
+    }`;
 
-    return { pagination, updatePagination, goToPage, changeLimit, resetPagination };
+  return (
+    <div
+      className={`rounded-xl border border-border bg-primary px-3 py-3 sm:px-4 sm:py-3.5 ${className}`.trim()}
+    >
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        {/* Info */}
+        {showInfo && (
+          <p className="text-center text-xs text-secondary-foreground sm:text-left sm:text-sm">
+            Showing{' '}
+            <span className="font-semibold text-primary-foreground">
+              {startItem}–{endItem}
+            </span>{' '}
+            of{' '}
+            <span className="font-semibold text-primary-foreground">{totalItems}</span>
+          </p>
+        )}
+
+        {/* Page controls */}
+        <div className="flex items-center justify-center gap-1">
+          <button
+            type="button"
+            onClick={() => onPageChange(1)}
+            disabled={currentPage === 1}
+            className={navBtnClass}
+            title="First page"
+            aria-label="First page"
+          >
+            <ChevronsLeft size={15} />
+          </button>
+          <button
+            type="button"
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={navBtnClass}
+            title="Previous page"
+            aria-label="Previous page"
+          >
+            <ChevronLeft size={15} />
+          </button>
+
+          <div className="flex items-center gap-0.5 px-1">
+            {getPageNumbers().map((page, idx) =>
+              page === '...' ? (
+                <span
+                  key={`dots-${idx}`}
+                  className="inline-flex h-8 w-6 items-center justify-center text-xs text-secondary-foreground"
+                >
+                  …
+                </span>
+              ) : (
+                <button
+                  key={page}
+                  type="button"
+                  onClick={() => onPageChange(page)}
+                  className={pageBtnClass(currentPage === page)}
+                  aria-label={`Page ${page}`}
+                  aria-current={currentPage === page ? 'page' : undefined}
+                >
+                  {page}
+                </button>
+              ),
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className={navBtnClass}
+            title="Next page"
+            aria-label="Next page"
+          >
+            <ChevronRight size={15} />
+          </button>
+          <button
+            type="button"
+            onClick={() => onPageChange(totalPages)}
+            disabled={currentPage === totalPages}
+            className={navBtnClass}
+            title="Last page"
+            aria-label="Last page"
+          >
+            <ChevronsRight size={15} />
+          </button>
+        </div>
+
+        {/* Limit + jump */}
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:justify-end">
+          {onLimitChange && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-secondary-foreground sm:text-sm">
+                Rows
+              </span>
+              <div className="w-[72px]">
+                <SelectField
+                  value={{ value: itemsPerPage, label: String(itemsPerPage) }}
+                  onChange={(selectedOption) =>
+                    onLimitChange(Number(selectedOption.value))
+                  }
+                  options={availableLimits.map((limit) => ({
+                    value: limit,
+                    label: String(limit),
+                  }))}
+                  menuPlacement="auto"
+                />
+              </div>
+            </div>
+          )}
+
+          <form onSubmit={handleJump} className="flex items-center gap-2">
+            <span className="text-xs font-medium text-secondary-foreground sm:text-sm">
+              Page
+            </span>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={jumpPage}
+              onChange={(e) => {
+                const val = e.target.value.replace(/[^0-9]/g, '');
+                setJumpPage(val);
+              }}
+              className="h-8 w-12 rounded-lg border border-border bg-secondary text-center text-sm font-semibold text-primary-foreground outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15"
+              aria-label="Go to page"
+            />
+            <span className="text-xs text-secondary-foreground sm:text-sm">
+              of <span className="font-semibold text-primary-foreground">{totalPages}</span>
+            </span>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const usePagination = (initialPage = 1, initialLimit = 10) => {
+  const [pagination, setPagination] = useState({
+    page: initialPage,
+    limit: initialLimit,
+    total: 0,
+    total_pages: 1,
+    is_last_page: true,
+  });
+
+  const updatePagination = useCallback((data) => {
+    setPagination((prev) => {
+      const page = data.page || prev.page;
+      const limit = data.limit || prev.limit;
+      const total = data.total ?? prev.total;
+      const total_pages = data.total_pages || Math.ceil(total / limit) || 1;
+      return {
+        page,
+        limit,
+        total,
+        total_pages,
+        is_last_page: data.is_last_page ?? page >= total_pages,
+      };
+    });
+  }, []);
+
+  const goToPage = useCallback((page) => {
+    setPagination((prev) => ({ ...prev, page }));
+  }, []);
+
+  const changeLimit = useCallback((limit) => {
+    setPagination((prev) => ({ ...prev, limit, page: 1 }));
+  }, []);
+
+  const resetPagination = useCallback(() => {
+    setPagination({
+      page: initialPage,
+      limit: initialLimit,
+      total: 0,
+      total_pages: 1,
+      is_last_page: true,
+    });
+  }, [initialPage, initialLimit]);
+
+  return { pagination, updatePagination, goToPage, changeLimit, resetPagination };
 };
 
 export default Pagination;

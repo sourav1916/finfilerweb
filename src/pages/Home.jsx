@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { clientRoute } from "../constants/routes";
 import { motion } from "framer-motion";
 import {
   AlertCircle,
@@ -106,7 +107,7 @@ function StatCard({ icon: Icon, label, value, hint, accent }) {
 function PendingPaymentCard({ order }) {
   return (
     <Link
-      to={`/orders/${order.order_id}`}
+      to={clientRoute(`/orders/${order.order_id}`)}
       className="group flex items-center justify-between gap-4 rounded-xl border border-border bg-primary px-4 py-4 transition hover:border-amber-300 hover:bg-amber-500/5"
     >
       <div className="min-w-0">
@@ -280,14 +281,14 @@ export default function Home() {
           </div>
           <div className="flex flex-wrap gap-2">
             <Link
-              to="/services"
+              to={clientRoute("/services")}
               className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-medium text-indigo-700 transition hover:bg-indigo-50"
             >
               <Sparkles size={15} />
               Browse services
             </Link>
             <Link
-              to="/orders"
+              to={clientRoute("/orders")}
               className="inline-flex items-center gap-2 rounded-md border border-white/30 bg-white/10 px-3 py-2 text-sm font-medium text-white backdrop-blur-sm transition hover:bg-white/20"
             >
               <ClipboardList size={15} />
@@ -353,7 +354,7 @@ export default function Home() {
             </div>
             {pendingPayments.length > 0 && (
               <Link
-                to="/orders"
+                to={clientRoute("/orders")}
                 className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
               >
                 View all
@@ -377,7 +378,7 @@ export default function Home() {
                 You&apos;re all set. Explore services to place a new order.
               </p>
               <Link
-                to="/services"
+                to={clientRoute("/services")}
                 className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
               >
                 Browse services
@@ -421,13 +422,13 @@ export default function Home() {
                 label: "Documents",
                 value: statistics.documents_count,
                 icon: FolderOpen,
-                link: "/documents",
+                link: clientRoute("/documents"),
               },
               {
                 label: "Businesses registered",
                 value: statistics.businesses_count,
                 icon: Building2,
-                link: "/firms",
+                link: clientRoute("/firms"),
               },
             ].map((item) => {
               const Icon = item.icon;
@@ -482,7 +483,7 @@ export default function Home() {
             </p>
           </div>
           <Link
-            to="/services"
+            to={clientRoute("/services")}
             className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
           >
             View all services
@@ -496,7 +497,7 @@ export default function Home() {
               <PopularServiceCard
                 key={service.service_id}
                 service={service}
-                onSelect={(serviceId) => navigate(`/services/${serviceId}`)}
+                onSelect={(serviceId) => navigate(clientRoute(`/services/${serviceId}`))}
               />
             ))}
           </div>

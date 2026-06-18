@@ -1,6 +1,7 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { Loader2 } from "lucide-react";
+import { clientRoute } from "../constants/routes";
 
 const PublicRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -16,7 +17,7 @@ const PublicRoute = ({ children }) => {
 
   if (user) {
     // Redirect to the page they were trying to go to or dashboard
-    const from = location.state?.from?.pathname || "/home";
+    const from = location.state?.from?.pathname || clientRoute("/home");
     return <Navigate to={from} replace />;
   }
 

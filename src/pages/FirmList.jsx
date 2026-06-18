@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { clientRoute } from "../constants/routes";
 import { motion } from "framer-motion";
 import {
   Search,
@@ -168,7 +169,7 @@ export default function FirmList() {
     {
       label: "View Details",
       icon: <Eye size={14} />,
-      onClick: () => navigate(`/firms/${row.firm_id}`),
+      onClick: () => navigate(clientRoute(`/firms/${row.firm_id}`)),
     },
     {
       label: "Edit",
@@ -276,7 +277,7 @@ export default function FirmList() {
               rowKey="firm_id"
               getActions={getActions}
               accent="indigo"
-              onRowClick={(row) => navigate(`/firms/${row.firm_id}`)}
+              onRowClick={(row) => navigate(clientRoute(`/firms/${row.firm_id}`))}
               emptyState="No businesses found."
             />
 

@@ -1,11 +1,11 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { clientRoute } from "../../constants/routes";
 import {
   Menu,
   X,
   User,
   ChevronDown,
-  Settings,
   LogOut,
   Sun,
   Moon,
@@ -163,7 +163,7 @@ const Navbar = ({
     setLoggingOut(true);
     try {
       await logout(logoutAll ? { logout_all: true } : {});
-      navigate("/login");
+      navigate(clientRoute("/login"));
     } finally {
       setLoggingOut(false);
       setLogoutModalOpen(false);
@@ -188,7 +188,7 @@ const Navbar = ({
 
               <button
                 type="button"
-                onClick={() => navigate("/home")}
+                onClick={() => navigate(clientRoute("/home"))}
                 className="flex items-center gap-2 rounded-lg transition-opacity duration-200 hover:opacity-90 focus:outline-none"
               >
                 <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-md">
@@ -291,7 +291,7 @@ const Navbar = ({
                         <button
                           onClick={() => {
                             setOpenDropdown(false);
-                            navigate("/profile");
+                            navigate(clientRoute("/profile"));
                           }}
                           className="group w-full text-left px-3 py-2.5 text-sm font-medium text-secondary-foreground hover:text-primary-foreground hover:bg-indigo-500/10 rounded-xl transition-all duration-150 flex items-center gap-3 border border-transparent hover:border-indigo-500/20"
                         >
@@ -299,19 +299,6 @@ const Navbar = ({
                             <User className="w-4 h-4 text-secondary-foreground group-hover:text-indigo-400 transition-colors" />
                           </span>
                           My Profile
-                        </button>
-
-                        <button
-                          onClick={() => {
-                            setOpenDropdown(false);
-                            navigate("/settings");
-                          }}
-                          className="group w-full text-left px-3 py-2.5 text-sm font-medium text-secondary-foreground hover:text-primary-foreground hover:bg-indigo-500/10 rounded-xl transition-all duration-150 flex items-center gap-3 border border-transparent hover:border-indigo-500/20"
-                        >
-                          <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-secondary group-hover:bg-indigo-500/20 transition-colors">
-                            <Settings className="w-4 h-4 text-secondary-foreground group-hover:text-indigo-400 transition-colors" />
-                          </span>
-                          Settings
                         </button>
 
                         <div className="border-t border-border/60 my-1 mx-1" />

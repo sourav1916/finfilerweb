@@ -14,7 +14,7 @@ import {
   Phone,
 } from "lucide-react";
 import {
-  FormSkeleton,
+  ProfileFormSkeleton,
   SessionsListSkeleton,
 } from "../components/SkeletonComponent";
 import { motion, AnimatePresence } from "framer-motion";
@@ -569,7 +569,7 @@ const Profile = () => {
               >
                 <div className="overflow-hidden rounded-2xl border border-border bg-primary p-4 shadow-soft sm:p-6">
                   {loadingProfile ? (
-                    <FormSkeleton />
+                    <ProfileFormSkeleton />
                   ) : (
                     <>
                       {/* Profile hero */}

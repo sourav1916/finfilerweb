@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { clientRoute } from "../constants/routes";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -675,7 +676,7 @@ export default function OrderCreate() {
           setPaymentModalOpen(true);
         } else {
           toast.success("Order placed successfully.", { id: toastId });
-          navigate(`/orders/${orderId}`);
+          navigate(clientRoute(`/orders/${orderId}`));
         }
         return;
       }
@@ -694,7 +695,7 @@ export default function OrderCreate() {
     const orderId = createdOrder?.order_id;
     setPaymentModalOpen(false);
     setCreatedOrder(null);
-    navigate(orderId ? `/orders/${orderId}` : "/orders");
+    navigate(orderId ? clientRoute(`/orders/${orderId}`) : clientRoute("/orders"));
   };
 
   const handlePaymentSuccess = ({ isFullPayment, remainingAfter }) => {
@@ -710,7 +711,7 @@ export default function OrderCreate() {
 
     setPaymentModalOpen(false);
     setCreatedOrder(null);
-    navigate(orderId ? `/orders/${orderId}` : "/orders");
+    navigate(orderId ? clientRoute(`/orders/${orderId}`) : clientRoute("/orders"));
   };
 
   const handleFirmCreated = (firm) => {
@@ -740,7 +741,7 @@ export default function OrderCreate() {
         <AlertCircle className="mx-auto mb-4 h-12 w-12 text-red-500" />
         <p className="text-red-500">{error || "Service not found."}</p>
         <Link
-          to={`/services/${serviceId}`}
+          to={clientRoute(`/services/${serviceId}`)}
           className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-indigo-600 hover:underline"
         >
           <ArrowLeft size={16} />
@@ -757,7 +758,7 @@ export default function OrderCreate() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <PageBackLink to={`/services/${serviceId}`}>Back to service</PageBackLink>
+        <PageBackLink to={clientRoute(`/services/${serviceId}`)}>Back to service</PageBackLink>
 
         <PageHeader
           className="mb-5"

@@ -58,9 +58,6 @@ export const AuthProvider = ({ children }) => {
         }
       } catch (error) {
         console.error("Server unreachable:", error);
-        if (window.location.pathname !== "/server-error") {
-          window.location.href = "/server-error";
-        }
       } finally {
         setLoading(false);
       }

@@ -109,24 +109,99 @@ export const FormSkeleton = () => {
   return (
     <div className="space-y-3 animate-pulse">
       <div>
-        <div className="h-4 w-24 border-border rounded mb-2"></div>
-        <div className="h-10 w-full border-border rounded-lg"></div>
+        <div className="h-4 w-24 rounded bg-border mb-2"></div>
+        <div className="h-10 w-full rounded-lg bg-border"></div>
       </div>
       <div>
-        <div className="h-4 w-24 border-border rounded mb-2"></div>
-        <div className="h-10 w-full border-border rounded-lg"></div>
+        <div className="h-4 w-24 rounded bg-border mb-2"></div>
+        <div className="h-10 w-full rounded-lg bg-border"></div>
       </div>
       <div>
-        <div className="h-4 w-24 border-border rounded mb-2"></div>
-        <div className="h-24 w-full border-border rounded-lg"></div>
+        <div className="h-4 w-24 rounded bg-border mb-2"></div>
+        <div className="h-24 w-full rounded-lg bg-border"></div>
       </div>
       <div className="flex justify-end gap-3">
-        <div className="h-10 w-24 border-border rounded-lg"></div>
-        <div className="h-10 w-32 border-border rounded-lg"></div>
+        <div className="h-10 w-24 rounded-lg bg-border"></div>
+        <div className="h-10 w-32 rounded-lg bg-border"></div>
       </div>
     </div>
   );
 };
+
+export const ProfileFormSkeleton = () => (
+  <div className="animate-pulse space-y-6">
+    {/* Profile hero */}
+    <div className="overflow-hidden rounded-2xl border border-border bg-secondary/40 p-6">
+      <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-6">
+        <div className="h-32 w-32 shrink-0 rounded-2xl bg-border sm:h-24 sm:w-24" />
+        <div className="w-full flex-1 space-y-2.5 text-center sm:text-left">
+          <div className="mx-auto h-7 w-52 max-w-full rounded-lg bg-border sm:mx-0" />
+          <div className="mx-auto h-4 w-36 rounded-md bg-border sm:mx-0" />
+          <div className="mx-auto h-4 w-48 rounded-md bg-border sm:mx-0" />
+        </div>
+        <div className="hidden h-10 w-32 shrink-0 rounded-xl bg-border sm:block" />
+      </div>
+      <div className="mt-4 h-10 w-full rounded-xl bg-border sm:hidden" />
+    </div>
+
+    {/* Name fields */}
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <div key={i} className="space-y-2">
+          <div className="h-4 w-24 rounded bg-border" />
+          <div className="h-10 rounded-lg bg-border" />
+        </div>
+      ))}
+    </div>
+
+    {/* Gender + profession */}
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      {Array.from({ length: 2 }).map((_, i) => (
+        <div key={i} className="space-y-2">
+          <div className="h-4 w-20 rounded bg-border" />
+          <div className="h-10 rounded-lg bg-border" />
+        </div>
+      ))}
+    </div>
+
+    {/* DOB + email */}
+    <div className="space-y-2">
+      <div className="h-4 w-28 rounded bg-border" />
+      <div className="h-10 rounded-lg bg-border" />
+    </div>
+    <div className="space-y-2">
+      <div className="h-4 w-32 rounded bg-border" />
+      <div className="h-10 rounded-lg bg-border" />
+    </div>
+
+    {/* Address */}
+    <div className="space-y-4 border-t border-border pt-4">
+      <div className="h-4 w-16 rounded bg-border" />
+      <div className="space-y-2">
+        <div className="h-4 w-28 rounded bg-border" />
+        <div className="h-10 rounded-lg bg-border" />
+      </div>
+      <div className="space-y-2">
+        <div className="h-4 w-28 rounded bg-border" />
+        <div className="h-10 rounded-lg bg-border" />
+      </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="space-y-2">
+            <div className="h-4 w-16 rounded bg-border" />
+            <div className="h-10 rounded-lg bg-border" />
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Actions */}
+    <div className="flex flex-col-reverse gap-3 border-t border-border pt-6 sm:flex-row sm:justify-end">
+      <div className="h-10 w-full rounded-xl bg-border sm:w-24" />
+      <div className="h-10 w-full rounded-xl bg-border sm:w-32" />
+    </div>
+  </div>
+);
 
 // Modal Skeleton
 export const ModalSkeleton = () => {
@@ -225,13 +300,20 @@ export const OrderCreateSkeleton = () => (
 export const SessionsListSkeleton = () => (
   <div className="space-y-3 animate-pulse">
     {Array.from({ length: 3 }).map((_, i) => (
-      <div key={i} className="flex items-center gap-4 rounded-xl border border-border bg-primary p-4">
-        <div className="h-10 w-10 rounded-lg bg-border" />
-        <div className="flex-1 space-y-2">
-          <div className="h-4 w-40 rounded-md bg-border" />
-          <div className="h-3 w-56 rounded-md bg-border" />
+      <div
+        key={i}
+        className="flex items-start gap-4 rounded-xl border border-border bg-secondary/40 p-4"
+      >
+        <div className="h-10 w-10 shrink-0 rounded-lg bg-border" />
+        <div className="min-w-0 flex-1 space-y-2.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="h-4 w-36 rounded-md bg-border" />
+            {i === 0 && <div className="h-5 w-24 rounded-full bg-border" />}
+          </div>
+          <div className="h-3 w-full max-w-xs rounded-md bg-border" />
+          <div className="h-3 w-48 rounded-md bg-border" />
         </div>
-        <div className="h-8 w-16 rounded-lg bg-border" />
+        {i > 0 && <div className="h-8 w-16 shrink-0 rounded-lg bg-border" />}
       </div>
     ))}
   </div>

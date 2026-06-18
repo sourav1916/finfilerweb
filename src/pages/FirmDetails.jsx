@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { clientRoute } from "../constants/routes";
 import { motion } from "framer-motion";
 import {
   Building2,
@@ -99,7 +100,7 @@ export default function FirmDetails() {
 
       if (response.ok && body.success) {
         toast.success("Business deleted successfully.", { id: toastId });
-        navigate("/firms");
+        navigate(clientRoute("/firms"));
       } else {
         throw new Error(body.message || "Failed to delete business");
       }
@@ -129,7 +130,7 @@ export default function FirmDetails() {
         >
           Retry
         </button>
-        <Link to="/firms" className="text-indigo-600 hover:underline text-sm font-medium">
+        <Link to={clientRoute("/firms")} className="text-indigo-600 hover:underline text-sm font-medium">
           Back to businesses
         </Link>
       </div>
@@ -142,7 +143,7 @@ export default function FirmDetails() {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <PageBackLink to="/firms">Back to businesses</PageBackLink>
+      <PageBackLink to={clientRoute("/firms")}>Back to businesses</PageBackLink>
 
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-3">

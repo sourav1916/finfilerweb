@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
+import { clientRoute } from "../constants/routes";
 import { motion } from "framer-motion";
 import {
   ClipboardList,
@@ -520,7 +521,7 @@ export default function OrderDetails() {
           Retry
         </button>
         <Link
-          to="/orders"
+          to={clientRoute("/orders")}
           className="text-sm font-medium text-indigo-600 hover:underline"
         >
           Back to orders
@@ -568,7 +569,7 @@ export default function OrderDetails() {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <PageBackLink to="/orders">Back to orders</PageBackLink>
+      <PageBackLink to={clientRoute("/orders")}>Back to orders</PageBackLink>
 
       <header className="mb-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
@@ -589,13 +590,13 @@ export default function OrderDetails() {
 
         <div className="mt-4 grid gap-2 sm:grid-cols-2">
           <MetaLink
-            to={`/services/${order.service_id}`}
+            to={clientRoute(`/services/${order.service_id}`)}
             icon={Tag}
             label="Service"
             value={order.service_id && order.service_name ? order.service_name : null}
           />
           <MetaLink
-            to={`/firms/${order.firm_id}`}
+            to={clientRoute(`/firms/${order.firm_id}`)}
             icon={Building2}
             label="Business"
             value={order.firm_id && order.firm_name ? order.firm_name : null}

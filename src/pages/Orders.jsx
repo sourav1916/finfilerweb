@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { clientRoute } from "../constants/routes";
 import { motion } from "framer-motion";
 import {
   ClipboardList,
@@ -275,11 +276,11 @@ export default function Orders() {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.04 }}
-                  onClick={() => navigate(`/orders/${order.order_id}`)}
+                  onClick={() => navigate(clientRoute(`/orders/${order.order_id}`))}
                   onKeyDown={(event) => {
                     if (event.key === "Enter" || event.key === " ") {
                       event.preventDefault();
-                      navigate(`/orders/${order.order_id}`);
+                      navigate(clientRoute(`/orders/${order.order_id}`));
                     }
                   }}
                   role="button"

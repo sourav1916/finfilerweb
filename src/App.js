@@ -8,7 +8,10 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import MainLayout from "./components/layout/Main";
-import Landing from "./pages/Landing";
+import PublicWebsiteLayout from "./layouts/PublicWebsiteLayout";
+import LegalPagesLayout from "./layouts/LegalPagesLayout";
+import { clientRoute } from "./constants/routes";
+
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
@@ -22,8 +25,19 @@ import OrderCreate from "./pages/OrderCreate";
 import OrderDetails from "./pages/OrderDetails";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
-import ServerUnreachable from "./pages/ServerUnreachable";
+import Support from "./pages/Support";
 
+import PublicHome from "./pages/public/Home";
+import PublicServices from "./pages/public/Services";
+import PublicServiceDetail from "./pages/public/ServiceDetail";
+import PublicAbout from "./pages/public/About";
+import PublicContact from "./pages/public/Contact";
+import PublicPrivacyPolicy from "./pages/public/PrivacyPolicy";
+import PublicTermsAndConditions from "./pages/public/TermsAndConditions";
+import PublicRefundPolicy from "./pages/public/RefundCancellationPolicy";
+import PublicDataDeletionPolicy from "./pages/public/DataDeletionPolicy";
+import PublicDisclaimer from "./pages/public/Disclaimer";
+import PublicGrievancePolicy from "./pages/public/GrievanceRedressalPolicy";
 
 function App() {
   return (
@@ -33,18 +47,30 @@ function App() {
         <AuthProvider>
           <ToastProvider>
             <Routes>
-              {/* Public Landing Page */}
-              <Route path="/" element={<Landing />} />
+              {/* Public website */}
+              <Route element={<PublicWebsiteLayout />}>
+                <Route path="/" element={<PublicHome />} />
+                <Route path="/services" element={<PublicServices />} />
+                <Route path="/services/:serviceId" element={<PublicServiceDetail />} />
+                <Route path="/about" element={<PublicAbout />} />
+                <Route path="/contact" element={<PublicContact />} />
+                <Route element={<LegalPagesLayout />}>
+                  <Route path="/privacy-policy" element={<PublicPrivacyPolicy />} />
+                  <Route path="/terms-and-conditions" element={<PublicTermsAndConditions />} />
+                  <Route path="/refund-and-cancellation-policy" element={<PublicRefundPolicy />} />
+                  <Route path="/data-deletion-policy" element={<PublicDataDeletionPolicy />} />
+                  <Route path="/disclaimer" element={<PublicDisclaimer />} />
+                  <Route path="/grievance-redressal-policy" element={<PublicGrievancePolicy />} />
+                </Route>
+              </Route>
 
-              {/* Auth Routes */}
-              <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-              <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+              {/* Client auth */}
+              <Route path="/client/login" element={<PublicRoute><Login /></PublicRoute>} />
+              <Route path="/client/register" element={<PublicRoute><Register /></PublicRoute>} />
 
-              {/* Server Unreachable */}
-              <Route path="/server-error" element={<ServerUnreachable />} />
-
-              {/* Protected Routes inside MainLayout */}
-              <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
+              {/* Client portal */}
+              <Route path="/client" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
+                <Route index element={<Navigate to="home" replace />} />
                 <Route path="home" element={<Home />} />
                 <Route path="dashboard" element={<Home />} />
                 <Route path="services" element={<Services />} />
@@ -56,9 +82,20 @@ function App() {
                 <Route path="firms" element={<FirmList />} />
                 <Route path="firms/:firmId" element={<FirmDetails />} />
                 <Route path="profile" element={<Profile />} />
+                <Route path="support" element={<Support />} />
               </Route>
 
-              {/* 404 */}
+              {/* Legacy redirects */}
+              <Route path="/login" element={<Navigate to={clientRoute("/login")} replace />} />
+              <Route path="/register" element={<Navigate to={clientRoute("/register")} replace />} />
+              <Route path="/home" element={<Navigate to={clientRoute("/home")} replace />} />
+              <Route path="/dashboard" element={<Navigate to={clientRoute("/dashboard")} replace />} />
+              <Route path="/orders" element={<Navigate to={clientRoute("/orders")} replace />} />
+              <Route path="/documents" element={<Navigate to={clientRoute("/documents")} replace />} />
+              <Route path="/firms" element={<Navigate to={clientRoute("/firms")} replace />} />
+              <Route path="/profile" element={<Navigate to={clientRoute("/profile")} replace />} />
+              <Route path="/support" element={<Navigate to={clientRoute("/support")} replace />} />
+
               <Route path="/404" element={<NotFound />} />
               <Route path="*" element={<Navigate to="/404" replace />} />
             </Routes>
