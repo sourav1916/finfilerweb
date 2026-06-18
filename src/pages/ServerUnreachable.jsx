@@ -54,7 +54,7 @@ const ServerUnreachable = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-primary flex items-center justify-center px-4">
       <div className="max-w-md w-full text-center">
         {/* Server Error Illustration */}
         <div className="relative mb-8">
@@ -108,7 +108,7 @@ const ServerUnreachable = () => {
           
           <button
             onClick={() => navigate('/dashboard')}
-            className="w-full flex items-center justify-center gap-2 px-6 py-3 border border-gray-300 text-primary-foreground rounded-xl hover:bg-primary transition-all duration-200"
+            className="w-full flex items-center justify-center gap-2 px-6 py-3 border border-border text-primary-foreground rounded-xl hover:bg-secondary transition-all duration-200"
           >
             <Home className="w-4 h-4" />
             Go to Dashboard
@@ -122,7 +122,7 @@ const ServerUnreachable = () => {
           </p>
           <button 
             onClick={() => window.location.href = '/login'}
-            className="text-sm text-blue-600 hover:text-blue-700 font-semibold mt-2"
+            className="text-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 font-semibold mt-2"
           >
             Try logging in again →
           </button>

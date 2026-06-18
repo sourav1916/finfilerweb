@@ -53,7 +53,7 @@ export default function ManagementCard({
         <div className="mb-2 flex items-start justify-between gap-1.5">
           <div className="min-w-0">
             {eyebrow && (
-              <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-slate-400">
+              <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-secondary-foreground">
                 {eyebrow}
               </p>
             )}

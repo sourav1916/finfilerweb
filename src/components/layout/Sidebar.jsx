@@ -4,7 +4,6 @@ import {
   Sparkles,
   ClipboardList,
   FolderOpen,
-  Briefcase,
   Building2,
   Settings,
 } from 'lucide-react';
@@ -22,8 +21,7 @@ const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar, onHover, isExpanded }) 
     { icon: Sparkles, label: 'Services', path: '/services' },
     { icon: ClipboardList, label: 'Orders', path: '/orders' },
     { icon: FolderOpen, label: 'Documents', path: '/documents' },
-    { icon: Building2, label: 'Firms', path: '/firms' },
-    { icon: Briefcase, label: 'Funds & Business', path: '/funds-business' },
+    { icon: Building2, label: 'Businesses', path: '/firms' },
     { icon: Settings, label: 'Settings', path: '/settings' },
   ];
 
@@ -45,7 +43,7 @@ const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar, onHover, isExpanded }) 
           fixed left-0 top-16 z-30 w-72 h-[calc(100vh-4rem)]
           bg-sidebar transform transition-transform duration-300 ease-out
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-          overflow-y-auto overflow-x-hidden shadow-2xl border-r border-border
+          overflow-y-auto overflow-x-hidden shadow-2xl border-r border-border scrollbar-hide
         `}>
           <div className="p-4">
             {/* User Profile Section */}
@@ -180,7 +178,7 @@ const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar, onHover, isExpanded }) 
         ${isSidebarExpanded ? 'w-64' : 'w-16'}
         h-[calc(100vh-4rem)]
         shadow-lg border-r border-border
-        overflow-y-auto overflow-x-hidden
+        overflow-y-auto overflow-x-hidden scrollbar-hide
       `}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

@@ -39,6 +39,12 @@ module.exports = {
       fontFamily: {
         display: ['Inter', 'system-ui', 'sans-serif'],
       },
+      borderRadius: {
+        lg: '0.5rem',
+        xl: '0.5rem',
+        '2xl': '0.5rem',
+        '3xl': '0.625rem',
+      },
       animation: {
         blob: "blob 7s infinite",
       },

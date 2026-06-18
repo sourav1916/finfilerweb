@@ -4,7 +4,7 @@ import { FaSpinner } from 'react-icons/fa';
 
 const toneClasses = {
   slate: {
-    solid: 'bg-slate-700 text-white hover:bg-slate-800 shadow-slate-200',
+    solid: 'bg-slate-700 text-white hover:bg-slate-800 shadow-slate-200 dark:shadow-none',
     soft: 'bg-primary text-primary-foreground border-border hover:bg-secondary',
     outline: 'bg-secondary text-primary-foreground border-border hover:bg-primary',
   },
@@ -25,8 +25,8 @@ const toneClasses = {
   },
   indigo: {
     solid: 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200',
-    soft: 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100',
-    outline: 'bg-secondary text-indigo-700 border-indigo-200 hover:bg-indigo-50',
+    soft: 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:text-indigo-300 dark:border-indigo-900 dark:hover:bg-indigo-950/60',
+    outline: 'bg-secondary text-indigo-700 border-indigo-200 hover:bg-indigo-50 dark:text-indigo-400 dark:border-indigo-900 dark:hover:bg-indigo-950/30',
   },
   violet: {
     solid: 'bg-violet-600 text-white hover:bg-violet-700 shadow-violet-200',

@@ -15,6 +15,7 @@ import {
 import { apiCall } from "../utils/apiCall";
 import { useToast } from "../contexts/ToastContext";
 import Pagination from "../components/common/PaginationComponent";
+import PageHeader from "../components/common/PageHeader";
 
 const formatCurrency = (amount) =>
   new Intl.NumberFormat("en-IN", {
@@ -70,8 +71,8 @@ const STATUS_CONFIG = {
 const getStatusConfig = (status) =>
   STATUS_CONFIG[status] || {
     label: status || "Unknown",
-    color: "bg-slate-100 text-slate-700",
-    ring: "ring-slate-200",
+    color: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+    ring: "ring-slate-200 dark:ring-slate-700",
   };
 
 const FILTER_TABS = [
@@ -100,7 +101,7 @@ const itemVariants = {
 
 function OrderListSkeleton() {
   return (
-    <div className="grid gap-3 p-4 sm:gap-4 sm:p-5">
+    <div className="grid min-w-0 gap-3 p-4 sm:gap-4 sm:p-5">
       {Array.from({ length: 5 }).map((_, index) => (
         <div
           key={index}
@@ -188,45 +189,40 @@ export default function Orders() {
   }, [fetchOrders]);
 
   return (
-    <motion.div className="mx-auto" variants={containerVariants} initial="hidden" animate="visible">
-      <motion.div
-        variants={itemVariants}
-        className="mb-6 flex flex-col justify-between gap-4 sm:mb-8 sm:flex-row sm:items-end"
-      >
-        <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-primary-foreground sm:text-4xl">
-            My Orders
-          </h1>
-          <p className="mt-1 text-sm text-secondary-foreground sm:mt-2 sm:text-base">
-            Track your service orders, payments, and status updates.
-          </p>
-        </div>
-        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
-          <div className="relative flex-1 sm:w-72">
-            <Search
-              size={16}
-              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-secondary-foreground"
-            />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder="Search orders…"
-              className="w-full rounded-xl border border-border bg-secondary py-2.5 pl-9 pr-4 text-sm text-primary-foreground outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
-            />
-          </div>
-          <motion.button
-            type="button"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={fetchOrders}
-            disabled={loading}
-            className="flex items-center justify-center gap-2 rounded-xl border border-border bg-secondary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary disabled:opacity-60"
-          >
-            {loading ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
-            Refresh
-          </motion.button>
-        </div>
+    <motion.div className="mx-auto min-w-0 max-w-full" variants={containerVariants} initial="hidden" animate="visible">
+      <motion.div variants={itemVariants}>
+        <PageHeader
+          title="My Orders"
+          description="Track your service orders, payments, and status updates."
+          actions={
+            <>
+              <div className="relative w-full sm:w-56">
+                <Search
+                  size={15}
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-secondary-foreground"
+                />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder="Search orders…"
+                  className="w-full rounded-md border border-border bg-secondary py-2 pl-9 pr-3 text-sm text-primary-foreground outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                />
+              </div>
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={fetchOrders}
+                disabled={loading}
+                className="flex items-center justify-center gap-2 rounded-md border border-border bg-secondary px-3 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary disabled:opacity-60"
+              >
+                {loading ? <Loader2 size={15} className="animate-spin" /> : <RefreshCw size={15} />}
+                Refresh
+              </motion.button>
+            </>
+          }
+        />
       </motion.div>
 
       <motion.div variants={itemVariants} className="mb-5 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
@@ -237,7 +233,7 @@ export default function Orders() {
             onClick={() => setActiveFilter(tab.id)}
             className={`flex-shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition-all sm:text-sm ${
               activeFilter === tab.id
-                ? "bg-indigo-600 text-white shadow-md shadow-indigo-200/60"
+                ? "bg-indigo-600 text-white shadow-md shadow-indigo-200/60 dark:shadow-none"
                 : "border border-border bg-secondary text-secondary-foreground hover:border-indigo-200 hover:text-indigo-600"
             }`}
           >
@@ -259,14 +255,14 @@ export default function Orders() {
           </div>
         ) : orders.length === 0 ? (
           <div className="py-16 text-center">
-            <ClipboardList className="mx-auto mb-3 text-slate-300" size={40} />
+            <ClipboardList className="mx-auto mb-3 text-secondary-foreground/50" size={40} />
             <p className="font-medium text-secondary-foreground">No orders found.</p>
             <p className="mt-1 text-sm text-secondary-foreground/80">
               Try a different filter or search term.
             </p>
           </div>
         ) : (
-          <div className="grid gap-3 p-4 sm:gap-4 sm:p-5">
+          <div className="grid min-w-0 gap-3 p-4 sm:gap-4 sm:p-5">
             {orders.map((order, index) => {
               const statusConfig = getStatusConfig(order.status);
               const displayTitle = order.name || order.service_name || "Untitled Order";
@@ -288,67 +284,69 @@ export default function Orders() {
                   }}
                   role="button"
                   tabIndex={0}
-                  className="group cursor-pointer rounded-2xl border border-border bg-primary/50 p-4 transition hover:border-indigo-200 hover:bg-primary hover:shadow-md sm:p-5"
+                  className="group min-w-0 cursor-pointer overflow-hidden rounded-2xl border border-border bg-primary/50 p-4 transition hover:border-indigo-200 hover:bg-primary hover:shadow-md sm:p-5"
                 >
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex min-w-0 items-start gap-4">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-600 ring-1 ring-indigo-500/15 transition group-hover:bg-indigo-500/15">
+                  <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex min-w-0 items-start gap-3 sm:gap-4">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-600 ring-1 ring-indigo-500/15 transition group-hover:bg-indigo-500/15 sm:h-12 sm:w-12">
                         <ClipboardList size={20} />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <h2 className="truncate text-base font-semibold text-primary-foreground">
+                        <div className="flex min-w-0 flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-2">
+                          <h2 className="min-w-0 truncate text-base font-semibold text-primary-foreground">
                             {displayTitle}
                           </h2>
                           <span
-                            className={`inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-bold ring-1 ring-inset ${statusConfig.color} ${statusConfig.ring}`}
+                            className={`inline-flex w-fit shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-bold ring-1 ring-inset ${statusConfig.color} ${statusConfig.ring}`}
                           >
                             {statusConfig.label}
                           </span>
                         </div>
                         {order.service_name && order.name && (
-                          <p className="mt-0.5 truncate text-sm text-indigo-600">
+                          <p className="mt-0.5 truncate text-sm text-indigo-600 dark:text-indigo-400">
                             {order.service_name}
                           </p>
                         )}
-                        <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-secondary-foreground">
-                          <span className="inline-flex items-center gap-1">
-                            <Calendar size={12} />
+                        <div className="mt-2 flex min-w-0 flex-col gap-1 text-xs text-secondary-foreground sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-1">
+                          <span className="inline-flex shrink-0 items-center gap-1">
+                            <Calendar size={12} className="shrink-0" />
                             {formatDate(order.create_date)}
                           </span>
                           {order.firm_name && (
-                            <span className="inline-flex items-center gap-1">
-                              <Building2 size={12} />
-                              {order.firm_name}
+                            <span className="inline-flex min-w-0 max-w-full items-center gap-1">
+                              <Building2 size={12} className="shrink-0" />
+                              <span className="truncate">{order.firm_name}</span>
                             </span>
                           )}
-                          <span className="font-mono text-[11px] opacity-70">{order.order_id}</span>
+                          <span className="shrink-0 font-mono text-[11px] opacity-70">{order.order_id}</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between gap-4 border-t border-border pt-4 sm:border-0 sm:pt-0">
-                      <div className="text-left sm:text-right">
+                    <div className="flex min-w-0 items-center justify-between gap-3 border-t border-border pt-4 sm:shrink-0 sm:justify-end sm:gap-4 sm:border-0 sm:pt-0">
+                      <div className="min-w-0 flex-1 text-left sm:flex-none sm:text-right">
                         <p className="text-[11px] font-medium uppercase tracking-wide text-secondary-foreground">
                           Order value
                         </p>
-                        <p className="text-lg font-bold tabular-nums text-primary-foreground">
+                        <p className="truncate text-lg font-bold tabular-nums text-primary-foreground">
                           {formatCurrency(order.fees)}
                         </p>
                         {order.is_paid ? (
-                          <p className="mt-0.5 text-xs font-medium text-emerald-600">Fully paid</p>
+                          <p className="mt-0.5 truncate text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                            Fully paid
+                          </p>
                         ) : showDue ? (
-                          <p className="mt-0.5 inline-flex items-center gap-1 text-xs font-semibold text-amber-600">
-                            <CreditCard size={12} />
-                            Due {formatCurrency(remaining)}
+                          <p className="mt-0.5 inline-flex max-w-full items-center gap-1 truncate text-xs font-semibold text-amber-600 dark:text-amber-400">
+                            <CreditCard size={12} className="shrink-0" />
+                            <span className="truncate">Due {formatCurrency(remaining)}</span>
                           </p>
                         ) : order.is_partially_paid ? (
-                          <p className="mt-0.5 text-xs text-secondary-foreground">
+                          <p className="mt-0.5 truncate text-xs text-secondary-foreground">
                             Paid {formatCurrency(order.paid_amount)}
                           </p>
                         ) : null}
                       </div>
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-secondary text-slate-400 transition group-hover:border-indigo-200 group-hover:text-indigo-600">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-secondary text-secondary-foreground transition group-hover:border-indigo-200 group-hover:text-indigo-600 dark:group-hover:border-indigo-800 dark:group-hover:text-indigo-400">
                         <ChevronRight size={18} />
                       </div>
                     </div>

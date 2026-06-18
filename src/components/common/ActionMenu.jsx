@@ -126,7 +126,7 @@ const ActionMenu = ({ actions = [], activeId, onToggle, menuId, trigger }) => {
             flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold
             transition-all duration-150
             ${action.disabled
-              ? 'cursor-not-allowed opacity-50 text-gray-400'
+              ? 'cursor-not-allowed opacity-50 text-secondary-foreground'
               : `hover:bg-blue-50 hover:pl-4 ${action.className || 'text-primary-foreground hover:text-blue-600'}`
             }
           `}

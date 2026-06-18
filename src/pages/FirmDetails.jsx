@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft,
   Building2,
   Loader2,
   AlertCircle,
@@ -12,7 +11,9 @@ import {
 } from "lucide-react";
 import { apiCall } from "../utils/apiCall";
 import { useToast } from "../contexts/ToastContext";
+import { DetailSkeleton } from "../components/SkeletonComponent";
 import FirmFormModal from "../components/firms/FirmFormModal";
+import { PageBackLink } from "../components/common/PageHeader";
 
 const FIRM_TYPE_LABELS = {
   proprietorship: "Proprietorship",
@@ -72,11 +73,11 @@ export default function FirmDetails() {
       if (response.ok && body.success && body.data) {
         setFirm(body.data);
       } else {
-        throw new Error(body.message || "Failed to retrieve firm details");
+        throw new Error(body.message || "Failed to retrieve business details");
       }
     } catch (err) {
-      setError(err.message || "Failed to load firm details.");
-      toast.error("Failed to load firm details.");
+      setError(err.message || "Failed to load business details.");
+      toast.error("Failed to load business details.");
     } finally {
       setLoading(false);
     }
@@ -87,23 +88,23 @@ export default function FirmDetails() {
   }, [fetchDetails]);
 
   const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this firm?")) return;
+    if (!window.confirm("Are you sure you want to delete this business?")) return;
 
     setDeleting(true);
-    const toastId = toast.loading("Deleting firm…");
+    const toastId = toast.loading("Deleting business…");
 
     try {
       const response = await apiCall("/firms/delete", "POST", { firm_id: firmId });
       const body = await response.json();
 
       if (response.ok && body.success) {
-        toast.success("Firm deleted successfully.", { id: toastId });
+        toast.success("Business deleted successfully.", { id: toastId });
         navigate("/firms");
       } else {
-        throw new Error(body.message || "Failed to delete firm");
+        throw new Error(body.message || "Failed to delete business");
       }
     } catch (err) {
-      toast.error(err.message || "Failed to delete firm.", { id: toastId });
+      toast.error(err.message || "Failed to delete business.", { id: toastId });
     } finally {
       setDeleting(false);
     }
@@ -111,17 +112,17 @@ export default function FirmDetails() {
 
   if (loading) {
     return (
-      <div className="mx-auto py-12 flex justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+      <div className="mx-auto max-w-4xl py-6">
+        <DetailSkeleton />
       </div>
     );
   }
 
   if (error || !firm) {
     return (
-      <div className="mx-auto py-8 px-4 text-center">
+      <div className="mx-auto max-w-4xl py-8 text-center">
         <AlertCircle className="mx-auto mb-4 h-10 w-10 text-red-500" />
-        <p className="text-red-500 mb-4">{error || "Firm not found."}</p>
+        <p className="text-red-500 mb-4">{error || "Business not found."}</p>
         <button
           onClick={fetchDetails}
           className="mr-3 rounded-xl border border-border px-4 py-2 text-sm font-medium"
@@ -129,7 +130,7 @@ export default function FirmDetails() {
           Retry
         </button>
         <Link to="/firms" className="text-indigo-600 hover:underline text-sm font-medium">
-          Back to firms
+          Back to businesses
         </Link>
       </div>
     );
@@ -137,40 +138,34 @@ export default function FirmDetails() {
 
   return (
     <motion.div
-      className="mx-auto py-4 sm:py-6"
+      className="mx-auto"
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <Link
-        to="/firms"
-        className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-secondary-foreground hover:text-indigo-600 transition"
-      >
-        <ArrowLeft size={16} />
-        Back to firms
-      </Link>
+      <PageBackLink to="/firms">Back to businesses</PageBackLink>
 
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex items-start gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-600">
-            <Building2 size={28} />
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex items-start gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-600">
+            <Building2 size={22} />
           </div>
           <div>
-            <h1 className="font-display text-2xl sm:text-3xl font-bold text-primary-foreground">
+            <h1 className="text-xl font-semibold text-primary-foreground sm:text-2xl">
               {firm.name}
             </h1>
-            <p className="mt-1 text-sm text-secondary-foreground">
+            <p className="mt-0.5 text-sm text-secondary-foreground">
               {formatType(firm.type)} · ID: {firm.firm_id}
             </p>
           </div>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex gap-2">
           <button
             type="button"
             onClick={() => setEditModalOpen(true)}
-            className="inline-flex items-center gap-2 rounded-xl border border-border bg-secondary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:border-indigo-500/40 transition"
+            className="inline-flex items-center gap-2 rounded-md border border-border bg-secondary px-3 py-2 text-sm font-medium text-primary-foreground transition hover:border-indigo-500/40"
           >
-            <Pencil size={16} />
+            <Pencil size={15} />
             Edit
           </button>
           <button
@@ -187,12 +182,12 @@ export default function FirmDetails() {
       <div className="rounded-2xl border border-border bg-secondary p-6 shadow-soft">
         <div className="mb-5 flex items-center gap-2">
           <FileText size={18} className="text-indigo-600" />
-          <h2 className="text-lg font-semibold text-primary-foreground">Firm Details</h2>
+          <h2 className="text-lg font-semibold text-primary-foreground">Business Details</h2>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <DetailRow label="Firm Name" value={firm.name} />
-          <DetailRow label="Firm Type" value={formatType(firm.type)} />
+          <DetailRow label="Business Name" value={firm.name} />
+          <DetailRow label="Business Type" value={formatType(firm.type)} />
           <DetailRow label="PAN Number" value={firm.pan_no} />
           <DetailRow label="GST Number" value={firm.gst_no} />
           <DetailRow label="VAT Number" value={firm.vat_no} />

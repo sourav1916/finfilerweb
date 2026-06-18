@@ -256,7 +256,7 @@ export default function ServiceDetails() {
       const body = await response.json();
 
       if (!response.ok || !body.success) {
-        throw new Error(body.message || "Failed to check firms");
+        throw new Error(body.message || "Failed to check businesses");
       }
 
       const firmCount = body.data?.pagination?.total ?? 0;
@@ -282,7 +282,7 @@ export default function ServiceDetails() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-6xl px-2 py-6 sm:px-4">
+      <div className="mx-auto max-w-6xl py-6">
         <DetailSkeleton />
       </div>
     );
@@ -290,7 +290,7 @@ export default function ServiceDetails() {
 
   if (error || !service) {
     return (
-      <div className="mx-auto max-w-6xl px-2 py-10 sm:px-4 text-center">
+      <div className="mx-auto max-w-6xl py-10 text-center">
         <AlertCircle className="mx-auto mb-4 h-12 w-12 text-red-500" />
         <h1 className="text-xl font-bold text-primary-foreground">
           Service Not Found
@@ -320,7 +320,7 @@ export default function ServiceDetails() {
 
   return (
     <motion.div
-      className="mx-auto max-w-6xl px-2 py-4 sm:px-4 sm:py-6"
+      className="mx-auto max-w-6xl py-4 sm:py-6"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
@@ -361,7 +361,7 @@ export default function ServiceDetails() {
             )}
           </div>
 
-          <h1 className="font-display mt-3 text-2xl font-bold tracking-tight text-primary-foreground sm:text-4xl">
+          <h1 className="mt-2 text-xl font-semibold tracking-tight text-primary-foreground sm:text-2xl">
             {service.name}
           </h1>
 
@@ -447,7 +447,7 @@ export default function ServiceDetails() {
                     {doc.name}
                   </span>
                   {doc.is_required ? (
-                    <span className="shrink-0 rounded-full border border-red-100 bg-red-50 px-2.5 py-0.5 text-[10px] font-bold text-red-600">
+                    <span className="shrink-0 rounded-full border border-red-100 bg-red-50 px-2.5 py-0.5 text-[10px] font-bold text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
                       Required
                     </span>
                   ) : (
@@ -461,7 +461,7 @@ export default function ServiceDetails() {
                     {doc.description}
                   </p>
                 )}
-                <div className="flex flex-wrap gap-x-3 text-[11px] text-slate-400">
+                <div className="flex flex-wrap gap-x-3 text-[11px] text-secondary-foreground">
                   <span>
                     Formats:{" "}
                     <span className="font-semibold text-secondary-foreground">
@@ -490,7 +490,7 @@ export default function ServiceDetails() {
         isOpen={firmModalOpen}
         onClose={() => setFirmModalOpen(false)}
         mode="create"
-        description="You need at least one firm before placing an order."
+        description="You need at least one business before placing an order."
         onSuccess={handleFirmCreated}
       />
     </motion.div>

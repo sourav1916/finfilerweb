@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { CreditCard, CheckCircle2, Loader2, X } from "lucide-react";
 import { payForOrder } from "../../utils/razorpay";
+import AnimatedModal from "../common/AnimatedModal";
 
 const formatCurrency = (amount) =>
   new Intl.NumberFormat("en-IN", {
@@ -59,14 +60,7 @@ export default function OrderPaymentModal({
       setPaymentType("full");
       setPartialAmount("");
     }
-
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "unset";
-    };
   }, [isOpen, order]);
-
-  if (!isOpen || !order) return null;
 
   const validateAmount = () => {
     if (remainingAmount <= 0) {
@@ -123,16 +117,15 @@ export default function OrderPaymentModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <button
-        type="button"
-        aria-label="Close payment modal"
-        className="absolute inset-0 bg-black/50"
-        onClick={paying ? undefined : onClose}
-      />
-
-      <div className="relative z-10 w-full max-w-md overflow-hidden rounded-2xl border border-border bg-secondary shadow-xl">
-        <div className="flex items-center justify-between border-b border-border px-5 py-4">
+    <AnimatedModal
+      isOpen={isOpen && Boolean(order)}
+      onClose={onClose}
+      closeDisabled={paying}
+      closeOnBackdrop={!paying}
+      maxWidth="max-w-md"
+      panelClassName="overflow-hidden rounded-lg border border-border bg-secondary shadow-xl"
+    >
+      <div className="flex items-center justify-between border-b border-border px-5 py-4">
           <div>
             <h3 className="text-lg font-bold text-primary-foreground">Make payment</h3>
             <p className="mt-0.5 text-xs text-secondary-foreground">
@@ -149,7 +142,7 @@ export default function OrderPaymentModal({
           </button>
         </div>
 
-        <div className="space-y-5 px-5 py-5">
+        <div className="modal-scroll max-h-[calc(90vh-10rem)] space-y-5 overflow-y-auto px-5 py-5">
           {showOrderCreatedSuccess && (
             <div className="flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 dark:border-emerald-900 dark:bg-emerald-950/40">
               <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-emerald-600" />
@@ -296,7 +289,6 @@ export default function OrderPaymentModal({
             {paying ? "Processing…" : `Pay ${formatCurrency(selectedAmount)}`}
           </button>
         </div>
-      </div>
-    </div>
+    </AnimatedModal>
   );
 }

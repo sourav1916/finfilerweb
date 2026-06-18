@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft,
   ClipboardList,
   Loader2,
   AlertCircle,
@@ -18,9 +17,12 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { apiCall, resolveMediaUrl } from "../utils/apiCall";
+import { getDocumentDownloadName } from "../utils/documentDownload";
 import OrderPaymentModal from "../components/orders/OrderPaymentModal";
 import { downloadPaymentInvoice } from "../utils/razorpay";
 import { useToast } from "../contexts/ToastContext";
+import { DetailSkeleton } from "../components/SkeletonComponent";
+import { PageBackLink } from "../components/common/PageHeader";
 
 const formatCurrency = (amount) =>
   new Intl.NumberFormat("en-IN", {
@@ -70,7 +72,7 @@ const STATUS_COLORS = {
 };
 
 const getStatusColor = (status) =>
-  STATUS_COLORS[status] || "bg-slate-100 text-slate-700";
+  STATUS_COLORS[status] || "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300";
 
 const downloadDocument = async (fileDoc, toast) => {
   try {
@@ -83,7 +85,7 @@ const downloadDocument = async (fileDoc, toast) => {
     const objectUrl = URL.createObjectURL(blob);
     const anchor = window.document.createElement("a");
     anchor.href = objectUrl;
-    anchor.download = fileDoc.file_name || "document";
+    anchor.download = getDocumentDownloadName(fileDoc);
     window.document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
@@ -298,8 +300,8 @@ function PaymentSummary({ order, onOpenPayment, onDownloadInvoice, downloadingPa
 
       {paymentFailed && !order.is_paid && (
         <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 dark:border-red-900 dark:bg-red-950/40">
-          <p className="text-sm font-semibold text-red-600">Payment failed</p>
-          <p className="mt-0.5 text-xs text-red-500/90">
+          <p className="text-sm font-semibold text-red-600 dark:text-red-300">Payment failed</p>
+          <p className="mt-0.5 text-xs text-red-500/90 dark:text-red-400">
             {latestPayment.failure_reason || "Please try again."}
           </p>
         </div>
@@ -310,7 +312,7 @@ function PaymentSummary({ order, onOpenPayment, onDownloadInvoice, downloadingPa
           <p className="text-sm font-semibold text-amber-700 dark:text-amber-300">
             Payment pending
           </p>
-          <p className="mt-0.5 text-xs text-amber-600/90">
+          <p className="mt-0.5 text-xs text-amber-600/90 dark:text-amber-400">
             Complete checkout to confirm your order.
           </p>
         </div>
@@ -363,7 +365,7 @@ function PaymentSummary({ order, onOpenPayment, onDownloadInvoice, downloadingPa
         )}
       </div>
 
-      <div className="mt-4 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-700 p-4 text-white shadow-md shadow-indigo-200/40">
+      <div className="mt-4 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-700 p-4 text-white shadow-md shadow-indigo-200/40 dark:shadow-none">
         <div className="flex items-end justify-between gap-3">
           <div>
             <p className="text-xs font-medium uppercase tracking-wide text-indigo-100">
@@ -394,7 +396,7 @@ function PaymentSummary({ order, onOpenPayment, onDownloadInvoice, downloadingPa
         <button
           type="button"
           onClick={onOpenPayment}
-          className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-indigo-200 transition hover:bg-indigo-700"
+          className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-indigo-200 transition hover:bg-indigo-700 dark:shadow-none"
         >
           <CreditCard size={18} />
           {paidAmount > 0
@@ -453,7 +455,7 @@ function MetaLink({ to, icon: Icon, label, value }) {
       </div>
       <ChevronRight
         size={16}
-        className="shrink-0 text-slate-300 transition group-hover:text-indigo-400"
+        className="shrink-0 text-secondary-foreground/40 transition group-hover:text-indigo-400"
       />
     </Link>
   );
@@ -499,15 +501,15 @@ export default function OrderDetails() {
 
   if (loading) {
     return (
-      <div className="mx-auto flex max-w-6xl justify-center px-2 py-12 sm:px-4">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+      <div className="mx-auto max-w-6xl py-4 sm:py-6">
+        <DetailSkeleton />
       </div>
     );
   }
 
   if (error || !order) {
     return (
-      <div className="mx-auto max-w-6xl px-2 py-8 text-center sm:px-4">
+      <div className="mx-auto max-w-6xl py-8 text-center">
         <AlertCircle className="mx-auto mb-4 h-10 w-10 text-red-500" />
         <p className="mb-4 text-red-500">{error || "Order not found."}</p>
         <button
@@ -562,36 +564,30 @@ export default function OrderDetails() {
 
   return (
     <motion.div
-      className="mx-auto max-w-6xl px-2 py-4 sm:px-4 sm:py-6"
+      className="mx-auto max-w-6xl"
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <Link
-        to="/orders"
-        className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-secondary-foreground transition hover:text-indigo-600"
-      >
-        <ArrowLeft size={16} />
-        Back to orders
-      </Link>
+      <PageBackLink to="/orders">Back to orders</PageBackLink>
 
-      <header className="mb-8">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-600">
-            <ClipboardList size={28} />
+      <header className="mb-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-600">
+            <ClipboardList size={22} />
           </div>
           <div className="min-w-0 flex-1">
             <span
-              className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${getStatusColor(order.status)}`}
+              className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${getStatusColor(order.status)}`}
             >
               {formatStatusLabel(order.status)}
             </span>
-            <h1 className="mt-2 font-display text-2xl font-bold tracking-tight text-primary-foreground sm:text-3xl">
+            <h1 className="mt-1.5 text-xl font-semibold tracking-tight text-primary-foreground sm:text-2xl">
               {displayTitle}
             </h1>
           </div>
         </div>
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <div className="mt-4 grid gap-2 sm:grid-cols-2">
           <MetaLink
             to={`/services/${order.service_id}`}
             icon={Tag}
@@ -601,7 +597,7 @@ export default function OrderDetails() {
           <MetaLink
             to={`/firms/${order.firm_id}`}
             icon={Building2}
-            label="Firm"
+            label="Business"
             value={order.firm_id && order.firm_name ? order.firm_name : null}
           />
         </div>
@@ -641,8 +637,8 @@ export default function OrderDetails() {
                       <p className="truncate text-sm font-semibold text-primary-foreground">
                         {document.document_name}
                       </p>
-                      <p className="mt-0.5 truncate text-xs text-secondary-foreground">
-                        {document.file_name} · {formatBytes(document.size)}
+                      <p className="mt-0.5 text-xs text-secondary-foreground">
+                        {formatBytes(document.size)}
                       </p>
                     </div>
                     {document.file_url && (

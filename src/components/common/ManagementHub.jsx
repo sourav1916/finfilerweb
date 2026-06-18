@@ -112,7 +112,7 @@ export default function ManagementHub({
                       isActive
                         ? activeButtonStyles[accent] || activeButtonStyles.slate
                         : disabled
-                          ? 'cursor-not-allowed border-border bg-secondary text-slate-400'
+                          ? 'cursor-not-allowed border-border bg-secondary text-secondary-foreground'
                           : 'border-border bg-secondary text-secondary-foreground hover:border-border hover:bg-primary'
                     )}
                   >

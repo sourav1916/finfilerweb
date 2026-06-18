@@ -7,10 +7,10 @@ const Button = ({
   className = ''
 }) => {
   const variants = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700',
-    secondary: 'bg-gray-600 text-white hover:bg-gray-700',
+    primary: 'bg-indigo-600 text-white hover:bg-indigo-700',
+    secondary: 'bg-secondary text-primary-foreground border border-border hover:bg-primary',
     danger: 'bg-red-600 text-white hover:bg-red-700',
-    outline: 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50'
+    outline: 'border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 dark:text-indigo-400 dark:border-indigo-500',
   };
 
   return (

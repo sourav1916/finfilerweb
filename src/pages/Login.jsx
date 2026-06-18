@@ -72,7 +72,7 @@ function OtpInput({ value, onChange }) {
           onChange={(e) => handleChange(i, e)}
           onKeyDown={(e) => handleKey(i, e)}
           onPaste={handlePaste}
-          className="h-12 w-12 rounded-xl border border-slate-200 bg-slate-50 text-center text-lg font-bold text-slate-900 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
+          className="h-12 w-12 rounded-xl border border-border bg-secondary text-center text-lg font-bold text-primary-foreground outline-none transition-all focus:border-indigo-500 focus:bg-primary focus:ring-4 focus:ring-indigo-500/10"
         />
       ))}
     </div>
@@ -215,7 +215,7 @@ export default function Login() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-white">
+    <div className="flex h-screen overflow-hidden bg-primary">
 
       {/* ── Left: Brand Panel ── */}
       <div className="hidden lg:flex w-1/2 relative overflow-hidden items-center justify-center flex-shrink-0"
@@ -323,7 +323,7 @@ export default function Login() {
       </div>
 
       {/* ── Right: Form Panel ── */}
-      <div className="flex w-full lg:w-1/2 flex-col justify-center overflow-y-auto px-5 sm:px-10 lg:px-12 xl:px-16 bg-white flex-shrink-0">
+      <div className="flex w-full lg:w-1/2 flex-col justify-center overflow-y-auto px-5 sm:px-10 lg:px-12 xl:px-16 bg-secondary flex-shrink-0">
         <motion.div variants={containerVariants} initial="hidden" animate="visible" className="w-full max-w-sm mx-auto">
 
           {/* Logo */}
@@ -332,29 +332,29 @@ export default function Login() {
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600 text-white shadow-md shadow-indigo-200">
                 <ShieldCheck size={20} />
               </div>
-              <span className="text-3xl font-bold tracking-tight text-slate-900">
-                Fin<span className="text-indigo-600 font-light">Filer</span>
+              <span className="text-3xl font-bold tracking-tight text-primary-foreground">
+                Fin<span className="text-indigo-600 font-light dark:text-indigo-400">Filer</span>
               </span>
             </Link>
 
             {/* Step indicator */}
             <div className="flex items-center gap-2 mb-8">
-              <div className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${step >= 1 ? 'bg-indigo-600' : 'bg-slate-200'}`} />
-              <div className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${step >= 2 ? 'bg-indigo-600' : 'bg-slate-200'}`} />
+              <div className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${step >= 1 ? 'bg-indigo-600' : 'bg-border'}`} />
+              <div className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${step >= 2 ? 'bg-indigo-600' : 'bg-border'}`} />
             </div>
 
             <AnimatePresence mode="wait" custom={direction}>
               {step === 1 ? (
                 <motion.div key="step1-heading" custom={direction} variants={slideVariants} initial="enter" animate="center" exit="exit">
-                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Welcome back</h1>
-                  <p className="mt-1 text-sm text-slate-500">Enter your mobile number to receive an OTP.</p>
+                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-primary-foreground">Welcome back</h1>
+                  <p className="mt-1 text-sm text-secondary-foreground">Enter your mobile number to receive an OTP.</p>
                 </motion.div>
               ) : (
                 <motion.div key="step2-heading" custom={direction} variants={slideVariants} initial="enter" animate="center" exit="exit">
-                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Verify OTP</h1>
-                  <p className="mt-1 text-sm text-slate-500">
+                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-primary-foreground">Verify OTP</h1>
+                  <p className="mt-1 text-sm text-secondary-foreground">
                     Enter the 6-digit code sent to{' '}
-                    <span className="font-semibold text-slate-700">{mobile}</span>.
+                    <span className="font-semibold text-primary-foreground">{mobile}</span>.
                   </p>
                 </motion.div>
               )}
@@ -376,17 +376,17 @@ export default function Login() {
                 noValidate
               >
                 <div>
-                  <label className="mb-1 block text-xs font-semibold text-slate-700">
+                  <label className="mb-1 block text-xs font-semibold text-primary-foreground">
                     Mobile Number <span className="text-red-500">*</span>
                   </label>
-                  <div className="flex items-center gap-2.5 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-3 transition-all focus-within:border-indigo-500 focus-within:bg-white focus-within:ring-4 focus-within:ring-indigo-500/10 hover:border-slate-300">
-                    <Phone size={16} className="text-slate-400 flex-shrink-0" />
+                  <div className="flex items-center gap-2.5 rounded-xl border border-border bg-primary px-3.5 py-3 transition-all focus-within:border-indigo-500 focus-within:bg-secondary focus-within:ring-4 focus-within:ring-indigo-500/10 hover:border-indigo-500/30">
+                    <Phone size={16} className="text-secondary-foreground flex-shrink-0" />
                     <input
                       type="tel"
                       value={mobile}
                       onChange={(e) => setMobile(e.target.value)}
                       placeholder="9876543210"
-                      className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
+                      className="w-full bg-transparent text-sm text-primary-foreground outline-none placeholder:text-secondary-foreground"
                     />
                   </div>
                 </div>
@@ -421,7 +421,7 @@ export default function Login() {
                 noValidate
               >
                 <div>
-                  <label className="mb-3 block text-xs font-semibold text-slate-700">Enter 6-digit OTP</label>
+                  <label className="mb-3 block text-xs font-semibold text-primary-foreground">Enter 6-digit OTP</label>
                   <OtpInput value={otp} onChange={setOtp} />
                 </div>
 
@@ -444,7 +444,7 @@ export default function Login() {
                   <button
                     type="button"
                     onClick={goBack}
-                    className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 transition-colors"
+                    className="flex items-center gap-1 text-xs text-secondary-foreground hover:text-primary-foreground transition-colors"
                   >
                     <ChevronLeft size={14} /> Change number
                   </button>
@@ -463,7 +463,7 @@ export default function Login() {
             )}
           </AnimatePresence>
 
-          <motion.p variants={itemVariants} className="mt-6 text-center text-xs text-slate-500">
+          <motion.p variants={itemVariants} className="mt-6 text-center text-xs text-secondary-foreground">
             Don't have an account?{' '}
             <Link to="/register" className="font-semibold text-indigo-600 hover:underline">Create account</Link>
           </motion.p>

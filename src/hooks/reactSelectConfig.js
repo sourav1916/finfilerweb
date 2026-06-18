@@ -1,57 +1,64 @@
 export const reactSelectStyles = {
   control: (provided, state) => ({
     ...provided,
-    backgroundColor: 'white',
-    borderColor: state.isFocused ? '#3b82f6' : '#d1d5db', // blue-500 or gray-300
-    borderRadius: '0.75rem', // rounded-xl (from Services.jsx)
-    boxShadow: state.isFocused ? '0 0 0 2px rgba(59, 130, 246, 0.2)' : 'none', // focus:ring-blue-500
+    backgroundColor: 'var(--bg-secondary, #ffffff)',
+    borderColor: state.isFocused ? '#6366f1' : 'var(--border-color, #e2e8f0)',
+    borderRadius: '0.375rem',
+    boxShadow: state.isFocused ? '0 0 0 2px rgba(99, 102, 241, 0.25)' : 'none',
     '&:hover': {
-      borderColor: state.isFocused ? '#3b82f6' : '#9ca3af' // gray-400
+      borderColor: state.isFocused ? '#6366f1' : '#94a3b8',
     },
     minHeight: '38px',
-    fontSize: '0.875rem'
+    fontSize: '0.875rem',
   }),
   option: (provided, state) => ({
     ...provided,
-    backgroundColor: state.isSelected 
-      ? '#2563eb' // blue-600 
-      : state.isFocused 
-        ? '#eff6ff' // blue-50
-        : 'white',
-    color: state.isSelected ? 'white' : '#374151', // gray-700
+    backgroundColor: state.isSelected
+      ? '#6366f1'
+      : state.isFocused
+        ? 'rgba(99, 102, 241, 0.12)'
+        : 'var(--bg-secondary, #ffffff)',
+    color: state.isSelected ? '#ffffff' : 'var(--text-primary, #0f172a)',
     cursor: 'pointer',
     fontSize: '0.875rem',
     '&:active': {
-      backgroundColor: state.isSelected ? '#1d4ed8' : '#dbeafe' // blue-700 or blue-100
-    }
+      backgroundColor: state.isSelected ? '#4f46e5' : 'rgba(99, 102, 241, 0.2)',
+    },
   }),
   menu: (provided) => ({
     ...provided,
-    borderRadius: '0.75rem',
+    backgroundColor: 'var(--bg-secondary, #ffffff)',
+    borderRadius: '0.5rem',
+    border: '1px solid var(--border-color, #e2e8f0)',
     boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
     zIndex: 9999,
   }),
-  menuPortal: base => ({ ...base, zIndex: 9999 }),
+  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
   singleValue: (provided) => ({
     ...provided,
-    color: '#374151', // gray-700
-    fontSize: '0.875rem'
+    color: 'var(--text-primary, #0f172a)',
+    fontSize: '0.875rem',
+  }),
+  placeholder: (provided) => ({
+    ...provided,
+    color: 'var(--text-secondary, #64748b)',
+    fontSize: '0.875rem',
   }),
   valueContainer: (provided) => ({
     ...provided,
-    padding: '2px 8px'
+    padding: '2px 8px',
   }),
   indicatorSeparator: () => ({
-    display: 'none'
+    display: 'none',
   }),
-  dropdownIndicator: (provided) => ({
+  dropdownIndicator: (provided, state) => ({
     ...provided,
-    color: '#9ca3af', // gray-400
+    color: state.isFocused ? '#6366f1' : '#94a3b8',
     padding: '4px 8px',
     '&:hover': {
-      color: '#6b7280' // gray-500
-    }
-  })
+      color: '#6366f1',
+    },
+  }),
 };
 
 export const getReactSelectMenuProps = () => ({
@@ -59,3 +66,68 @@ export const getReactSelectMenuProps = () => ({
   menuPosition: "fixed",
   menuPlacement: "auto",
 });
+
+export const profileSelectStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    backgroundColor: 'var(--bg-secondary, #ffffff)',
+    borderColor: state.isFocused ? '#6366f1' : 'var(--border-color, #e2e8f0)',
+    borderRadius: '0.375rem',
+    boxShadow: state.isFocused ? '0 0 0 2px rgba(99, 102, 241, 0.25)' : 'none',
+    minHeight: '42px',
+    fontSize: '0.875rem',
+    cursor: 'pointer',
+    transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+    '&:hover': {
+      borderColor: state.isFocused ? '#6366f1' : '#94a3b8',
+    },
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isSelected
+      ? '#6366f1'
+      : state.isFocused
+        ? 'rgba(99, 102, 241, 0.12)'
+        : 'var(--bg-secondary, #ffffff)',
+    color: state.isSelected ? '#ffffff' : 'var(--text-primary, #0f172a)',
+    cursor: 'pointer',
+    fontSize: '0.875rem',
+    padding: '10px 12px',
+    '&:active': {
+      backgroundColor: state.isSelected ? '#4f46e5' : 'rgba(99, 102, 241, 0.2)',
+    },
+  }),
+  menu: (provided) => ({
+    ...provided,
+    backgroundColor: 'var(--bg-secondary, #ffffff)',
+    borderRadius: '0.5rem',
+    border: '1px solid var(--border-color, #e2e8f0)',
+    boxShadow: '0 20px 40px -12px rgba(15, 23, 42, 0.25)',
+    overflow: 'hidden',
+    zIndex: 9999,
+  }),
+  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+  singleValue: (provided) => ({
+    ...provided,
+    color: 'var(--text-primary, #0f172a)',
+    fontSize: '0.875rem',
+  }),
+  placeholder: (provided) => ({
+    ...provided,
+    color: 'var(--text-secondary, #64748b)',
+    fontSize: '0.875rem',
+  }),
+  valueContainer: (provided) => ({
+    ...provided,
+    padding: '2px 12px',
+  }),
+  indicatorSeparator: () => ({ display: 'none' }),
+  dropdownIndicator: (provided, state) => ({
+    ...provided,
+    color: state.isFocused ? '#6366f1' : '#94a3b8',
+    padding: '4px 10px',
+    transition: 'color 0.2s ease, transform 0.2s ease',
+    transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+    '&:hover': { color: '#6366f1' },
+  }),
+};

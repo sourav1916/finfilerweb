@@ -92,7 +92,7 @@ const Pagination = ({
                     <button
                         onClick={() => onPageChange(1)}
                         disabled={currentPage === 1}
-                        className="p-1.5 rounded-lg border border-border text-slate-400 hover:bg-primary hover:text-indigo-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                        className="p-1.5 rounded-lg border border-border text-secondary-foreground hover:bg-primary hover:text-indigo-600 dark:hover:text-indigo-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                         title="First Page"
                     >
                         <FaAngleDoubleLeft size={11} />
@@ -101,7 +101,7 @@ const Pagination = ({
                     <button
                         onClick={() => onPageChange(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className="p-1.5 rounded-lg border border-border text-slate-400 hover:bg-primary hover:text-indigo-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                        className="p-1.5 rounded-lg border border-border text-secondary-foreground hover:bg-primary hover:text-indigo-600 dark:hover:text-indigo-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                         title="Previous Page"
                     >
                         <FaChevronLeft size={11} />
@@ -110,7 +110,7 @@ const Pagination = ({
                     <div className="flex items-center gap-0.5 px-0.5">
                         {getPageNumbers().map((page, idx) =>
                             page === '...' ? (
-                                <span key={`dots-${idx}`} className="px-1 text-slate-400 text-xs">...</span>
+                                <span key={`dots-${idx}`} className="px-1 text-secondary-foreground text-xs">...</span>
                             ) : (
                                 <button
                                     key={page}
@@ -132,7 +132,7 @@ const Pagination = ({
                     <button
                         onClick={() => onPageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
-                        className="p-1.5 rounded-lg border border-border text-slate-400 hover:bg-primary hover:text-indigo-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                        className="p-1.5 rounded-lg border border-border text-secondary-foreground hover:bg-primary hover:text-indigo-600 dark:hover:text-indigo-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                         title="Next Page"
                     >
                         <FaChevronRight size={11} />
@@ -141,7 +141,7 @@ const Pagination = ({
                     <button
                         onClick={() => onPageChange(totalPages)}
                         disabled={currentPage === totalPages}
-                        className="p-1.5 rounded-lg border border-border text-slate-400 hover:bg-primary hover:text-indigo-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                        className="p-1.5 rounded-lg border border-border text-secondary-foreground hover:bg-primary hover:text-indigo-600 dark:hover:text-indigo-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                         title="Last Page"
                     >
                         <FaAngleDoubleRight size={11} />

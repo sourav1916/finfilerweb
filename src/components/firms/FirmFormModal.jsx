@@ -3,6 +3,8 @@ import { Loader2, Save, Building2, X } from "lucide-react";
 import { apiCall } from "../../utils/apiCall";
 import { useToast } from "../../contexts/ToastContext";
 import SelectField from "../common/SelectField";
+import AnimatedModal from "../common/AnimatedModal";
+import { FormSkeleton } from "../SkeletonComponent";
 
 export const FIRM_TYPES = [
   { value: "proprietorship", label: "Proprietorship" },
@@ -66,10 +68,10 @@ export default function FirmFormModal({
           tan_no: firm.tan_no || "",
         });
       } else {
-        throw new Error(body.message || "Failed to load firm details");
+        throw new Error(body.message || "Failed to load business details");
       }
     } catch (err) {
-      setError(err.message || "Failed to load firm details.");
+      setError(err.message || "Failed to load business details.");
     } finally {
       setLoading(false);
     }
@@ -111,12 +113,12 @@ export default function FirmFormModal({
     event.preventDefault();
 
     if (!form.type) {
-      toast.error("Firm type is required.");
+      toast.error("Business type is required.");
       return;
     }
 
     setSaving(true);
-    const toastId = toast.loading(isEdit ? "Saving changes…" : "Creating firm…");
+    const toastId = toast.loading(isEdit ? "Saving changes…" : "Creating business…");
 
     try {
       const endpoint = isEdit ? "/firms/update" : "/firms/create";
@@ -125,47 +127,43 @@ export default function FirmFormModal({
       const body = await response.json();
 
       if (response.ok && body.success && body.data) {
-        toast.success(isEdit ? "Firm updated successfully." : "Firm created successfully.", {
+        toast.success(isEdit ? "Business updated successfully." : "Business created successfully.", {
           id: toastId,
         });
         onSuccess?.(body.data);
         onClose();
       } else {
-        throw new Error(body.message || "Failed to save firm");
+        throw new Error(body.message || "Failed to save business");
       }
     } catch (err) {
-      toast.error(err.message || "Failed to save firm.", { id: toastId });
+      toast.error(err.message || "Failed to save business.", { id: toastId });
     } finally {
       setSaving(false);
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <button
-        type="button"
-        className="absolute inset-0 bg-black/50"
-        aria-label="Close modal"
-        onClick={onClose}
-      />
-
-      <div className="relative z-10 flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-border bg-secondary shadow-2xl">
-        <div className="flex items-start justify-between gap-4 border-b border-border px-5 py-4 sm:px-6">
+    <AnimatedModal
+      isOpen={isOpen}
+      onClose={onClose}
+      closeDisabled={saving}
+      maxWidth="max-w-2xl"
+      panelClassName="flex max-h-[90vh] flex-col overflow-hidden rounded-lg border border-border bg-secondary shadow-2xl"
+    >
+      <div className="flex items-start justify-between gap-4 border-b border-border px-5 py-4 sm:px-6">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-600">
               <Building2 size={20} />
             </div>
             <div>
               <h2 className="text-lg font-bold text-primary-foreground">
-                {isEdit ? "Edit Firm" : "Create Firm"}
+                {isEdit ? "Edit Business" : "Create Business"}
               </h2>
               <p className="mt-0.5 text-sm text-secondary-foreground">
                 {description ||
                   (isEdit
-                    ? "Update your firm details."
-                    : "Add a new business firm to your account.")}
+                    ? "Update your business details."
+                    : "Add a new business to your account.")}
               </p>
             </div>
           </div>
@@ -178,11 +176,9 @@ export default function FirmFormModal({
           </button>
         </div>
 
-        <div className="overflow-y-auto px-5 py-5 sm:px-6">
+        <div className="modal-scroll overflow-y-auto px-5 py-5 sm:px-6">
           {loading ? (
-            <div className="flex justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
-            </div>
+            <FormSkeleton />
           ) : error ? (
             <div className="rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3 text-sm text-red-500">
               {error}
@@ -191,7 +187,7 @@ export default function FirmFormModal({
             <form id="firm-form-modal" onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-primary-foreground">
-                  Firm Name <span className="text-red-500">*</span>
+                  Business Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -205,13 +201,13 @@ export default function FirmFormModal({
 
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-primary-foreground">
-                  Firm Type <span className="text-red-500">*</span>
+                  Business Type <span className="text-red-500">*</span>
                 </label>
                 <SelectField
                   value={FIRM_TYPES.find((item) => item.value === form.type) || null}
                   onChange={handleTypeChange}
                   options={FIRM_TYPES}
-                  placeholder="Select firm type"
+                  placeholder="Select business type"
                 />
               </div>
 
@@ -289,11 +285,10 @@ export default function FirmFormModal({
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-indigo-700 disabled:opacity-60"
             >
               {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-              {isEdit ? "Save Changes" : "Create Firm"}
+              {isEdit ? "Save Changes" : "Create Business"}
             </button>
           </div>
         )}
-      </div>
-    </div>
+    </AnimatedModal>
   );
 }

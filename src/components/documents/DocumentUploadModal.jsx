@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { UploadCloud, X, Loader2, Building2, FileText } from "lucide-react";
 import { apiCall, uploadFile } from "../../utils/apiCall";
+import { buildFirmSelectOptions } from "../../utils/firmSelect";
 import { useToast } from "../../contexts/ToastContext";
 import SelectField from "../common/SelectField";
+import AnimatedModal from "../common/AnimatedModal";
 
 const truncateFileName = (fileName = "", maxBaseLength = 28) => {
   if (!fileName) return "";
@@ -37,10 +39,7 @@ export default function DocumentUploadModal({
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
 
-  const firmOptions = firms.map((firm) => ({
-    value: firm.firm_id,
-    label: firm.name,
-  }));
+  const firmOptions = buildFirmSelectOptions(firms);
 
   useEffect(() => {
     if (!isOpen) {
@@ -67,7 +66,14 @@ export default function DocumentUploadModal({
     if (!file || uploading) return;
 
     setSelectedFile(file);
-    setDocumentName(file.name.replace(/\.[^/.]+$/, "").slice(0, 100) || file.name.slice(0, 100));
+  };
+
+  const canPickFile = !uploading && firms.length > 0;
+
+  const openFilePicker = () => {
+    if (canPickFile) {
+      fileInputRef.current?.click();
+    }
   };
 
   const handleFileChange = (event) => {
@@ -102,7 +108,7 @@ export default function DocumentUploadModal({
     event.preventDefault();
 
     if (!firmId) {
-      toast.error("Please select a firm.");
+      toast.error("Please select a business.");
       return;
     }
 
@@ -111,7 +117,7 @@ export default function DocumentUploadModal({
       return;
     }
 
-    const name = documentName.trim() || selectedFile.name.slice(0, 100);
+    const name = documentName.trim();
     if (!name) {
       toast.error("Please enter a document name.");
       return;
@@ -144,19 +150,15 @@ export default function DocumentUploadModal({
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <button
-        type="button"
-        className="absolute inset-0 bg-black/50"
-        aria-label="Close modal"
-        onClick={onClose}
-      />
-
-      <div className="relative z-10 flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-border bg-secondary shadow-2xl">
-        <div className="flex items-start justify-between gap-4 border-b border-border px-5 py-4 sm:px-6">
+    <AnimatedModal
+      isOpen={isOpen}
+      onClose={onClose}
+      closeDisabled={uploading}
+      maxWidth="max-w-lg"
+      panelClassName="flex max-h-[90vh] flex-col overflow-hidden rounded-lg border border-border bg-secondary shadow-2xl"
+    >
+      <div className="flex items-start justify-between gap-4 border-b border-border px-5 py-4 sm:px-6">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-600">
               <UploadCloud size={20} />
@@ -164,7 +166,7 @@ export default function DocumentUploadModal({
             <div>
               <h2 className="text-lg font-bold text-primary-foreground">Upload Document</h2>
               <p className="mt-0.5 text-sm text-secondary-foreground">
-                Add a document to your firm library.
+                Add a document to your business library.
               </p>
             </div>
           </div>
@@ -179,21 +181,21 @@ export default function DocumentUploadModal({
         </div>
 
         <form onSubmit={handleUpload} className="flex flex-1 flex-col overflow-hidden">
-          <div className="flex-1 space-y-5 overflow-y-auto px-5 py-5 sm:px-6">
+          <div className="modal-scroll flex-1 space-y-5 overflow-y-auto px-5 py-5 sm:px-6">
             <div>
               <label className="mb-1.5 block text-sm font-medium text-primary-foreground">
-                Firm <span className="text-red-500">*</span>
+                Business <span className="text-red-500">*</span>
               </label>
               {firms.length === 0 ? (
                 <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm text-amber-700">
-                  <p className="mb-3">You need at least one firm to upload documents.</p>
+                  <p className="mb-3">You need at least one business to upload documents.</p>
                   <button
                     type="button"
                     onClick={onRequestCreateFirm}
                     className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-semibold text-white hover:bg-indigo-700"
                   >
                     <Building2 size={14} />
-                    Create Firm
+                    Create Business
                   </button>
                 </div>
               ) : (
@@ -201,7 +203,7 @@ export default function DocumentUploadModal({
                   value={firmOptions.find((item) => item.value === firmId) || null}
                   onChange={(option) => setFirmId(option?.value || null)}
                   options={firmOptions}
-                  placeholder="Select a firm"
+                  placeholder="Select a business"
                   isDisabled={uploading}
                 />
               )}
@@ -226,52 +228,50 @@ export default function DocumentUploadModal({
                 File <span className="text-red-500">*</span>
               </label>
               <div
+                role="button"
+                tabIndex={canPickFile ? 0 : -1}
+                onClick={openFilePicker}
+                onKeyDown={(event) => {
+                  if ((event.key === 'Enter' || event.key === ' ') && canPickFile) {
+                    event.preventDefault();
+                    openFilePicker();
+                  }
+                }}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
-                className={`rounded-2xl border-2 border-dashed p-6 text-center transition ${
+                className={`rounded-lg border-2 border-dashed p-5 text-center transition outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/30 ${
+                  canPickFile ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'
+                } ${
                   dragOver
                     ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30"
                     : "border-indigo-200 bg-indigo-50/50 dark:border-indigo-900 dark:bg-indigo-950/20"
                 }`}
               >
                 {selectedFile ? (
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
+                  <div className="flex flex-col items-center gap-2 pointer-events-none">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600">
                       <FileText size={22} />
                     </div>
                     <p className="text-sm font-semibold text-primary-foreground" title={selectedFile.name}>
                       {truncateFileName(selectedFile.name, 32)}
                     </p>
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={uploading}
-                      className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 disabled:opacity-60"
-                    >
-                      Change file
-                    </button>
+                    <p className="text-xs font-medium text-indigo-600">
+                      Click to change file
+                    </p>
                   </div>
                 ) : (
-                  <>
-                    <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
+                  <div className="pointer-events-none">
+                    <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600">
                       <UploadCloud size={22} />
                     </div>
                     <p className="text-sm font-semibold text-primary-foreground">
-                      {dragOver ? "Drop file here" : "Drag & drop or choose file"}
+                      {dragOver ? "Drop file here" : "Click or drag & drop to upload"}
                     </p>
                     <p className="mt-1 text-xs text-secondary-foreground">
                       Supports PDF, JPG, PNG, XLSX and more
                     </p>
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={uploading || firms.length === 0}
-                      className="mt-4 rounded-xl border border-indigo-200 bg-secondary px-4 py-2 text-sm font-semibold text-indigo-600 transition hover:shadow-sm disabled:opacity-60"
-                    >
-                      Browse Files
-                    </button>
-                  </>
+                  </div>
                 )}
                 <input
                   ref={fileInputRef}
@@ -303,7 +303,6 @@ export default function DocumentUploadModal({
             </button>
           </div>
         </form>
-      </div>
-    </div>
+    </AnimatedModal>
   );
 }

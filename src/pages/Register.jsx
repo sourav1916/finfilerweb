@@ -389,7 +389,7 @@ export default function Register() {
                     <label className="mb-1 block text-xs font-semibold text-primary-foreground">
                       First Name <span className="text-red-500">*</span>
                     </label>
-                    <div className="flex items-center gap-2.5 rounded-xl border border-border bg-primary px-3.5 py-3 transition-all focus-within:border-indigo-500 focus-within:bg-secondary focus-within:ring-4 focus-within:ring-indigo-500/10 hover:border-slate-300">
+                    <div className="flex items-center gap-2.5 rounded-xl border border-border bg-primary px-3.5 py-3 transition-all focus-within:border-indigo-500 focus-within:bg-secondary focus-within:ring-4 focus-within:ring-indigo-500/10 hover:border-indigo-500/30">
                       <User size={14} className="text-secondary-foreground flex-shrink-0" />
                       <input
                         type="text"
@@ -405,7 +405,7 @@ export default function Register() {
                     <label className="mb-1 block text-xs font-semibold text-primary-foreground">
                       Last Name <span className="text-red-500">*</span>
                     </label>
-                    <div className="flex items-center gap-2.5 rounded-xl border border-border bg-primary px-3.5 py-3 transition-all focus-within:border-indigo-500 focus-within:bg-secondary focus-within:ring-4 focus-within:ring-indigo-500/10 hover:border-slate-300">
+                    <div className="flex items-center gap-2.5 rounded-xl border border-border bg-primary px-3.5 py-3 transition-all focus-within:border-indigo-500 focus-within:bg-secondary focus-within:ring-4 focus-within:ring-indigo-500/10 hover:border-indigo-500/30">
                       <User size={14} className="text-secondary-foreground flex-shrink-0" />
                       <input
                         type="text"
@@ -424,7 +424,7 @@ export default function Register() {
                   <label className="mb-1 block text-xs font-semibold text-primary-foreground">
                     Middle Name <span className="text-secondary-foreground font-normal">(optional)</span>
                   </label>
-                  <div className="flex items-center gap-2.5 rounded-xl border border-border bg-primary px-3.5 py-3 transition-all focus-within:border-indigo-500 focus-within:bg-secondary focus-within:ring-4 focus-within:ring-indigo-500/10 hover:border-slate-300">
+                  <div className="flex items-center gap-2.5 rounded-xl border border-border bg-primary px-3.5 py-3 transition-all focus-within:border-indigo-500 focus-within:bg-secondary focus-within:ring-4 focus-within:ring-indigo-500/10 hover:border-indigo-500/30">
                     <User size={16} className="text-secondary-foreground flex-shrink-0" />
                     <input
                       type="text"
@@ -442,7 +442,7 @@ export default function Register() {
                   <label className="mb-1 block text-xs font-semibold text-primary-foreground">
                     Email Address <span className="text-red-500">*</span>
                   </label>
-                  <div className="flex items-center gap-2.5 rounded-xl border border-border bg-primary px-3.5 py-3 transition-all focus-within:border-indigo-500 focus-within:bg-secondary focus-within:ring-4 focus-within:ring-indigo-500/10 hover:border-slate-300">
+                  <div className="flex items-center gap-2.5 rounded-xl border border-border bg-primary px-3.5 py-3 transition-all focus-within:border-indigo-500 focus-within:bg-secondary focus-within:ring-4 focus-within:ring-indigo-500/10 hover:border-indigo-500/30">
                     <Mail size={16} className="text-secondary-foreground flex-shrink-0" />
                     <input
                       type="email"
@@ -460,7 +460,7 @@ export default function Register() {
                   <label className="mb-1 block text-xs font-semibold text-primary-foreground">
                     Mobile <span className="text-red-500">*</span>
                   </label>
-                  <div className="flex items-center gap-2.5 rounded-xl border border-border bg-primary px-3.5 py-3 transition-all focus-within:border-indigo-500 focus-within:bg-secondary focus-within:ring-4 focus-within:ring-indigo-500/10 hover:border-slate-300">
+                  <div className="flex items-center gap-2.5 rounded-xl border border-border bg-primary px-3.5 py-3 transition-all focus-within:border-indigo-500 focus-within:bg-secondary focus-within:ring-4 focus-within:ring-indigo-500/10 hover:border-indigo-500/30">
                     <Phone size={16} className="text-secondary-foreground flex-shrink-0" />
                     <input
                       type="tel"

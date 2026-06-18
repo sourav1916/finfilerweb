@@ -14,11 +14,15 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { apiCall, resolveMediaUrl } from "../utils/apiCall";
+import { getDocumentDownloadName } from "../utils/documentDownload";
+import { buildFirmSelectOptions } from "../utils/firmSelect";
 import { useToast } from "../contexts/ToastContext";
 import SelectField from "../components/common/SelectField";
 import Pagination from "../components/common/PaginationComponent";
 import FirmFormModal from "../components/firms/FirmFormModal";
 import DocumentUploadModal from "../components/documents/DocumentUploadModal";
+import ConfirmModal from "../components/common/ConfirmModal";
+import PageHeader from "../components/common/PageHeader";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -97,7 +101,7 @@ const downloadDocument = async (doc, toast) => {
     const objectUrl = URL.createObjectURL(blob);
     const anchor = window.document.createElement("a");
     anchor.href = objectUrl;
-    anchor.download = doc.file_name || doc.name || "document";
+    anchor.download = getDocumentDownloadName(doc);
     window.document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
@@ -162,7 +166,7 @@ function DocumentCard({
             type="button"
             onClick={() => onDownload(doc)}
             disabled={downloadingId === doc.document_id}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/95 text-indigo-600 shadow-sm transition hover:bg-white disabled:opacity-60"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-secondary/95 text-indigo-600 shadow-sm transition hover:bg-secondary disabled:opacity-60 dark:text-indigo-400"
             title="Download"
           >
             {downloadingId === doc.document_id ? (
@@ -173,9 +177,9 @@ function DocumentCard({
           </button>
           <button
             type="button"
-            onClick={() => onDelete(doc.document_id)}
+            onClick={() => onDelete(doc)}
             disabled={deletingId === doc.document_id}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/95 text-red-500 shadow-sm transition hover:bg-white disabled:opacity-60"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-secondary/95 text-red-500 shadow-sm transition hover:bg-secondary disabled:opacity-60"
             title="Delete"
           >
             {deletingId === doc.document_id ? (
@@ -195,7 +199,7 @@ function DocumentCard({
         {doc.firm_name && (
           <Link
             to={`/firms/${doc.firm_id}`}
-            className="mt-2 inline-block truncate text-xs font-medium text-indigo-600 transition hover:text-indigo-700"
+            className="mt-2 inline-block truncate text-xs font-medium text-indigo-600 transition hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
             title={doc.firm_name}
           >
             {doc.firm_name}
@@ -247,13 +251,11 @@ export default function Documents() {
   const [downloadingId, setDownloadingId] = useState(null);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [firmModalOpen, setFirmModalOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
-  const firmOptions = firms.map((firm) => ({
-    value: firm.firm_id,
-    label: firm.name,
-  }));
+  const firmOptions = buildFirmSelectOptions(firms);
 
-  const filterFirmOptions = [{ value: "all", label: "All Firms" }, ...firmOptions];
+  const filterFirmOptions = [{ value: "all", label: "All Businesses" }, ...firmOptions];
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 300);
@@ -278,7 +280,7 @@ export default function Documents() {
         }
       }
     } catch {
-      toast.error("Failed to load firms.");
+      toast.error("Failed to load businesses.");
     }
   }, [toast]);
 
@@ -322,9 +324,17 @@ export default function Documents() {
     fetchDocuments();
   }, [fetchDocuments]);
 
-  const handleDelete = async (documentId) => {
-    if (!window.confirm("Are you sure you want to delete this document?")) return;
+  const requestDelete = (doc) => {
+    setDeleteTarget({
+      document_id: doc.document_id,
+      name: doc.name || "this document",
+    });
+  };
 
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
+
+    const documentId = deleteTarget.document_id;
     setDeletingId(documentId);
     const toastId = toast.loading("Deleting document…");
 
@@ -336,6 +346,7 @@ export default function Documents() {
 
       if (response.ok && body.success) {
         toast.success("Document deleted successfully.", { id: toastId });
+        setDeleteTarget(null);
         fetchDocuments();
       } else {
         throw new Error(body.message || "Failed to delete document");
@@ -358,7 +369,7 @@ export default function Documents() {
     setUploadFirmId(firm.firm_id);
     setFirmModalOpen(false);
     setUploadModalOpen(true);
-    toast.success("Firm created. You can now upload documents.");
+    toast.success("Business created. You can now upload documents.");
   };
 
   const handleUploadSuccess = () => {
@@ -375,57 +386,52 @@ export default function Documents() {
 
   return (
     <motion.div
-      className="mx-auto max-w-8xl py-6 sm:py-8 px-2 sm:px-4"
+      className="mx-auto max-w-8xl"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
-      <motion.div
-        variants={itemVariants}
-        className="mb-6 flex flex-col justify-between gap-4 sm:mb-8 sm:flex-row sm:items-end"
-      >
-        <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-primary-foreground sm:text-4xl">
-            My Documents
-          </h1>
-          <p className="mt-1 text-sm text-secondary-foreground sm:mt-2 sm:text-lg">
-            Manage and upload your documents securely.
-          </p>
-        </div>
-        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-          <motion.button
-            type="button"
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={fetchDocuments}
-            disabled={loading}
-            className="flex items-center justify-center gap-2 rounded-xl border border-border bg-secondary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary disabled:opacity-60"
-          >
-            {loading ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
-            Refresh
-          </motion.button>
-          <motion.button
-            type="button"
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={openUploadModal}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-indigo-200 transition hover:bg-indigo-700 sm:w-auto"
-          >
-            <Plus size={18} />
-            Upload Document
-          </motion.button>
-        </div>
+      <motion.div variants={itemVariants}>
+        <PageHeader
+          title="My Documents"
+          description="Manage and upload your documents securely."
+          actions={
+            <>
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={fetchDocuments}
+                disabled={loading}
+                className="flex items-center justify-center gap-2 rounded-md border border-border bg-secondary px-3 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary disabled:opacity-60"
+              >
+                {loading ? <Loader2 size={15} className="animate-spin" /> : <RefreshCw size={15} />}
+                Refresh
+              </motion.button>
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={openUploadModal}
+                className="flex items-center justify-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-indigo-700"
+              >
+                <Plus size={16} />
+                Upload
+              </motion.button>
+            </>
+          }
+        />
       </motion.div>
 
-      <motion.div variants={itemVariants} className="mb-5 flex flex-col gap-3 sm:flex-row">
+      <motion.div variants={itemVariants} className="mb-4 flex flex-col gap-3 sm:flex-row">
         <div className="flex flex-1 items-center gap-2 rounded-xl border border-border bg-secondary px-4 py-2.5">
-          <Search size={16} className="text-slate-400" />
+          <Search size={16} className="text-secondary-foreground" />
           <input
             type="text"
             placeholder="Search documents..."
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
-            className="w-full bg-transparent text-sm text-primary-foreground outline-none placeholder:text-slate-400"
+            className="w-full bg-transparent text-sm text-primary-foreground outline-none placeholder:text-secondary-foreground"
           />
         </div>
         <div className="w-full sm:w-64">
@@ -435,7 +441,7 @@ export default function Documents() {
             }
             onChange={(option) => setFirmFilter(option?.value === "all" ? null : option?.value || null)}
             options={filterFirmOptions}
-            placeholder="Filter by firm"
+            placeholder="Filter by business"
           />
         </div>
       </motion.div>
@@ -450,7 +456,7 @@ export default function Documents() {
           </div>
         ) : documents.length === 0 ? (
           <div className="rounded-2xl border border-border bg-secondary py-16 text-center shadow-soft sm:rounded-3xl">
-            <AlertCircle className="mx-auto mb-3 text-slate-300" size={40} />
+            <AlertCircle className="mx-auto mb-3 text-secondary-foreground/50" size={40} />
             <p className="mb-4 font-medium text-secondary-foreground">No documents found.</p>
             <button
               type="button"
@@ -471,7 +477,7 @@ export default function Documents() {
                 downloadingId={downloadingId}
                 deletingId={deletingId}
                 onDownload={handleDownload}
-                onDelete={handleDelete}
+                onDelete={requestDelete}
               />
             ))}
           </div>
@@ -510,8 +516,23 @@ export default function Documents() {
         isOpen={firmModalOpen}
         onClose={() => setFirmModalOpen(false)}
         mode="create"
-        description="You need at least one firm before uploading documents."
+        description="You need at least one business before uploading documents."
         onSuccess={handleFirmCreated}
+      />
+
+      <ConfirmModal
+        isOpen={Boolean(deleteTarget)}
+        onClose={() => !deletingId && setDeleteTarget(null)}
+        onConfirm={handleConfirmDelete}
+        title="Delete document?"
+        message={
+          deleteTarget
+            ? `"${deleteTarget.name}" will be permanently removed. This action cannot be undone.`
+            : ''
+        }
+        confirmText="Delete"
+        cancelText="Keep document"
+        loading={Boolean(deletingId)}
       />
     </motion.div>
   );

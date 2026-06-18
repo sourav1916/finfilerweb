@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { apiCall } from "../utils/apiCall";
 import { useToast } from "../contexts/ToastContext";
+import PageHeader from "../components/common/PageHeader";
 
 const formatCurrency = (amount) =>
   new Intl.NumberFormat("en-IN", {
@@ -120,7 +121,7 @@ function ServiceCard({ service, onSelect }) {
         )}
 
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/50 to-transparent px-3 pb-3 pt-10">
-          <span className="inline-flex rounded-full bg-white/90 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-indigo-700 backdrop-blur-sm">
+          <span className="inline-flex rounded-full bg-white/90 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-indigo-700 backdrop-blur-sm dark:bg-slate-900/90 dark:text-indigo-300">
             {service.type}
           </span>
         </div>
@@ -136,7 +137,7 @@ function ServiceCard({ service, onSelect }) {
             {formatCurrency(service.fees)}
           </span>
           {hasDiscount && (
-            <span className="text-sm text-slate-400 line-through">
+            <span className="text-sm text-secondary-foreground line-through">
               {formatCurrency(service.total_fees)}
             </span>
           )}
@@ -203,49 +204,40 @@ export default function Services() {
 
   return (
     <motion.div
-      className="mx-auto max-w-7xl py-4 sm:py-6 px-2 sm:px-4"
+      className="mx-auto max-w-7xl"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
-      <motion.div
-        variants={itemVariants}
-        className="mb-6 sm:mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between"
-      >
-        <div>
-          <p className="text-xs font-bold uppercase tracking-widest text-indigo-600">
-            Marketplace
-          </p>
-          <h1 className="font-display mt-1 text-2xl sm:text-4xl font-bold tracking-tight text-primary-foreground">
-            Our Services
-          </h1>
-          <p className="mt-1 sm:mt-2 max-w-2xl text-sm sm:text-base text-secondary-foreground">
-            Browse and order registration and compliance services. Open a
-            service to view details and place your order.
-          </p>
-        </div>
-
-        <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center lg:w-auto">
-          <div className="flex flex-1 items-center gap-2 rounded-xl border border-border bg-secondary px-3 py-2.5 shadow-sm focus-within:border-indigo-500 transition sm:min-w-[260px]">
-            <Search size={16} className="shrink-0 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search services…"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-transparent text-sm text-primary-foreground outline-none placeholder:text-slate-400"
-            />
-          </div>
-          <button
-            type="button"
-            onClick={fetchServices}
-            disabled={loading}
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-secondary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary disabled:opacity-50"
-          >
-            <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
-            Refresh
-          </button>
-        </div>
+      <motion.div variants={itemVariants}>
+        <PageHeader
+          eyebrow="Marketplace"
+          title="Our Services"
+          description="Browse and order registration and compliance services."
+          actions={
+            <>
+              <div className="flex w-full items-center gap-2 rounded-md border border-border bg-secondary px-3 py-2 shadow-sm focus-within:border-indigo-500 transition sm:w-56">
+                <Search size={15} className="shrink-0 text-secondary-foreground" />
+                <input
+                  type="text"
+                  placeholder="Search services…"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-transparent text-sm text-primary-foreground outline-none placeholder:text-secondary-foreground"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={fetchServices}
+                disabled={loading}
+                className="inline-flex items-center justify-center gap-2 rounded-md border border-border bg-secondary px-3 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary disabled:opacity-50"
+              >
+                <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
+                Refresh
+              </button>
+            </>
+          }
+        />
       </motion.div>
 
       <motion.div
@@ -259,7 +251,7 @@ export default function Services() {
             onClick={() => setActiveTab(tab.id)}
             className={`flex-shrink-0 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
               activeTab === tab.id
-                ? "bg-indigo-600 text-white shadow-md shadow-indigo-200"
+                ? "bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none"
                 : "border border-border bg-secondary text-secondary-foreground hover:bg-primary"
             }`}
           >
@@ -299,7 +291,7 @@ export default function Services() {
           variants={itemVariants}
           className="flex flex-col items-center justify-center rounded-2xl border border-border bg-secondary py-16 text-center shadow-soft"
         >
-          <ShoppingBag className="mb-4 h-12 w-12 text-slate-300" />
+          <ShoppingBag className="mb-4 h-12 w-12 text-secondary-foreground/50" />
           <h3 className="text-lg font-bold text-primary-foreground">
             No Services Found
           </h3>

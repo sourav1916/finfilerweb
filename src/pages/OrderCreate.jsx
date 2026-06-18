@@ -10,12 +10,17 @@ import {
   FileText,
   CheckCircle2,
   X,
+  FolderOpen,
 } from "lucide-react";
-import { apiCall, uploadFile } from "../utils/apiCall";
+import { apiCall, uploadFile, resolveMediaUrl } from "../utils/apiCall";
+import { buildFirmSelectOptions } from "../utils/firmSelect";
 import { useToast } from "../contexts/ToastContext";
 import SelectField from "../components/common/SelectField";
 import FirmFormModal from "../components/firms/FirmFormModal";
+import { OrderCreateSkeleton } from "../components/SkeletonComponent";
 import OrderPaymentModal from "../components/orders/OrderPaymentModal";
+import DocumentLibraryPickerModal from "../components/documents/DocumentLibraryPickerModal";
+import PageHeader, { PageBackLink } from "../components/common/PageHeader";
 
 const formatCurrency = (amount) =>
   new Intl.NumberFormat("en-IN", {
@@ -191,6 +196,7 @@ export default function OrderCreate() {
     EMPTY_VALIDATION_ERRORS,
   );
   const [showValidation, setShowValidation] = useState(false);
+  const [libraryPickerTarget, setLibraryPickerTarget] = useState(null);
 
   const requiredFieldKeys = useMemo(
     () => getRequiredFieldKeys(service?.fields),
@@ -202,14 +208,7 @@ export default function OrderCreate() {
     [service],
   );
 
-  const firmOptions = useMemo(
-    () =>
-      firms.map((firm) => ({
-        value: firm.firm_id,
-        label: firm.name,
-      })),
-    [firms],
-  );
+  const firmOptions = useMemo(() => buildFirmSelectOptions(firms), [firms]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -231,7 +230,7 @@ export default function OrderCreate() {
       }
 
       if (!firmsResponse.ok || !firmsBody.success) {
-        throw new Error(firmsBody.message || "Failed to load firms");
+        throw new Error(firmsBody.message || "Failed to load businesses");
       }
 
       const firmList = firmsBody.data?.firms || [];
@@ -286,7 +285,7 @@ export default function OrderCreate() {
     if (showValidation) {
       setValidationErrors((prev) => ({
         ...prev,
-        firm: selectedFirmId ? "" : "Please select a firm.",
+        firm: selectedFirmId ? "" : "Please select a business.",
       }));
     }
 
@@ -345,6 +344,110 @@ export default function OrderCreate() {
     return null;
   };
 
+  const validateLibraryDocument = (libraryDoc, document) => {
+    const fileName = libraryDoc.file_name || libraryDoc.name || "";
+    const size = Number(libraryDoc.size) || 0;
+
+    if (document.max_size > 0 && size > document.max_size) {
+      return `${document.name} exceeds maximum size of ${formatBytes(document.max_size)}.`;
+    }
+
+    const extension = getFileExtension(fileName);
+    const allowed = (document.accept_extensions || []).map((item) =>
+      item.toLowerCase().replace(/^\./, ""),
+    );
+
+    if (allowed.length > 0 && !allowed.includes(extension)) {
+      return `${document.name} must be one of: ${allowed.join(", ").toUpperCase()}`;
+    }
+
+    return null;
+  };
+
+  const applyDocumentSelection = useCallback(
+    (document, { fileName, url, size, fromLibrary = false }) => {
+      const documentName = document.name;
+
+      setDocumentUploads((prev) => ({
+        ...prev,
+        [documentName]: {
+          fileName,
+          url,
+          size,
+          uploading: false,
+          error: null,
+          fromLibrary,
+        },
+      }));
+
+      if (showValidation) {
+        setValidationErrors((prev) => {
+          const nextDocuments = { ...prev.documents };
+          delete nextDocuments[documentName];
+          return { ...prev, documents: nextDocuments };
+        });
+      }
+    },
+    [showValidation],
+  );
+
+  const openLibraryPicker = (document) => {
+    if (!firmId) {
+      toast.error("Please select a business first.");
+      return;
+    }
+
+    setLibraryPickerTarget(document);
+  };
+
+  const handleLibraryDocumentSelect = (libraryDoc) => {
+    if (!libraryPickerTarget) return;
+
+    const validationError = validateLibraryDocument(
+      libraryDoc,
+      libraryPickerTarget,
+    );
+
+    if (validationError) {
+      toast.error(validationError);
+      setDocumentUploads((prev) => ({
+        ...prev,
+        [libraryPickerTarget.name]: {
+          fileName: libraryDoc.file_name || libraryDoc.name,
+          url: null,
+          size: libraryDoc.size,
+          uploading: false,
+          error: validationError,
+        },
+      }));
+
+      if (showValidation) {
+        setValidationErrors((prev) => ({
+          ...prev,
+          documents: {
+            ...prev.documents,
+            [libraryPickerTarget.name]: validationError,
+          },
+        }));
+      }
+
+      setLibraryPickerTarget(null);
+      return;
+    }
+
+    const publicUrl = libraryDoc.public_url || resolveMediaUrl(libraryDoc.file_url);
+
+    applyDocumentSelection(libraryPickerTarget, {
+      fileName: libraryDoc.name || libraryDoc.file_name,
+      url: publicUrl,
+      size: libraryDoc.size,
+      fromLibrary: true,
+    });
+
+    toast.success(`${libraryPickerTarget.name} imported from your library.`);
+    setLibraryPickerTarget(null);
+  };
+
   const processDocumentFile = useCallback(
     async (document, file) => {
       if (!file) return;
@@ -394,24 +497,13 @@ export default function OrderCreate() {
 
       try {
         const url = await uploadFile(file);
-        setDocumentUploads((prev) => ({
-          ...prev,
-          [documentName]: {
-            fileName: file.name,
-            url,
-            size: file.size,
-            uploading: false,
-            error: null,
-          },
-        }));
+        applyDocumentSelection(document, {
+          fileName: file.name,
+          url,
+          size: file.size,
+          fromLibrary: false,
+        });
         toast.success(`${documentName} uploaded successfully.`);
-        if (showValidation) {
-          setValidationErrors((prev) => {
-            const nextDocuments = { ...prev.documents };
-            delete nextDocuments[documentName];
-            return { ...prev, documents: nextDocuments };
-          });
-        }
       } catch (err) {
         const message = err.message || `Failed to upload ${documentName}.`;
         setDocumentUploads((prev) => ({
@@ -433,7 +525,7 @@ export default function OrderCreate() {
         }
       }
     },
-    [showValidation, toast],
+    [showValidation, toast, applyDocumentSelection],
   );
 
   const handleDocumentChange = (document) => async (event) => {
@@ -484,7 +576,7 @@ export default function OrderCreate() {
     };
 
     if (!firmId) {
-      errors.firm = "Please select a firm.";
+      errors.firm = "Please select a business.";
     }
 
     requiredFieldKeys.forEach((key) => {
@@ -635,20 +727,16 @@ export default function OrderCreate() {
       return next;
     });
     setFirmModalOpen(false);
-    toast.success("Firm created. You can now place your order.");
+    toast.success("Business created. You can now place your order.");
   };
 
   if (loading) {
-    return (
-      <div className="mx-auto py-12 flex justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
-      </div>
-    );
+    return <OrderCreateSkeleton />;
   }
 
   if (error || !service) {
     return (
-      <div className="mx-auto px-4 py-10 text-center">
+      <div className="mx-auto py-10 text-center">
         <AlertCircle className="mx-auto mb-4 h-12 w-12 text-red-500" />
         <p className="text-red-500">{error || "Service not found."}</p>
         <Link
@@ -665,45 +753,34 @@ export default function OrderCreate() {
   return (
     <>
       <motion.div
-        className="mx-auto py-4 sm:py-6"
+        className="mx-auto"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <Link
-          to={`/services/${serviceId}`}
-          className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-secondary-foreground transition hover:text-indigo-600"
-        >
-          <ArrowLeft size={16} />
-          Back to service
-        </Link>
+        <PageBackLink to={`/services/${serviceId}`}>Back to service</PageBackLink>
 
-        <div className="mb-8">
-          <p className="text-xs font-bold uppercase tracking-widest text-indigo-600">
-            Place Order
-          </p>
-          <h1 className="font-display mt-1 text-2xl font-bold text-primary-foreground sm:text-3xl">
-            {service.name}
-          </h1>
-          <p className="mt-1 text-sm text-secondary-foreground">
-            Fill in the details below to place your order.
-          </p>
-        </div>
+        <PageHeader
+          className="mb-5"
+          eyebrow="Place Order"
+          title={service.name}
+          description="Fill in the details below to place your order."
+        />
 
         {firms.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border bg-secondary px-6 py-12 text-center">
             <AlertCircle className="mx-auto mb-4 h-10 w-10 text-amber-500" />
             <h2 className="text-lg font-semibold text-primary-foreground">
-              Firm required
+              Business required
             </h2>
             <p className="mt-2 text-sm text-secondary-foreground">
-              You need at least one firm before placing an order.
+              You need at least one business before placing an order.
             </p>
             <button
               type="button"
               onClick={() => setFirmModalOpen(true)}
               className="mt-6 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
             >
-              Create Firm
+              Create Business
             </button>
           </div>
         ) : (
@@ -714,7 +791,7 @@ export default function OrderCreate() {
           >
             <div>
               <label className="mb-1.5 block text-sm font-medium text-primary-foreground">
-                Firm <span className="text-red-500">*</span>
+                Business <span className="text-red-500">*</span>
               </label>
               <div
                 className={`rounded-xl transition ${
@@ -729,7 +806,7 @@ export default function OrderCreate() {
                   }
                   onChange={handleFirmChange}
                   options={firmOptions}
-                  placeholder="Select a firm"
+                  placeholder="Select a business"
                 />
               </div>
             </div>
@@ -911,9 +988,20 @@ export default function OrderCreate() {
                               </button>
                             )}
                         </div>
+                        <button
+                          type="button"
+                          onClick={() => openLibraryPicker(document)}
+                          disabled={isUploading || !firmId}
+                          className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-md border border-border bg-secondary px-3 py-2 text-xs font-medium text-primary-foreground transition hover:border-indigo-500/40 hover:bg-indigo-500/5 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          <FolderOpen size={14} className="text-indigo-600" />
+                          Import from uploaded documents
+                        </button>
                         {upload?.url && !documentError && (
                           <p className="mt-2 truncate text-xs text-emerald-600">
-                            Uploaded and ready for order submission.
+                            {upload.fromLibrary
+                              ? "Imported from library and ready for submission."
+                              : "Uploaded and ready for order submission."}
                           </p>
                         )}
                       </div>
@@ -956,7 +1044,7 @@ export default function OrderCreate() {
         isOpen={firmModalOpen}
         onClose={() => setFirmModalOpen(false)}
         mode="create"
-        description="You need at least one firm before placing an order."
+        description="You need at least one business before placing an order."
         onSuccess={handleFirmCreated}
       />
 
@@ -966,6 +1054,13 @@ export default function OrderCreate() {
         order={createdOrder}
         onSuccess={handlePaymentSuccess}
         showOrderCreatedSuccess
+      />
+
+      <DocumentLibraryPickerModal
+        isOpen={Boolean(libraryPickerTarget)}
+        onClose={() => setLibraryPickerTarget(null)}
+        firmId={firmId}
+        onSelect={handleLibraryDocumentSelect}
       />
     </>
   );

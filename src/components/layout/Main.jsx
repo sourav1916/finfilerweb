@@ -98,14 +98,14 @@ const MainLayout = ({ children }) => {
             ${getContentMargin()}
             min-h-[calc(100vh-64px)]
             overflow-x-hidden
+            px-4 py-3 md:px-3
           `}
           style={{
-            padding: isMobile ? '0px' : '1rem',
             transition: 'margin-left 0.3s ease-out',
             maxWidth: isMobile ? '100%' : `calc(100vw - ${desktopSidebarCollapsed ? '64px' : '256px'})`,
           }}
         >
-          <div className="w-full max-w-8xl p-2">
+          <div className="w-full max-w-8xl">
             {children || <Outlet />}
           </div>
         </main>

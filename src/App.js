@@ -1,5 +1,6 @@
 // src/App.js
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import ScrollToTop from "./components/common/ScrollToTop";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ToastProvider } from "./contexts/ToastContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -15,7 +16,6 @@ import Services from "./pages/Services";
 import ServiceDetails from "./pages/ServiceDetails";
 import Orders from "./pages/Orders";
 import Documents from "./pages/Documents";
-import FundsBusiness from "./pages/FundsBusiness";
 import FirmList from "./pages/FirmList";
 import FirmDetails from "./pages/FirmDetails";
 import OrderCreate from "./pages/OrderCreate";
@@ -28,6 +28,7 @@ import ServerUnreachable from "./pages/ServerUnreachable";
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <ThemeProvider>
         <AuthProvider>
           <ToastProvider>
@@ -52,7 +53,6 @@ function App() {
                 <Route path="orders" element={<Orders />} />
                 <Route path="orders/:orderId" element={<OrderDetails />} />
                 <Route path="documents" element={<Documents />} />
-                <Route path="funds-business" element={<FundsBusiness />} />
                 <Route path="firms" element={<FirmList />} />
                 <Route path="firms/:firmId" element={<FirmDetails />} />
                 <Route path="profile" element={<Profile />} />
