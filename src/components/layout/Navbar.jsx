@@ -93,11 +93,10 @@ const LogoutModal = ({ isOpen, onClose, onConfirm, loading }) => {
           {/* Toggle pill */}
           <div
             className={`relative flex-shrink-0 w-11 h-6 rounded-full border transition-colors duration-200
-                ${
-                  logoutAll
-                    ? "bg-indigo-600 border-indigo-500"
-                    : "bg-secondary border-border group-hover:border-secondary-foreground/40"
-                }`}
+                ${logoutAll
+                ? "bg-indigo-600 border-indigo-500"
+                : "bg-secondary border-border group-hover:border-secondary-foreground/40"
+              }`}
           >
             <span
               className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-200
@@ -191,8 +190,12 @@ const Navbar = ({
                 onClick={() => navigate(clientRoute("/home"))}
                 className="flex items-center gap-2 rounded-lg transition-opacity duration-200 hover:opacity-90 focus:outline-none"
               >
-                <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-md">
-                  <span className="text-white font-bold text-sm">FF</span>
+                <div className="w-8 h-8 flex-shrink-0">
+                  <img
+                    src="/logo512.png"
+                    alt="FinFiler Logo"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div>
                   <span className="text-xl font-bold text-primary-foreground tracking-tight">
