@@ -53,6 +53,16 @@ function renderNode(node) {
     return <li className="text-neutral-500 text-[15px] leading-relaxed">{inner}</li>;
   }
 
+  if (node.type === "orderedList") {
+    return (
+      <ol className="list-decimal pl-5 mb-4 space-y-1">
+        {(node.content || []).map((n, i) => (
+          <span key={i}>{renderNode(n)}</span>
+        ))}
+      </ol>
+    );
+  }
+
   if (node.type === "hardBreak") {
     return <br />;
   }
@@ -82,8 +92,9 @@ function fmtDate(s) {
 function DetailSkeleton() {
   return (
     <div className="max-w-6xl min-h-[calc(100vh-4rem)] mx-auto py-9 animate-pulse">
-      <div className="h-9 w-24 bg-neutral-100 rounded-lg mb-7" />
-      <div className="h-72 bg-neutral-100 rounded-2xl mb-7" />
+      <div className="h-9 w-32 bg-neutral-100 rounded-lg mb-4" />
+      <div className="h-9 w-48 bg-neutral-100 rounded-lg mb-7" />
+      <div className="aspect-video bg-neutral-100 rounded-2xl mb-7" />
       <div className="h-8 w-3/4 bg-neutral-100 rounded mb-4" />
       <div className="space-y-2">
         <div className="h-4 bg-neutral-100 rounded w-full" />
@@ -96,7 +107,7 @@ function DetailSkeleton() {
 
 // ── Main Component ───────────────────────────────────
 export default function BlogDetail() {
-  const { blogId } = useParams(); // This is the encoded blog path from URL
+  const { blogId } = useParams();
   const navigate = useNavigate();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -109,7 +120,6 @@ export default function BlogDetail() {
       return;
     }
 
-    // Decode the path from URL
     const decodedPath = decodeURIComponent(blogId);
     console.log("Encoded path from URL:", blogId);
     console.log("Decoded path:", decodedPath);
@@ -120,7 +130,6 @@ export default function BlogDetail() {
 
     (async () => {
       try {
-        // API call using the decoded path: {{BASE_URL}}/blogs/{path}
         const res = await apiCall(`/blogs/${decodedPath}`);
         console.log("API Response status:", res.status);
         
@@ -170,26 +179,41 @@ export default function BlogDetail() {
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: "easeOut" }}
-      className="max-w-5xl  min-h-[calc(100vh-4rem)] mx-auto py-9"
+      className="max-w-6xl min-h-[calc(100vh-4rem)] mx-auto py-9 px-4"
     >
-      {/* Back button */}
-      <button
-        onClick={handleBack}
-        className="inline-flex items-center gap-1.5 text-sm text-neutral-500 border border-neutral-200 rounded-lg px-3 py-1.5 mb-7 hover:bg-neutral-50 transition-colors"
-      >
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-          <path d="M19 12H5M12 19l-7-7 7-7" />
-        </svg>
-        All posts
-      </button>
+      {/* ─── Header: "Details View" + Back Button ─── */}
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+        {/* Left: Back button */}
+        <button
+          onClick={handleBack}
+          className="inline-flex items-center gap-2 text-sm text-neutral-500 border border-neutral-200 rounded-lg px-4 py-2 hover:bg-neutral-50 hover:text-neutral-700 transition-all duration-200"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          Back to Blogs
+        </button>
 
-      {/* Hero image */}
+        {/* Right: "Details View" badge */}
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">Viewing</span>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 text-xs font-semibold rounded-full border border-blue-100">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+            Details View
+          </span>
+        </div>
+      </div>
+
+      {/* ─── Hero Image with fixed 16:9 ratio ─── */}
       {thumbnailUrl && (
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
-          className="rounded-2xl overflow-hidden h-72 bg-neutral-100 mb-7"
+          className="rounded-2xl overflow-hidden bg-neutral-100 mb-7 aspect-video"
         >
           <img
             src={thumbnailUrl}
@@ -200,15 +224,23 @@ export default function BlogDetail() {
         </motion.div>
       )}
 
-      {/* Meta */}
+      {/* ─── Meta ─── */}
       <div className="flex items-center gap-2.5 flex-wrap mb-5">
-        <span className="text-xs text-neutral-300">{fmtDate(blog.published_at)}</span>
+        <span className="text-xs text-neutral-400">{fmtDate(blog.published_at)}</span>
         <span className="text-neutral-200">·</span>
         <span className="text-[11px] text-neutral-300 font-mono">/{blog.path}</span>
+        {blog.status && (
+          <>
+            <span className="text-neutral-200">·</span>
+            <span className="text-[10px] uppercase tracking-wider text-emerald-500 font-medium bg-emerald-50 px-2 py-0.5 rounded-full">
+              {blog.status}
+            </span>
+          </>
+        )}
       </div>
 
-      {/* Article content */}
-      <article>
+      {/* ─── Article content ─── */}
+      <article className="prose prose-neutral max-w-none">
         {renderNode(blog.content)}
       </article>
     </motion.div>

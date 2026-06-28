@@ -11,9 +11,9 @@ function PublicWebsiteLayout() {
   const transitionKey = isLegalPolicyPath(location.pathname) ? 'legal-pages' : location.pathname;
 
   return (
-    <div className="app">
+    <div className="app flex flex-col min-h-screen">
       <PublicNavbar />
-      <main>
+      <main className="flex-1 pt-20 md:pt-24 lg:pt-28">
         <AnimatePresence mode="wait">
           <PageTransition transitionKey={transitionKey}>
             <Outlet />
