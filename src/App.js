@@ -38,6 +38,8 @@ import PublicRefundPolicy from "./pages/public/RefundCancellationPolicy";
 import PublicDataDeletionPolicy from "./pages/public/DataDeletionPolicy";
 import PublicDisclaimer from "./pages/public/Disclaimer";
 import PublicGrievancePolicy from "./pages/public/GrievanceRedressalPolicy";
+import PublicBlogs from "./pages/public/BlogList";
+import PublicBlogDetail from "./pages/public/BlogDetail";
 
 function App() {
   return (
@@ -51,6 +53,8 @@ function App() {
               <Route element={<PublicWebsiteLayout />}>
                 <Route path="/" element={<PublicHome />} />
                 <Route path="/services" element={<PublicServices />} />
+                <Route path="/blogs" element={<PublicBlogs />} />
+                <Route path="/blogs/:blogId" element={<PublicBlogDetail />} />
                 <Route path="/services/:serviceId" element={<PublicServiceDetail />} />
                 <Route path="/about" element={<PublicAbout />} />
                 <Route path="/contact" element={<PublicContact />} />
