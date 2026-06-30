@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Clock, User, Share2 } from "lucide-react";
 import { apiCall, resolveMediaUrl } from "../../utils/apiCall";
@@ -115,6 +114,15 @@ export default function BlogDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Must be declared before any early returns (Rules of Hooks)
+  const pageRef = useRef(null);
+  useEffect(() => {
+    if (pageRef.current) {
+      pageRef.current.style.opacity = "1";
+      pageRef.current.style.transform = "translateY(0)";
+    }
+  }, [blog]); // re-run when blog loads so the ref is populated
+
   useEffect(() => {
     if (!blogId) {
       setError("No blog path provided");
@@ -178,80 +186,79 @@ export default function BlogDetail() {
 
   return (
     <>
-      <SEO 
-        title={`${blog.title} | FinFiler Blog`} 
+      <SEO
+        title={`${blog.title} | FinFiler Blog`}
         description={blog.summary || (blog.content ? blog.content.substring(0, 150).replace(/<[^>]+>/g, '') + '...' : 'Read this article on FinFiler.')}
         ogImage={thumbnailUrl}
       />
-      <motion.div
-        initial={{ opacity: 0, y: 18 }}
-        animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
-      className="max-w-7xl min-h-[calc(100vh-4rem)] mx-auto py-9 px-4"
-    >
-      {/* ─── Header: "Details View" + Back Button ─── */}
-      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-        {/* Left: Back button */}
-        <button
-          onClick={handleBack}
-          className="inline-flex items-center gap-2 text-sm text-neutral-500 border border-neutral-200 rounded-lg px-4 py-2 hover:bg-neutral-50 hover:text-neutral-700 transition-all duration-200"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M19 12H5M12 19l-7-7 7-7" />
-          </svg>
-          Back to Blogs
-        </button>
-
-        {/* Right: "Details View" badge */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">Viewing</span>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 text-xs font-semibold rounded-full border border-blue-100">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-              <circle cx="12" cy="12" r="3" />
+      <div
+        ref={pageRef}
+        style={{
+          opacity: 0,
+          transform: "translateY(14px)",
+          transition: "opacity 0.35s ease, transform 0.35s ease",
+          willChange: "opacity, transform",
+        }}
+        className="max-w-7xl min-h-[calc(100vh-4rem)] mx-auto py-9 px-4"
+      >
+        {/* ─── Header: Back Button + badge ─── */}
+        <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <button
+            onClick={handleBack}
+            className="inline-flex items-center gap-2 text-sm text-neutral-500 border border-neutral-200 rounded-lg px-4 py-2 hover:bg-neutral-50 hover:text-neutral-700 transition-all duration-200"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
-            Details View
-          </span>
-        </div>
-      </div>
+            Back to Blogs
+          </button>
 
-      {/* ─── Hero Image with fixed 16:9 ratio ─── */}
-      {thumbnailUrl && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
-          className="rounded-2xl overflow-hidden bg-neutral-100 mb-7 aspect-video"
-        >
-          <img
-            src={thumbnailUrl}
-            alt={blog.title}
-            className="w-full h-full object-cover"
-            onError={(e) => { e.target.style.display = "none"; }}
-          />
-        </motion.div>
-      )}
-
-      {/* ─── Meta ─── */}
-      <div className="flex items-center gap-2.5 flex-wrap mb-5">
-        <span className="text-xs text-neutral-400">{fmtDate(blog.published_at)}</span>
-        <span className="text-neutral-200">·</span>
-        <span className="text-[11px] text-neutral-300 font-mono">/{blog.path}</span>
-        {blog.status && (
-          <>
-            <span className="text-neutral-200">·</span>
-            <span className="text-[10px] uppercase tracking-wider text-emerald-500 font-medium bg-emerald-50 px-2 py-0.5 rounded-full">
-              {blog.status}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">Viewing</span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 text-xs font-semibold rounded-full border border-blue-100">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              Details View
             </span>
-          </>
-        )}
-      </div>
+          </div>
+        </div>
 
-      {/* ─── Article content ─── */}
-      <article className="prose prose-neutral max-w-none">
-        {renderNode(blog.content)}
-      </article>
-    </motion.div>
+        {/* ─── Hero Image ─── */}
+        {thumbnailUrl && (
+          <div className="rounded-2xl overflow-hidden bg-neutral-100 mb-7 aspect-video">
+            <img
+              src={thumbnailUrl}
+              alt={blog.title}
+              loading="eager"
+              decoding="async"
+              className="w-full h-full object-cover"
+              onError={e => { e.currentTarget.style.display = "none"; }}
+            />
+          </div>
+        )}
+
+        {/* ─── Meta ─── */}
+        <div className="flex items-center gap-2.5 flex-wrap mb-5">
+          <span className="text-xs text-neutral-400">{fmtDate(blog.published_at)}</span>
+          <span className="text-neutral-200">·</span>
+          <span className="text-[11px] text-neutral-300 font-mono">/{blog.path}</span>
+          {blog.status && (
+            <>
+              <span className="text-neutral-200">·</span>
+              <span className="text-[10px] uppercase tracking-wider text-emerald-500 font-medium bg-emerald-50 px-2 py-0.5 rounded-full">
+                {blog.status}
+              </span>
+            </>
+          )}
+        </div>
+
+        {/* ─── Article content ─── */}
+        <article className="prose prose-neutral max-w-none">
+          {renderNode(blog.content)}
+        </article>
+      </div>
     </>
   );
 }

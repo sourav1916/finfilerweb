@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { Briefcase, Building2, FileText, Shield, User, ArrowRight } from 'lucide-react';
 import { formatCurrency, formatServiceType } from '../../utils/public/format';
+import AnimatedSection from './AnimatedSection';
 
 const typeIcons = {
   general: FileText,
@@ -39,48 +39,53 @@ function ServiceCard({ service, index = 0 }) {
   const hasDiscount = Number(service.discount_value) > 0;
 
   return (
-    <motion.article
-      className="service-card"
-      initial={{ opacity: 0, y: 28 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.45, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ y: -6, transition: { duration: 0.2 } }}
+    <AnimatedSection
+      as="article"
+      delay={index * 0.05}
+      className="group relative flex flex-col h-full bg-white rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
     >
-      {service.image ? (
-        <div className="service-card-media">
-          <ServiceImage src={service.image} alt={title} className="service-card-image" />
+      {service.image && (
+        <div className="relative h-48 w-full bg-slate-100 overflow-hidden">
+          <ServiceImage src={service.image} alt={title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
           {service.type && (
-            <span className="service-card-badge">{formatServiceType(service.type)}</span>
+            <span className="absolute top-4 right-4 px-3 py-1 bg-white/90 backdrop-blur text-xs font-semibold text-slate-800 rounded-full shadow-sm">
+              {formatServiceType(service.type)}
+            </span>
           )}
         </div>
-      ) : null}
+      )}
 
-      <div className="service-card-body">
+      <div className="flex flex-col flex-1 p-6">
         {!service.image && (
-          <div className="service-card-icon">
-            <Icon size={20} strokeWidth={2} />
+          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 mb-5 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
+            <Icon size={24} strokeWidth={2} />
           </div>
         )}
 
-        <h3>{title}</h3>
-        <p className="service-card-desc">{subtitle}</p>
+        <h3 className="text-lg font-bold text-slate-900 mb-2 line-clamp-2 leading-tight">
+          {title}
+        </h3>
+        <p className="text-sm text-slate-500 mb-6 line-clamp-3 leading-relaxed flex-1">
+          {subtitle}
+        </p>
 
-        {service.fees != null && (
-          <div className="service-card-price">
-            <span className="service-card-price-value">{formatCurrency(service.fees)}</span>
-            {hasDiscount && (
-              <span className="service-card-price-old">{formatCurrency(service.total_fees)}</span>
-            )}
-          </div>
-        )}
+        <div className="flex items-end justify-between mt-auto pt-4 border-t border-slate-100">
+          {service.fees != null ? (
+            <div className="flex flex-col">
+              <span className="text-lg font-bold text-slate-900">{formatCurrency(service.fees)}</span>
+              {hasDiscount && (
+                <span className="text-xs text-slate-400 line-through">{formatCurrency(service.total_fees)}</span>
+              )}
+            </div>
+          ) : <div />}
 
-        <Link to={`/services/${id}`} className="service-card-link">
-          Learn More
-          <ArrowRight size={16} aria-hidden />
-        </Link>
+          <Link to={`/services/${id}`} className="inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-600 group-hover:text-indigo-700">
+            Learn More
+            <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+          </Link>
+        </div>
       </div>
-    </motion.article>
+    </AnimatedSection>
   );
 }
 

@@ -1,6 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import {
   ArrowLeft,
   FileText,
@@ -15,6 +14,7 @@ import {
 import { clientRoute } from '../../constants/routes';
 import PageHeader from '../../components/public/WebsitePageHeader';
 import { ServiceDetailSkeleton } from '../../components/public/ServiceSkeleton';
+import AnimatedSection from '../../components/public/AnimatedSection';
 import { fetchServiceDetails } from '../../utils/public/api';
 import {
   formatCurrency,
@@ -22,7 +22,6 @@ import {
   getDiscountLabel,
   hasStoredAuth,
 } from '../../utils/public/format';
-import { staggerContainer, staggerItem } from '../../utils/public/animations';
 import SEO from '../../components/public/SEO';
 
 const formatBytes = (bytes) => {
@@ -42,9 +41,9 @@ const formatFieldLabel = (key) =>
 
 function PriceRow({ label, value, muted, accent, highlight }) {
   return (
-    <div className={`pricing-row${muted ? ' pricing-row--muted' : ''}${highlight ? ' pricing-row--highlight' : ''}`}>
-      <span>{label}</span>
-      <span className={accent ? 'pricing-row-value pricing-row-value--accent' : 'pricing-row-value'}>
+    <div className={`flex justify-between items-center py-3 text-sm ${highlight ? 'font-bold border-t border-slate-200 mt-2 pt-4' : 'border-b border-slate-50 last:border-0'}`}>
+      <span className={`${muted ? 'text-slate-500' : 'text-slate-700'} ${highlight ? 'text-slate-900 text-base' : ''}`}>{label}</span>
+      <span className={`${accent ? 'text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded-md' : 'text-slate-900 font-medium'} ${highlight ? 'text-indigo-600 text-lg' : ''}`}>
         {value}
       </span>
     </div>
@@ -61,39 +60,39 @@ function PricingPanel({ service, serviceId }) {
   const ctaLabel = isAuthenticated ? 'Continue to Order' : 'Register & Get Started';
 
   return (
-    <div className="pricing-panel">
-      <div className="pricing-panel-head">
-        <span className="pricing-panel-icon">
-          <Receipt size={18} aria-hidden />
-        </span>
+    <div className="bg-white rounded-3xl p-6 lg:p-8 shadow-xl shadow-slate-200/50 border border-slate-100 sticky top-32">
+      <div className="flex items-center gap-3 mb-6 pb-6 border-b border-slate-100">
+        <div className="w-10 h-10 flex items-center justify-center bg-indigo-50 text-indigo-600 rounded-xl">
+          <Receipt size={20} aria-hidden />
+        </div>
         <div>
-          <h2>Pricing Details</h2>
-          <p>Transparent fee breakdown with GST included</p>
+          <h2 className="text-lg font-bold text-slate-900">Pricing Details</h2>
+          <p className="text-xs text-slate-500">Transparent fee breakdown</p>
         </div>
       </div>
 
-      <div className="pricing-total-card">
-        <div className="pricing-total-top">
+      <div className="bg-slate-50 rounded-2xl p-5 mb-6 border border-slate-100">
+        <div className="flex justify-between items-start mb-2">
           <div>
-            <p className="pricing-total-label">Total payable</p>
-            <p className="pricing-total-amount">{formatCurrency(service.fees)}</p>
+            <p className="text-sm font-medium text-slate-500 mb-1">Total payable</p>
+            <p className="text-3xl font-bold text-slate-900">{formatCurrency(service.fees)}</p>
           </div>
           {hasDiscount && (
-            <div className="pricing-total-before">
-              <p>Before discount</p>
-              <p>{formatCurrency(service.total_fees)}</p>
+            <div className="text-right">
+              <p className="text-xs text-slate-400 mb-1">Before discount</p>
+              <p className="text-sm text-slate-400 line-through">{formatCurrency(service.total_fees)}</p>
             </div>
           )}
         </div>
         {hasDiscount && (
-          <span className="pricing-save-badge">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-md mt-2">
             <Tag size={12} aria-hidden />
             You save {formatCurrency(service.discount_value)}
           </span>
         )}
       </div>
 
-      <div className="pricing-breakdown">
+      <div className="mb-6">
         <PriceRow label="Base price" value={formatCurrency(service.base_price)} muted />
         <PriceRow
           label={`GST (${service.tax_rate ?? 0}%)`}
@@ -111,23 +110,23 @@ function PricingPanel({ service, serviceId }) {
         <PriceRow label="Final amount" value={formatCurrency(service.fees)} highlight />
       </div>
 
-      <div className="pricing-note">
-        <IndianRupee size={16} aria-hidden />
-        <p>
+      <div className="flex gap-3 items-start bg-indigo-50/50 rounded-xl p-4 mb-8">
+        <IndianRupee size={16} className="text-indigo-400 mt-0.5 shrink-0" aria-hidden />
+        <p className="text-xs text-indigo-900/70 leading-relaxed">
           {hasDiscount
             ? 'Discount is applied automatically. The final amount shown above is what you pay.'
             : 'All taxes included. No hidden charges at checkout.'}
         </p>
       </div>
 
-      <Link to={ctaHref} className="btn btn-primary btn-block pricing-cta">
+      <Link to={ctaHref} className="flex items-center justify-center w-full py-3.5 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition-colors shadow-lg shadow-indigo-600/20 mb-4">
         {ctaLabel}
       </Link>
 
       {!isAuthenticated && (
-        <p className="pricing-login-hint">
+        <p className="text-sm text-center text-slate-500">
           Already have an account?{' '}
-          <Link to={clientRoute('/login')}>Sign in</Link>
+          <Link to={clientRoute('/login')} className="text-indigo-600 font-semibold hover:underline">Sign in</Link>
         </p>
       )}
     </div>
@@ -139,29 +138,46 @@ function ServiceDetail() {
   const [service, setService] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const abortControllerRef = useRef(null);
 
   const loadService = useCallback(async () => {
     setLoading(true);
     setError(null);
+    
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     try {
-      const data = await fetchServiceDetails(serviceId);
+      const data = await fetchServiceDetails(serviceId, { signal: controller.signal });
       setService(data);
     } catch (err) {
-      setError(err.message || 'Service not found');
-      setService(null);
+      if (err.name !== 'AbortError') {
+        setError(err.message || 'Service not found');
+        setService(null);
+      }
     } finally {
-      setLoading(false);
+      if (abortControllerRef.current === controller) {
+        setLoading(false);
+      }
     }
   }, [serviceId]);
 
   useEffect(() => {
     loadService();
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    }
   }, [loadService]);
 
   if (loading) {
     return (
-      <section className="section page-top">
-        <div className="container detail-page">
+      <section className="bg-slate-50 py-16">
+        <div className="max-w-7xl mx-auto px-6">
           <ServiceDetailSkeleton />
         </div>
       </section>
@@ -175,13 +191,11 @@ function ServiceDetail() {
           title="Service Not Found"
           subtitle={error || 'The service you are looking for does not exist.'}
         />
-        <section className="section page-top">
-          <div className="container">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-              <Link to="/services" className="btn btn-primary">
-                Back to Services
-              </Link>
-            </motion.div>
+        <section className="bg-slate-50 py-16 text-center">
+          <div className="max-w-7xl mx-auto px-6">
+            <Link to="/services" className="inline-flex items-center justify-center px-6 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors shadow-md">
+              Back to Services
+            </Link>
           </div>
         </section>
       </>
@@ -213,134 +227,113 @@ function ServiceDetail() {
         subtitle={service.description || 'Professional compliance service from FinFiler.'}
       />
 
-      <section className="section page-top">
-        <div className="container detail-page">
-          <motion.div initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}>
-            <Link to="/services" className="back-link">
-              <ArrowLeft size={16} aria-hidden />
+      <section className="bg-slate-50 py-12 pb-24">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="mb-8">
+            <Link to="/services" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 transition-colors group">
+              <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-1" aria-hidden />
               All Services
             </Link>
-          </motion.div>
+          </div>
 
-          <div className="detail-page-grid">
-            <div className="detail-page-main">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 xl:gap-12 items-start">
+            <div className="flex flex-col gap-8">
               {service.image && (
-                <motion.div
-                  className="detail-hero-image detail-hero-image--wide"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                >
-                  <img src={service.image} alt={service.name} />
+                <AnimatedSection as="div" className="relative h-[300px] sm:h-[400px] w-full bg-slate-200 rounded-3xl overflow-hidden shadow-sm">
+                  <img src={service.image} alt={service.name} className="w-full h-full object-cover" />
                   {service.type && (
-                    <span className="detail-hero-badge">{formatServiceType(service.type)}</span>
+                    <span className="absolute top-6 right-6 px-4 py-1.5 bg-white/90 backdrop-blur text-sm font-bold text-slate-900 rounded-full shadow-sm">
+                      {formatServiceType(service.type)}
+                    </span>
                   )}
-                </motion.div>
+                </AnimatedSection>
               )}
 
-              <motion.div
-                className="detail-overview-card"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 }}
-              >
-                <h2>About this service</h2>
-                <p>{service.description || 'A professional compliance service tailored for your business needs.'}</p>
+              <AnimatedSection as="div" delay={0.05} className="bg-white rounded-3xl p-8 lg:p-10 border border-slate-100 shadow-sm">
+                <h2 className="text-2xl font-bold text-slate-900 mb-4">About this service</h2>
+                <p className="text-lg text-slate-600 leading-relaxed mb-8">{service.description || 'A professional compliance service tailored for your business needs.'}</p>
 
                 {highlights.length > 0 && (
-                  <div className="detail-meta-chips">
+                  <div className="flex flex-wrap gap-3">
                     {highlights.map(({ icon: Icon, text }) => (
-                      <span key={text} className="detail-meta-chip">
-                        <Icon size={14} aria-hidden />
+                      <span key={text} className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 text-sm font-semibold rounded-xl border border-indigo-100/50">
+                        <Icon size={16} aria-hidden />
                         {text}
                       </span>
                     ))}
                   </div>
                 )}
-              </motion.div>
+              </AnimatedSection>
 
               {requiredFields.length > 0 && (
-                <motion.div
-                  className="detail-section-card"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                >
-                  <h2>
-                    <ClipboardList size={18} aria-hidden />
+                <AnimatedSection as="div" delay={0.1} className="bg-white rounded-3xl p-8 lg:p-10 border border-slate-100 shadow-sm">
+                  <h2 className="flex items-center gap-3 text-xl font-bold text-slate-900 mb-6">
+                    <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                      <ClipboardList size={20} aria-hidden />
+                    </div>
                     Information required
                   </h2>
-                  <ul className="detail-check-list">
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {requiredFields.map((field) => (
-                      <li key={field}>
-                        <CheckCircle2 size={16} aria-hidden />
-                        {field}
+                      <li key={field} className="flex items-start gap-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <CheckCircle2 size={20} className="text-emerald-500 shrink-0" aria-hidden />
+                        <span className="text-slate-700 font-medium">{field}</span>
                       </li>
                     ))}
                   </ul>
-                </motion.div>
+                </AnimatedSection>
               )}
 
               {documents.length > 0 && (
-                <motion.div
-                  className="detail-section-card"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.15 }}
-                >
-                  <h2>
-                    <FileText size={18} aria-hidden />
+                <AnimatedSection as="div" delay={0.15} className="bg-white rounded-3xl p-8 lg:p-10 border border-slate-100 shadow-sm">
+                  <h2 className="flex items-center gap-3 text-xl font-bold text-slate-900 mb-6">
+                    <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                      <FileText size={20} aria-hidden />
+                    </div>
                     Required documents
                   </h2>
-                  <ul className="detail-doc-list">
+                  <ul className="flex flex-col gap-4">
                     {documents.map((doc) => (
-                      <li key={doc.required_id || doc.name}>
-                        <div className="detail-doc-list-head">
-                          <strong>{doc.name}</strong>
-                          <span className={doc.is_required ? 'detail-doc-tag detail-doc-tag--required' : 'detail-doc-tag'}>
+                      <li key={doc.required_id || doc.name} className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                        <div className="flex items-center justify-between gap-4 mb-2">
+                          <strong className="text-lg font-bold text-slate-900">{doc.name}</strong>
+                          <span className={`px-2.5 py-1 text-xs font-bold rounded-md ${doc.is_required ? 'bg-rose-100 text-rose-700' : 'bg-slate-200 text-slate-600'}`}>
                             {doc.is_required ? 'Required' : 'Optional'}
                           </span>
                         </div>
-                        {doc.description && <p>{doc.description}</p>}
+                        {doc.description && <p className="text-slate-600 text-sm leading-relaxed mb-3">{doc.description}</p>}
                         {formatBytes(doc.max_size) && (
-                          <span className="detail-doc-meta">Max file size: {formatBytes(doc.max_size)}</span>
+                          <span className="inline-block px-2.5 py-1 bg-white border border-slate-200 text-xs font-medium text-slate-500 rounded-md">
+                            Max file size: {formatBytes(doc.max_size)}
+                          </span>
                         )}
                       </li>
                     ))}
                   </ul>
-                </motion.div>
+                </AnimatedSection>
               )}
 
               {requiredFields.length === 0 && documents.length === 0 && (
-                <motion.ul
-                  className="feature-list"
-                  variants={staggerContainer}
-                  initial="hidden"
-                  animate="visible"
-                >
-                  <motion.li variants={staggerItem}>
-                    <span className="feature-check">✓</span>
+                <ul className="flex flex-col gap-4 mt-4">
+                  <li className="flex items-center gap-3 text-lg font-medium text-slate-700">
+                    <span className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 text-sm font-bold">✓</span>
                     Expert-guided compliance support
-                  </motion.li>
-                  <motion.li variants={staggerItem}>
-                    <span className="feature-check">✓</span>
+                  </li>
+                  <li className="flex items-center gap-3 text-lg font-medium text-slate-700">
+                    <span className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 text-sm font-bold">✓</span>
                     Secure document handling
-                  </motion.li>
-                  <motion.li variants={staggerItem}>
-                    <span className="feature-check">✓</span>
+                  </li>
+                  <li className="flex items-center gap-3 text-lg font-medium text-slate-700">
+                    <span className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 text-sm font-bold">✓</span>
                     Transparent pricing with no hidden fees
-                  </motion.li>
-                </motion.ul>
+                  </li>
+                </ul>
               )}
             </div>
 
-            <motion.aside
-              className="detail-page-sidebar"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.12 }}
-            >
+            <AnimatedSection as="aside" delay={0.12} className="relative">
               <PricingPanel service={service} serviceId={serviceId} />
-            </motion.aside>
+            </AnimatedSection>
           </div>
         </div>
       </section>
