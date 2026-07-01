@@ -111,34 +111,37 @@ export default function BlogDetail() {
           </motion.div>
         </header>
 
-        {/* COVER IMAGE */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="max-w-5xl mx-auto px-6 mb-16">
-           <div className="w-full aspect-[21/9] rounded-[2.5rem] overflow-hidden shadow-2xl shadow-emerald-900/10">
-             <img src={blog.thumbnail || blog.cover_image || `https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=1200`} alt={blog.title} className="w-full h-full object-cover" />
-           </div>
-        </motion.div>
+        {/* DESKTOP SPLIT / MOBILE STACK */}
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12">
+          {/* LEFT SIDE: COVER IMAGE */}
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="lg:col-span-5 relative">
+             <div className="sticky top-24 w-full aspect-[4/3] rounded-[2rem] overflow-hidden shadow-2xl shadow-emerald-900/10">
+               <img src={blog.thumbnail || blog.cover_image || `https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=1200`} alt={blog.title} className="w-full h-full object-cover" />
+             </div>
+          </motion.div>
 
-        {/* CONTENT */}
-        <div className="max-w-3xl mx-auto px-6 relative">
-           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="prose prose-lg prose-slate prose-emerald max-w-none">
-             {blog.content ? (
-               typeof blog.content === 'object' && blog.content.type === 'doc' ? (
-                 blog.content.content.map((node, index) => renderTipTapNode(node, index))
+          {/* RIGHT SIDE: CONTENT */}
+          <div className="lg:col-span-7 relative">
+             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="prose prose-lg prose-slate prose-emerald max-w-none">
+               {blog.content ? (
+                 typeof blog.content === 'object' && blog.content.type === 'doc' ? (
+                   blog.content.content.map((node, index) => renderTipTapNode(node, index))
+                 ) : (
+                   <div dangerouslySetInnerHTML={{ __html: blog.content }} />
+                 )
                ) : (
-                 <div dangerouslySetInnerHTML={{ __html: blog.content }} />
-               )
-             ) : (
-               <p className="text-slate-500 italic text-center">Content is being updated.</p>
-             )}
-           </motion.div>
+                 <p className="text-slate-500 italic text-center">Content is being updated.</p>
+               )}
+             </motion.div>
 
-           {/* SHARE BUTTON */}
-           <div className="mt-16 pt-8 border-t border-slate-100 flex items-center justify-between">
-              <span className="text-slate-900 font-bold">Share this article</span>
-              <button className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 transition-colors">
-                <Share2 size={18} />
-              </button>
-           </div>
+             {/* SHARE BUTTON */}
+             <div className="mt-16 pt-8 border-t border-slate-100 flex items-center justify-between">
+                <span className="text-slate-900 font-bold">Share this article</span>
+                <button className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 transition-colors">
+                  <Share2 size={18} />
+                </button>
+             </div>
+          </div>
         </div>
       </article>
     </div>
