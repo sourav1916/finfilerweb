@@ -115,7 +115,7 @@ export default function BlogDetail() {
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* LEFT SIDE: COVER IMAGE */}
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="lg:col-span-5 relative">
-            <div className="sticky top-24 w-full aspect-[4/3] rounded-[2rem] overflow-hidden shadow-2xl shadow-emerald-900/10">
+            <div className="sticky top-24 w-full aspect-[4/3] rounded-sm overflow-hidden shadow-2xl shadow-emerald-900/10">
               <img src={blog.thumbnail || blog.cover_image || `https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=1200`} alt={blog.title} className="w-full h-full object-cover" />
             </div>
           </motion.div>
