@@ -6,35 +6,43 @@ import SEO from './SEO';
 
 export default function LegalLayout({ title, description, children, lastUpdated }) {
   return (
-    <div className="bg-slate-50 min-h-screen font-sans text-slate-800 pb-24">
+    <div className="bg-slate-50 min-h-screen font-sans text-slate-800 pb-8">
       <SEO title={`${title} | FinFiler`} description={description} />
-      
+
       {/* Header */}
-      <section className="bg-white pt-32 pb-16 border-b border-slate-200 relative overflow-hidden">
-         <div className="absolute top-0 right-0 w-64 h-64 bg-slate-100 rounded-full mix-blend-multiply filter blur-3xl opacity-60"></div>
-         
-         <div className="max-w-4xl mx-auto px-6 relative z-10 text-center">
-           <Link to="/" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 mb-8 font-semibold transition-colors">
-             <ArrowLeft size={18} /> Back to Home
-           </Link>
-           
-           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center">
-             <div className="w-16 h-16 bg-slate-100 text-slate-600 rounded-2xl flex items-center justify-center mb-6">
-                <Shield size={32} />
-             </div>
-             <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-4">{title}</h1>
-             <p className="text-lg text-slate-500">Last updated: {lastUpdated}</p>
-           </motion.div>
-         </div>
+      <section className="pt-20 mb-6 pb-16 relative overflow-hidden">
+        {/* Colorful Abstract Shapes */}
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-gradient-to-br from-blue-300 to-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob" />
+        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-gradient-to-tr from-cyan-300 to-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000" />
+
+        <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
+          <Link to="/" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 mb-8 font-semibold transition-colors">
+            <ArrowLeft size={18} /> Back to Home
+          </Link>
+
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center">
+            <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-blue-100">
+              <Shield size={32} />
+            </div>
+            <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-4">
+              {title.split(' ').map((word, index, array) => (
+                <span key={index} className={index === array.length - 1 ? "text-blue-600" : ""}>
+                  {word}{index < array.length - 1 ? ' ' : ''}
+                </span>
+              ))}
+            </h1>
+            <p className="text-lg text-slate-500">Last updated: {lastUpdated}</p>
+          </motion.div>
+        </div>
       </section>
 
       {/* Content */}
-      <section className="pt-16">
-         <div className="max-w-4xl mx-auto px-6">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-slate-100 prose prose-slate prose-lg max-w-none prose-headings:text-slate-900 prose-a:text-blue-600">
-               {children}
-            </motion.div>
-         </div>
+      <section className="relative z-10">
+        <div className="max-w-7xl mx-auto px-6">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-sm p-8 md:p-12 shadow-xl shadow-blue-900/5 border border-slate-100 prose prose-slate prose-lg max-w-none prose-headings:text-slate-900 prose-a:text-blue-600 relative">
+            {children}
+          </motion.div>
+        </div>
       </section>
     </div>
   );

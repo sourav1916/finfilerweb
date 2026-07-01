@@ -8,11 +8,11 @@ export default function Contact() {
     <div className="bg-slate-50 min-h-screen font-sans text-slate-800">
       <SEO title="Contact Us | FinFiler" description="Get in touch with FinFiler for your financial compliance needs." />
 
-      <section className="pt-32 pb-24 relative overflow-hidden">
+      <section className="pt-20 mb-6 pb-16 relative overflow-hidden">
         {/* Colorful Abstract Shapes */}
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-gradient-to-br from-blue-300 to-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob" />
         <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-gradient-to-tr from-cyan-300 to-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000" />
-        
+
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6">Let's talk <span className="text-blue-600">business</span>.</motion.h1>
@@ -57,8 +57,8 @@ export default function Contact() {
               </div>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }} className="lg:col-span-2 bg-white rounded-[2.5rem] p-8 md:p-12 shadow-xl shadow-blue-900/5 border border-slate-100 relative">
-               <form className="space-y-6 relative z-10" onSubmit={(e) => e.preventDefault()}>
+            <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }} className="lg:col-span-2 bg-white rounded-sm p-8 md:p-12 shadow-xl shadow-blue-900/5 border border-slate-100 relative">
+              <form className="space-y-6 relative z-10" onSubmit={(e) => e.preventDefault()}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-2">First Name</label>
@@ -69,7 +69,7 @@ export default function Contact() {
                     <input type="text" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors" placeholder="Doe" />
                   </div>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
                   <input type="email" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors" placeholder="jane@example.com" />

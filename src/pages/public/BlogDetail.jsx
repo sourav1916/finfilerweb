@@ -32,7 +32,7 @@ const renderTipTapNode = (node, index) => {
   if (node.type === 'tableCell' || node.type === 'tableHeader') {
     return <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-700" key={index}>{node.content?.map((n, i) => renderTipTapNode(n, i))}</td>;
   }
-  
+
   if (node.content) {
     return <div key={index}>{node.content.map((n, i) => renderTipTapNode(n, i))}</div>;
   }
@@ -66,7 +66,7 @@ export default function BlogDetail() {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center pt-20">
-         <div className="w-16 h-16 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
+        <div className="w-16 h-16 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -85,17 +85,17 @@ export default function BlogDetail() {
   return (
     <div className="bg-white min-h-screen font-sans text-slate-800 relative">
       <SEO title={`${blog.title} | FinFiler`} description={blog.summary || blog.meta_description} />
-      
+
       {/* Progress Bar */}
       <motion.div className="fixed top-0 left-0 right-0 h-1.5 bg-emerald-500 origin-left z-50" style={{ scaleX }} />
 
       <article className="pt-32 pb-24">
         {/* HEADER */}
-        <header className="max-w-4xl mx-auto px-6 text-center mb-12">
+        <header className="max-w-7xl mx-auto px-6 text-center mb-12">
           <Link to="/blogs" className="inline-flex items-center gap-2 text-slate-500 hover:text-emerald-600 mb-8 font-semibold transition-colors">
             <ArrowLeft size={18} /> Back to insights
           </Link>
-          
+
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <span className="inline-block px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-700 font-bold text-sm mb-6">
               {blog.category?.name || 'Compliance Guide'}
@@ -103,10 +103,10 @@ export default function BlogDetail() {
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 mb-6 leading-tight">
               {blog.title}
             </h1>
-            
+
             <div className="flex items-center justify-center gap-6 text-slate-500 font-medium">
-               <span className="flex items-center gap-2"><User size={18} /> FinFiler Editorial</span>
-               <span className="flex items-center gap-2"><Calendar size={18} /> {blog.published_at ? new Date(blog.published_at.split(' ')[0]).toLocaleDateString() : 'Recent'}</span>
+              <span className="flex items-center gap-2"><User size={18} /> FinFiler Editorial</span>
+              <span className="flex items-center gap-2"><Calendar size={18} /> {blog.published_at ? new Date(blog.published_at.split(' ')[0]).toLocaleDateString() : 'Recent'}</span>
             </div>
           </motion.div>
         </header>
@@ -115,32 +115,32 @@ export default function BlogDetail() {
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* LEFT SIDE: COVER IMAGE */}
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="lg:col-span-5 relative">
-             <div className="sticky top-24 w-full aspect-[4/3] rounded-[2rem] overflow-hidden shadow-2xl shadow-emerald-900/10">
-               <img src={blog.thumbnail || blog.cover_image || `https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=1200`} alt={blog.title} className="w-full h-full object-cover" />
-             </div>
+            <div className="sticky top-24 w-full aspect-[4/3] rounded-[2rem] overflow-hidden shadow-2xl shadow-emerald-900/10">
+              <img src={blog.thumbnail || blog.cover_image || `https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=1200`} alt={blog.title} className="w-full h-full object-cover" />
+            </div>
           </motion.div>
 
           {/* RIGHT SIDE: CONTENT */}
           <div className="lg:col-span-7 relative">
-             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="prose prose-lg prose-slate prose-emerald max-w-none">
-               {blog.content ? (
-                 typeof blog.content === 'object' && blog.content.type === 'doc' ? (
-                   blog.content.content.map((node, index) => renderTipTapNode(node, index))
-                 ) : (
-                   <div dangerouslySetInnerHTML={{ __html: blog.content }} />
-                 )
-               ) : (
-                 <p className="text-slate-500 italic text-center">Content is being updated.</p>
-               )}
-             </motion.div>
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="prose prose-lg prose-slate prose-emerald max-w-none">
+              {blog.content ? (
+                typeof blog.content === 'object' && blog.content.type === 'doc' ? (
+                  blog.content.content.map((node, index) => renderTipTapNode(node, index))
+                ) : (
+                  <div dangerouslySetInnerHTML={{ __html: blog.content }} />
+                )
+              ) : (
+                <p className="text-slate-500 italic text-center">Content is being updated.</p>
+              )}
+            </motion.div>
 
-             {/* SHARE BUTTON */}
-             <div className="mt-16 pt-8 border-t border-slate-100 flex items-center justify-between">
-                <span className="text-slate-900 font-bold">Share this article</span>
-                <button className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 transition-colors">
-                  <Share2 size={18} />
-                </button>
-             </div>
+            {/* SHARE BUTTON */}
+            <div className="mt-16 pt-8 border-t border-slate-100 flex items-center justify-between">
+              <span className="text-slate-900 font-bold">Share this article</span>
+              <button className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 transition-colors">
+                <Share2 size={18} />
+              </button>
+            </div>
           </div>
         </div>
       </article>
