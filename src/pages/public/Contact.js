@@ -1,193 +1,93 @@
-import { Link } from 'react-router-dom';
-import { clientRoute } from '../../constants/routes';
-import {
-  Mail,
-  Phone,
-  Clock,
-  MapPin,
-  Headphones,
-  ArrowRight,
-  MessageCircle,
-  ShieldCheck,
-  Zap,
-} from 'lucide-react';
-import PageHeader from '../../components/public/WebsitePageHeader';
-import AnimatedSection from '../../components/public/AnimatedSection';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import SEO from '../../components/public/SEO';
 
-const contactMethods = [
-  {
-    label: 'Email',
-    value: 'support@finfiler.com',
-    hint: 'Best for detailed queries and document sharing',
-    href: 'mailto:support@finfiler.com',
-    action: 'Send email',
-    icon: Mail,
-    accent: 'text-blue-600 bg-blue-50',
-    border: 'hover:border-blue-200'
-  },
-  {
-    label: 'Phone',
-    value: '+91 7002695990',
-    hint: 'Speak directly with our support team',
-    href: 'tel:+917002695990',
-    action: 'Call now',
-    icon: Phone,
-    accent: 'text-emerald-600 bg-emerald-50',
-    border: 'hover:border-emerald-200'
-  },
-  {
-    label: 'Office Hours',
-    value: 'Mon – Sat, 10:00 AM – 6:00 PM',
-    hint: 'Indian Standard Time (IST)',
-    icon: Clock,
-    accent: 'text-amber-600 bg-amber-50',
-    border: 'hover:border-amber-200'
-  },
-  {
-    label: 'Office Address',
-    value: 'Wahab Nagar, Sunarupatty, Kharupetia, Darrang, Assam – 784115',
-    hint: 'Registered office location',
-    href: 'https://maps.google.com/?q=Kharupetia+Darrang+Assam+784115',
-    action: 'View on map',
-    icon: MapPin,
-    accent: 'text-indigo-600 bg-indigo-50',
-    border: 'hover:border-indigo-200'
-  },
-];
-
-const helpTopics = [
-  {
-    title: 'Account & login',
-    desc: 'OTP issues, profile updates, or access to your client portal.',
-    icon: ShieldCheck,
-  },
-  {
-    title: 'Orders & filings',
-    desc: 'Status updates, document requests, or questions about an active service.',
-    icon: MessageCircle,
-  },
-  {
-    title: 'Quick response',
-    desc: 'Most support requests are answered within one business day.',
-    icon: Zap,
-  },
-];
-
-function Contact() {
+export default function Contact() {
   return (
-    <>
-      <SEO title="Contact Us | FinFiler" description="Reach out to FinFiler for help with your account, orders, or any support-related questions. Our team is here to assist you." />
-      
-      <PageHeader
-        label="Support"
-        title="Contact Us"
-        subtitle="Reach out for help with your account, orders, or any support-related questions. Our team is here to assist you."
-        centered
-      />
+    <div className="bg-slate-50 min-h-screen font-sans text-slate-800">
+      <SEO title="Contact Us | FinFiler" description="Get in touch with FinFiler for your financial compliance needs." />
 
-      <section className="bg-white py-16 md:py-24">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-12 lg:gap-16 items-start">
-            
-            <AnimatedSection as="aside" className="bg-slate-50 rounded-3xl p-8 lg:p-10 border border-slate-100 lg:sticky lg:top-32">
-              <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-indigo-100 text-indigo-600 mb-6 shadow-sm">
-                <Headphones size={28} strokeWidth={2} aria-hidden />
-              </div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">We're here to help</h2>
-              <p className="text-slate-600 leading-relaxed mb-8">
-                Whether you need help with an order, have a billing question, or run into a technical issue — our support team is ready to assist you.
-              </p>
-
-              <div className="bg-white rounded-xl p-5 border border-slate-200 mb-8 shadow-sm">
-                <p className="text-sm text-slate-600 leading-relaxed">
-                  Looking to register or start a new service?{' '}
-                  <Link to={clientRoute('/register')} className="text-indigo-600 font-semibold hover:underline">Create an account</Link> or{' '}
-                  <Link to="/services" className="text-indigo-600 font-semibold hover:underline">browse services</Link> instead.
-                </p>
-              </div>
-
-              <div className="flex gap-6 mb-8">
-                <div>
-                  <span className="block text-2xl font-bold text-slate-900 mb-1">{'< 24 hrs'}</span>
-                  <span className="text-sm font-medium text-slate-500">Typical response</span>
-                </div>
-                <div className="w-px bg-slate-200" />
-                <div>
-                  <span className="block text-2xl font-bold text-slate-900 mb-1">Mon–Sat</span>
-                  <span className="text-sm font-medium text-slate-500">Support days</span>
-                </div>
-              </div>
-
-              <Link to={clientRoute('/login')} className="inline-flex items-center gap-2 text-indigo-600 font-semibold hover:text-indigo-700 transition-colors group">
-                Already a client? Sign in
-                <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" aria-hidden />
-              </Link>
-            </AnimatedSection>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {contactMethods.map((item, i) => {
-                const Icon = item.icon;
-                return (
-                  <AnimatedSection as="article" delay={i * 0.05} key={item.label} className={`bg-white rounded-2xl p-6 border border-slate-100 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1 ${item.border}`}>
-                    <div className={`w-12 h-12 flex items-center justify-center rounded-xl mb-5 ${item.accent}`}>
-                      <Icon size={24} strokeWidth={2} aria-hidden />
-                    </div>
-                    <span className="block text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">{item.label}</span>
-                    
-                    {item.href ? (
-                      <a href={item.href} className="block text-lg font-bold text-slate-900 mb-2 hover:text-indigo-600 transition-colors" target={item.href.startsWith('http') ? '_blank' : undefined} rel={item.href.startsWith('http') ? 'noreferrer' : undefined}>
-                        {item.value}
-                      </a>
-                    ) : (
-                      <p className="text-lg font-bold text-slate-900 mb-2">{item.value}</p>
-                    )}
-                    
-                    <p className="text-sm text-slate-600 mb-6">{item.hint}</p>
-                    
-                    {item.href && item.action && (
-                      <a href={item.href} className="inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-600 hover:text-indigo-700 group" target={item.href.startsWith('http') ? '_blank' : undefined} rel={item.href.startsWith('http') ? 'noreferrer' : undefined}>
-                        {item.action}
-                        <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" aria-hidden />
-                      </a>
-                    )}
-                  </AnimatedSection>
-                );
-              })}
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-slate-50 py-20 lg:py-28 border-t border-slate-100">
-        <div className="max-w-7xl mx-auto px-6">
+      <section className="pt-32 pb-24 relative overflow-hidden">
+        {/* Colorful Abstract Shapes */}
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-gradient-to-br from-blue-300 to-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob" />
+        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-gradient-to-tr from-cyan-300 to-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000" />
+        
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-sm font-semibold text-indigo-600 uppercase tracking-wider mb-3 block">How we can help</span>
-            <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">Support topics</h2>
-            <p className="text-lg text-slate-600">
-              Use the contact details above for any of these — we'll route your request to the right team.
-            </p>
+            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6">Let's talk <span className="text-blue-600">business</span>.</motion.h1>
+            <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-lg text-slate-600">
+              Whether you have a question about our services, pricing, or just want to say hi, our team is ready to answer all your questions.
+            </motion.p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {helpTopics.map((topic, i) => {
-              const Icon = topic.icon;
-              return (
-                <AnimatedSection as="div" delay={i * 0.1} key={topic.title} className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-50 text-slate-700 mb-6">
-                    <Icon size={24} strokeWidth={2} aria-hidden />
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="lg:col-span-1 space-y-8">
+              <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 flex items-start gap-4">
+                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center shrink-0">
+                  <Mail size={24} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 mb-1">Email Us</h3>
+                  <p className="text-slate-600 text-sm">Our friendly team is here to help.</p>
+                  <a href="mailto:support@finfiler.com" className="text-blue-600 font-semibold mt-2 inline-block">support@finfiler.com</a>
+                </div>
+              </div>
+
+              <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 flex items-start gap-4">
+                <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center shrink-0">
+                  <MapPin size={24} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 mb-1">Office</h3>
+                  <p className="text-slate-600 text-sm">Come say hello at our headquarters.</p>
+                  <p className="text-slate-800 font-semibold mt-2">123 Compliance Avenue, Tech Park, Bangalore 560001</p>
+                </div>
+              </div>
+
+              <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 flex items-start gap-4">
+                <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center shrink-0">
+                  <Phone size={24} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 mb-1">Phone</h3>
+                  <p className="text-slate-600 text-sm">Mon-Fri from 9am to 6pm.</p>
+                  <a href="tel:+918000000000" className="text-blue-600 font-semibold mt-2 inline-block">+91 800 000 0000</a>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }} className="lg:col-span-2 bg-white rounded-[2.5rem] p-8 md:p-12 shadow-xl shadow-blue-900/5 border border-slate-100 relative">
+               <form className="space-y-6 relative z-10" onSubmit={(e) => e.preventDefault()}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">First Name</label>
+                    <input type="text" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors" placeholder="Jane" />
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-3">{topic.title}</h3>
-                  <p className="text-slate-600 leading-relaxed">{topic.desc}</p>
-                </AnimatedSection>
-              );
-            })}
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Last Name</label>
+                    <input type="text" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors" placeholder="Doe" />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
+                  <input type="email" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors" placeholder="jane@example.com" />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Message</label>
+                  <textarea rows="4" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors resize-none" placeholder="How can we help you?"></textarea>
+                </div>
+
+                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl px-4 py-4 flex items-center justify-center gap-2 transition-colors shadow-lg shadow-blue-600/30">
+                  Send Message <Send size={18} />
+                </button>
+              </form>
+            </motion.div>
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }
-
-export default Contact;

@@ -1,221 +1,88 @@
-import { useEffect, useState, useCallback, useRef, memo } from "react";
-import { useNavigate } from "react-router-dom";
-import { apiCall, resolveMediaUrl } from "../../utils/apiCall";
-import SEO from "../../components/public/SEO";
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import SEO from '../../components/public/SEO';
+import { Calendar, User, ArrowRight } from 'lucide-react';
 
-// ── Tag config ────────────────────────────────────────
-function getTagMeta(blog) {
-  const title = blog.title?.toLowerCase() || "";
-  if (title.includes("gst")) return { tag: "Tax", color: "#d97706", bg: "#fffbeb" };
-  if (title.includes("income tax")) return { tag: "Income Tax", color: "#059669", bg: "#ecfdf5" };
-  return { tag: "Article", color: "#4361ee", bg: "#eef1ff" };
-}
-
-function fmtDate(s) {
-  try {
-    return new Date(s.replace(" ", "T")).toLocaleDateString("en-IN", {
-      day: "numeric", month: "short", year: "numeric",
-    });
-  } catch { return s; }
-}
-
-// ── CSS-only fade-in using IntersectionObserver + useRef ──
-function useFadeIn() {
-  const ref = useRef(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.style.opacity = "1";
-          el.style.transform = "translateY(0)";
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-  return ref;
-}
-
-// Skeleton card
-function SkeletonCard() {
-  return (
-    <div className="blog-card-skeleton bg-white rounded-2xl border border-neutral-100 overflow-hidden">
-      <div className="h-44 bg-neutral-100" style={{ animation: "pulse 1.5s ease-in-out infinite" }} />
-      <div className="p-5">
-        <div className="h-3 w-16 bg-neutral-100 rounded-full mb-4" style={{ animation: "pulse 1.5s ease-in-out infinite" }} />
-        <div className="h-4 w-11/12 bg-neutral-100 rounded mb-2" style={{ animation: "pulse 1.5s ease-in-out infinite" }} />
-        <div className="h-4 w-3/4 bg-neutral-100 rounded mb-5" style={{ animation: "pulse 1.5s ease-in-out infinite" }} />
-        <div className="h-3 w-24 bg-neutral-100 rounded" style={{ animation: "pulse 1.5s ease-in-out infinite" }} />
-      </div>
-    </div>
-  );
-}
-
-// Blog card — memo prevents unnecessary re-renders
-const BlogCard = memo(function BlogCard({ blog, onReadMore }) {
-  const { tag, color, bg } = getTagMeta(blog);
-  const thumbnailUrl = resolveMediaUrl(blog.thumbnail);
-  const ref = useFadeIn();
-
-  return (
-    <div
-      ref={ref}
-      style={{
-        opacity: 0,
-        transform: "translateY(18px)",
-        transition: "opacity 0.38s ease, transform 0.38s ease",
-        willChange: "opacity, transform",
-      }}
-      className="blog-card bg-white rounded-2xl border border-neutral-100 overflow-hidden cursor-pointer"
-      onClick={() => onReadMore(blog)}
-    >
-      {/* Thumbnail */}
-      <div className="h-44 bg-neutral-100 overflow-hidden">
-        {thumbnailUrl && (
-          <img
-            src={thumbnailUrl}
-            alt={blog.title}
-            loading="lazy"
-            decoding="async"
-            width={400}
-            height={176}
-            className="w-full h-full object-cover"
-            style={{ transition: "transform 0.4s ease" }}
-            onMouseEnter={e => { e.currentTarget.style.transform = "scale(1.05)"; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = "scale(1)"; }}
-            onError={e => { e.currentTarget.style.display = "none"; }}
-          />
-        )}
-      </div>
-
-      {/* Body */}
-      <div className="p-5">
-        <span
-          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wide mb-3"
-          style={{ color, background: bg }}
-        >
-          {tag}
-        </span>
-
-        <h3 className="text-sm font-bold text-neutral-900 leading-snug mb-2 line-clamp-2">
-          {blog.title}
-        </h3>
-
-        {blog.summary && (
-          <p className="text-xs text-neutral-400 leading-relaxed mb-4 line-clamp-2">
-            {blog.summary}
-          </p>
-        )}
-
-        <div className="flex items-center justify-between pt-3 border-t border-neutral-50">
-          <span className="text-xs text-neutral-300">{fmtDate(blog.published_at)}</span>
-          <span className="text-xs font-semibold text-blue-500 flex items-center gap-1">
-            Read more
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden>
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-});
-
-// ── Main Component ────────────────────────────────────
 export default function BlogList() {
-  const navigate = useNavigate();
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [error, setError] = useState(null);
-  const [pagination, setPagination] = useState({
-    page_no: 1, limit: 6, total: 0, total_pages: 1,
-  });
-
-  const fetchBlogs = useCallback(async (page = 1, append = false) => {
-    try {
-      const res = await apiCall(`/blogs/list?page=${page}&limit=${pagination.limit}`);
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.message || "Failed to load posts.");
-      const newBlogs = data.data.blogs;
-      const pg = data.data.pagination;
-      setBlogs(prev => append ? [...prev, ...newBlogs] : newBlogs);
-      setPagination({ page_no: pg.page_no, limit: pg.limit, total: pg.total, total_pages: pg.total_pages });
-    } catch (e) {
-      setError(e.message || "Failed to load posts.");
-    }
-  }, [pagination.limit]);
-
-  const fetched = useRef(false);
 
   useEffect(() => {
-    if (fetched.current) return;
-    fetched.current = true;
-    setLoading(true);
-    fetchBlogs(1, false).finally(() => setLoading(false));
-  }, [fetchBlogs]);
-
-  const handleLoadMore = async () => {
-    if (loadingMore || pagination.page_no >= pagination.total_pages) return;
-    setLoadingMore(true);
-    await fetchBlogs(pagination.page_no + 1, true);
-    setLoadingMore(false);
-  };
-
-  const handleReadMore = useCallback((blog) => {
-    let cleanPath = blog.path.startsWith("/") ? blog.path.substring(1) : blog.path;
-    navigate(`/blogs/${encodeURIComponent(cleanPath)}`);
-  }, [navigate]);
+    // Mock blog data
+    setTimeout(() => {
+      setBlogs([
+        { blog_id: '1', slug: 'gst-updates-2024', title: 'Major GST Updates for 2024', cover_image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=600', createdAt: new Date().toISOString(), category: { name: 'Tax' }, meta_description: 'Discover the latest GST updates and how they impact your small business this year.' },
+        { blog_id: '2', slug: 'how-to-register-company', title: 'Step by Step Guide to Company Registration', cover_image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&q=80&w=600', createdAt: new Date().toISOString(), category: { name: 'Startup' }, meta_description: 'A comprehensive guide to registering your private limited company in India.' },
+        { blog_id: '3', slug: 'income-tax-slabs', title: 'New Income Tax Slabs Explained', cover_image: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&q=80&w=600', createdAt: new Date().toISOString(), category: { name: 'Personal Finance' }, meta_description: 'Understand the new vs old tax regime and which one you should choose.' }
+      ]);
+      setLoading(false);
+    }, 500);
+  }, []);
 
   return (
-    <div className="py-8 max-w-7xl mx-auto min-h-[calc(100vh-4rem)] px-4 sm:px-6 lg:px-8">
-      <SEO
-        title="Blog | FinFiler"
-        description="Read the latest articles, insights, and updates on taxation, compliance, and financial management in India."
-      />
+    <div className="bg-slate-50 min-h-screen font-sans text-slate-800">
+      <SEO title="Blog | FinFiler Insights" description="Latest updates, news, and insights on financial compliance." />
 
-      {/* Section heading */}
-      <div className="mb-7">
-        <h1 className="text-2xl font-extrabold text-neutral-900 mb-1">All Posts</h1>
-        {!loading && !error && (
-          <p className="text-sm text-neutral-400">
-            Showing {blogs.length} of {pagination.total} article{pagination.total !== 1 ? "s" : ""} published
-          </p>
-        )}
-      </div>
-
-      {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-
-      {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {loading
-          ? [1, 2, 3, 4, 5, 6].map(i => <SkeletonCard key={i} />)
-          : blogs.map(blog => (
-              <BlogCard key={blog.blog_id} blog={blog} onReadMore={handleReadMore} />
-            ))
-        }
-      </div>
-
-      {/* Load More */}
-      {!loading && !error && pagination.page_no < pagination.total_pages && (
-        <div className="mt-8 text-center">
-          <button
-            onClick={handleLoadMore}
-            disabled={loadingMore}
-            className="inline-flex items-center gap-2 px-6 py-2.5 bg-white border border-neutral-200 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loadingMore ? "Loading…" : "Load more articles"}
-          </button>
-          <p className="text-xs text-neutral-400 mt-2">
-            Showing {blogs.length} of {pagination.total} articles
-          </p>
+      <section className="pt-32 pb-16 bg-white relative border-b border-slate-100 overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-green-50 rounded-full mix-blend-multiply filter blur-3xl opacity-60"></div>
+        <div className="absolute top-0 left-0 w-64 h-64 bg-blue-50 rounded-full mix-blend-multiply filter blur-3xl opacity-60 translate-x-1/2"></div>
+        <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
+          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6">
+            FinFiler <span className="text-emerald-600">Insights</span>
+          </motion.h1>
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-lg text-slate-600 max-w-2xl mx-auto mb-10">
+            Expert advice, news, and updates to keep your business compliant and growing.
+          </motion.p>
         </div>
-      )}
+      </section>
+
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {loading ? (
+              Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="bg-white rounded-3xl p-4 shadow-sm border border-slate-100 animate-pulse">
+                  <div className="w-full h-48 bg-slate-200 rounded-2xl mb-4"></div>
+                  <div className="h-4 bg-slate-200 rounded w-1/3 mb-2"></div>
+                  <div className="h-6 bg-slate-200 rounded w-3/4 mb-4"></div>
+                  <div className="h-4 bg-slate-200 rounded w-full mb-2"></div>
+                  <div className="h-4 bg-slate-200 rounded w-2/3"></div>
+                </div>
+              ))
+            ) : blogs.length > 0 ? (
+              blogs.map((blog, i) => (
+                <motion.div key={blog.blog_id} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.1 }}>
+                  <Link to={`/blog/${blog.slug}`} className="block group bg-white rounded-3xl p-4 shadow-sm border border-slate-100 hover:shadow-xl hover:shadow-emerald-900/5 hover:-translate-y-1 transition-all">
+                    <div className="w-full h-48 bg-slate-100 rounded-2xl mb-6 overflow-hidden relative">
+                      <img src={blog.cover_image || `https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=600`} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <div className="absolute top-4 left-4 bg-white/90 backdrop-blur text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-full">
+                        {blog.category?.name || 'Article'}
+                      </div>
+                    </div>
+                    <div className="px-2 pb-2">
+                      <div className="flex items-center gap-4 text-xs font-semibold text-slate-500 mb-3">
+                        <span className="flex items-center gap-1.5"><Calendar size={14} /> {new Date(blog.createdAt).toLocaleDateString()}</span>
+                        <span className="flex items-center gap-1.5"><User size={14} /> FinFiler Editorial</span>
+                      </div>
+                      <h2 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition-colors line-clamp-2">{blog.title}</h2>
+                      <p className="text-slate-600 text-sm mb-4 line-clamp-2">{blog.meta_description || 'Read more about this topic in our latest insight.'}</p>
+                      <span className="text-emerald-600 font-bold text-sm flex items-center gap-2">
+                        Read Article <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                      </span>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))
+            ) : (
+              <div className="col-span-full py-20 text-center">
+                <h3 className="text-xl font-bold text-slate-900 mb-2">No articles found</h3>
+                <p className="text-slate-500">Check back later for new updates.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

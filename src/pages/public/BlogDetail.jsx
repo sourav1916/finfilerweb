@@ -1,297 +1,108 @@
-import { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Clock, User, Share2 } from "lucide-react";
-import { apiCall, resolveMediaUrl } from "../../utils/apiCall";
-import SEO from "../../components/public/SEO";
+import React, { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { motion, useScroll, useSpring } from 'framer-motion';
+import SEO from '../../components/public/SEO';
+import { ArrowLeft, Calendar, User, Share2 } from 'lucide-react';
 
-// ── TipTap / ProseMirror content renderer ────────────
-function renderNode(node) {
-  if (!node) return null;
-
-  if (node.type === "doc") {
-    return (node.content || []).map((n, i) => (
-      <span key={i}>{renderNode(n)}</span>
-    ));
-  }
-
-  if (node.type === "heading") {
-    const level = node.attrs?.level || 1;
-    const inner = (node.content || []).map((n, i) => (
-      <span key={i}>{renderNode(n)}</span>
-    ));
-    const base = "font-bold text-neutral-900 leading-tight";
-    const sizes = {
-      1: `text-3xl ${base} mt-0 mb-4`,
-      2: `text-xl  ${base} mt-6 mb-3`,
-      3: `text-lg  ${base} mt-5 mb-2`,
-    };
-    const cls = sizes[level] || sizes[1];
-    const Tag = `h${level}`;
-    return <Tag className={cls}>{inner}</Tag>;
-  }
-
-  if (node.type === "paragraph") {
-    const inner = (node.content || []).map((n, i) => (
-      <span key={i}>{renderNode(n)}</span>
-    ));
-    return <p className="text-neutral-500 leading-relaxed text-[15px] mb-4">{inner}</p>;
-  }
-
-  if (node.type === "bulletList") {
-    return (
-      <ul className="list-disc pl-5 mb-4 space-y-1">
-        {(node.content || []).map((n, i) => (
-          <span key={i}>{renderNode(n)}</span>
-        ))}
-      </ul>
-    );
-  }
-
-  if (node.type === "listItem") {
-    const inner = (node.content || []).map((n, i) => (
-      <span key={i}>{renderNode(n)}</span>
-    ));
-    return <li className="text-neutral-500 text-[15px] leading-relaxed">{inner}</li>;
-  }
-
-  if (node.type === "orderedList") {
-    return (
-      <ol className="list-decimal pl-5 mb-4 space-y-1">
-        {(node.content || []).map((n, i) => (
-          <span key={i}>{renderNode(n)}</span>
-        ))}
-      </ol>
-    );
-  }
-
-  if (node.type === "hardBreak") {
-    return <br />;
-  }
-
-  if (node.type === "text") {
-    let el = <>{node.text}</>;
-    (node.marks || []).forEach((m) => {
-      if (m.type === "bold")   el = <strong className="font-semibold text-neutral-900">{el}</strong>;
-      if (m.type === "italic") el = <em className="italic text-blue-500">{el}</em>;
-    });
-    return el;
-  }
-
-  return null;
-}
-
-// ── Helpers ──────────────────────────────────────────
-function fmtDate(s) {
-  try {
-    return new Date(s.replace(" ", "T")).toLocaleDateString("en-IN", {
-      day: "numeric", month: "short", year: "numeric",
-    });
-  } catch { return s; }
-}
-
-// Skeleton
-function DetailSkeleton() {
-  return (
-    <div className="max-w-6xl min-h-[calc(100vh-4rem)] mx-auto py-9 animate-pulse">
-      <div className="h-9 w-32 bg-neutral-100 rounded-lg mb-4" />
-      <div className="h-9 w-48 bg-neutral-100 rounded-lg mb-7" />
-      <div className="aspect-video bg-neutral-100 rounded-2xl mb-7" />
-      <div className="h-8 w-3/4 bg-neutral-100 rounded mb-4" />
-      <div className="space-y-2">
-        <div className="h-4 bg-neutral-100 rounded w-full" />
-        <div className="h-4 bg-neutral-100 rounded w-5/6" />
-        <div className="h-4 bg-neutral-100 rounded w-4/6" />
-      </div>
-    </div>
-  );
-}
-
-// ── Main Component ───────────────────────────────────
 export default function BlogDetail() {
   const { blogId } = useParams();
-  const navigate = useNavigate();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Must be declared before any early returns (Rules of Hooks)
-  const pageRef = useRef(null);
-  useEffect(() => {
-    if (pageRef.current) {
-      pageRef.current.style.opacity = "1";
-      pageRef.current.style.transform = "translateY(0)";
-    }
-  }, [blog]); // re-run when blog loads so the ref is populated
-
-  const fetched = useRef(false);
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
   useEffect(() => {
-    if (fetched.current) return;
-    fetched.current = true;
-
-    if (!blogId) {
-      setError("No blog path provided");
-      setLoading(false);
-      return;
-    }
-
-    const decodedPath = decodeURIComponent(blogId);
-    console.log("Encoded path from URL:", blogId);
-    console.log("Decoded path:", decodedPath);
-
     setLoading(true);
-    setBlog(null);
-    setError(null);
-
-    (async () => {
-      try {
-        const res = await apiCall(`/blogs/${decodedPath}`);
-        console.log("API Response status:", res.status);
-        
-        const data = await res.json();
-        console.log("API Response data:", data);
-
-        if (!res.ok) {
-          throw new Error(data?.message || "Failed to load article.");
-        }
-
-        if (!data.data) {
-          throw new Error("No data received from server");
-        }
-
-        setBlog(data.data);
-      } catch (e) {
-        console.error("Error fetching blog:", e);
-        setError(e.message || "Failed to load article.");
-      } finally {
-        setLoading(false);
-      }
-    })();
+    setTimeout(() => {
+      setBlog({
+        blog_id: blogId || '1',
+        title: 'Major GST Updates for 2024',
+        cover_image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=1200',
+        createdAt: new Date().toISOString(),
+        category: { name: 'Tax' },
+        meta_description: 'Discover the latest GST updates and how they impact your small business this year.',
+        content: '<p>The Goods and Services Tax (GST) council has recently introduced several major updates for the fiscal year 2024. These changes aim to simplify compliance for small businesses while closing loopholes for tax evasion.</p><h2>Key Highlights</h2><ul><li>Threshold limits for e-invoicing have been revised.</li><li>New forms for annual returns are now available.</li><li>Stricter penalties for late filing are being enforced.</li></ul><p>It is crucial for business owners to stay updated and ensure their accounting systems are ready for these changes. Failure to comply can result in significant financial penalties.</p>'
+      });
+      setLoading(false);
+    }, 500);
   }, [blogId]);
 
-  const handleBack = () => {
-    navigate("/blogs");
-  };
-
-  if (loading) return <DetailSkeleton />;
-
-  if (error || !blog) {
+  if (loading) {
     return (
-      <div className="py-16 text-center">
-        <p className="text-red-500 mb-2">{error || "Article not found."}</p>
-        <p className="text-neutral-400 text-sm mb-4">Blog path: {blogId}</p>
-        <button onClick={handleBack} className="text-blue-500 text-sm font-medium hover:underline">
-          ← Back to all posts
-        </button>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center pt-20">
+         <div className="w-16 h-16 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
       </div>
     );
   }
 
-  const thumbnailUrl = resolveMediaUrl(blog.thumbnail);
+  if (error || !blog) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center pt-20">
+        <h2 className="text-2xl font-bold text-slate-800 mb-4">Article not found</h2>
+        <Link to="/blog" className="text-emerald-600 hover:underline flex items-center gap-2">
+          <ArrowLeft size={16} /> Back to Blog
+        </Link>
+      </div>
+    );
+  }
 
   return (
-    <>
-      <SEO
-        title={`${blog.title} | FinFiler Blog`}
-        description={blog.summary || (blog.content ? blog.content.substring(0, 150).replace(/<[^>]+>/g, '') + '...' : 'Read this article on FinFiler.')}
-        ogImage={thumbnailUrl}
-      />
-      <div
-        ref={pageRef}
-        style={{
-          opacity: 0,
-          transform: "translateY(14px)",
-          transition: "opacity 0.35s ease, transform 0.35s ease",
-          willChange: "opacity, transform",
-        }}
-        className="max-w-7xl min-h-[calc(100vh-4rem)] mx-auto py-9 px-4"
-      >
-        {/* ─── Header: Back Button + badge ─── */}
-        <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-          <button
-            onClick={handleBack}
-            className="inline-flex items-center gap-2 text-sm text-neutral-500 border border-neutral-200 rounded-lg px-4 py-2 hover:bg-neutral-50 hover:text-neutral-700 transition-all duration-200"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-              <path d="M19 12H5M12 19l-7-7 7-7" />
-            </svg>
-            Back to Blogs
-          </button>
+    <div className="bg-white min-h-screen font-sans text-slate-800 relative">
+      <SEO title={`${blog.title} | FinFiler`} description={blog.meta_description} />
+      
+      {/* Progress Bar */}
+      <motion.div className="fixed top-0 left-0 right-0 h-1.5 bg-emerald-500 origin-left z-50" style={{ scaleX }} />
 
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">Viewing</span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 text-xs font-semibold rounded-full border border-blue-100">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                <circle cx="12" cy="12" r="3" />
-              </svg>
-              Details View
+      <article className="pt-32 pb-24">
+        {/* HEADER */}
+        <header className="max-w-4xl mx-auto px-6 text-center mb-12">
+          <Link to="/blog" className="inline-flex items-center gap-2 text-slate-500 hover:text-emerald-600 mb-8 font-semibold transition-colors">
+            <ArrowLeft size={18} /> Back to insights
+          </Link>
+          
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <span className="inline-block px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-700 font-bold text-sm mb-6">
+              {blog.category?.name || 'Compliance Guide'}
             </span>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-          {/* ─── Left Column: Hero Image & Meta (Sticky on Desktop) ─── */}
-          <div className="lg:col-span-5 lg:sticky lg:top-24">
-            {thumbnailUrl && (
-              <div className="rounded-2xl overflow-hidden bg-neutral-100 mb-6 aspect-video lg:aspect-[4/3] shadow-sm border border-neutral-100 group">
-                <img
-                  src={thumbnailUrl}
-                  alt={blog.title}
-                  loading="eager"
-                  decoding="async"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  onError={e => { e.currentTarget.style.display = "none"; }}
-                />
-              </div>
-            )}
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 mb-6 leading-tight">
+              {blog.title}
+            </h1>
             
-            {/* Meta (Desktop) */}
-            <div className="hidden lg:flex flex-col gap-3">
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <span className="flex items-center gap-1.5 text-xs font-medium text-neutral-500">
-                  <Clock size={14} className="text-neutral-400" />
-                  {fmtDate(blog.published_at)}
-                </span>
-                <span className="text-neutral-200">·</span>
-                <span className="text-[11px] text-neutral-400 font-mono bg-neutral-50 px-2 py-1 rounded-md">/{blog.path}</span>
-              </div>
-              {blog.status && (
-                <div className="flex items-center">
-                  <span className="text-[10px] uppercase tracking-wider text-emerald-600 font-bold bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
-                    {blog.status}
-                  </span>
-                </div>
-              )}
+            <div className="flex items-center justify-center gap-6 text-slate-500 font-medium">
+               <span className="flex items-center gap-2"><User size={18} /> FinFiler Editorial</span>
+               <span className="flex items-center gap-2"><Calendar size={18} /> {new Date(blog.createdAt).toLocaleDateString()}</span>
             </div>
-          </div>
+          </motion.div>
+        </header>
 
-          {/* ─── Right Column: Article content ─── */}
-          <div className="lg:col-span-7 bg-white lg:p-8 lg:rounded-3xl lg:shadow-sm lg:border lg:border-neutral-100">
-            {/* Meta (Mobile) */}
-            <div className="flex lg:hidden items-center gap-2.5 flex-wrap mb-6">
-              <span className="flex items-center gap-1.5 text-xs font-medium text-neutral-500">
-                <Clock size={14} className="text-neutral-400" />
-                {fmtDate(blog.published_at)}
-              </span>
-              <span className="text-neutral-200">·</span>
-              <span className="text-[11px] text-neutral-400 font-mono bg-neutral-50 px-2 py-1 rounded-md">/{blog.path}</span>
-              {blog.status && (
-                <>
-                  <span className="text-neutral-200">·</span>
-                  <span className="text-[10px] uppercase tracking-wider text-emerald-600 font-bold bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
-                    {blog.status}
-                  </span>
-                </>
-              )}
-            </div>
+        {/* COVER IMAGE */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="max-w-5xl mx-auto px-6 mb-16">
+           <div className="w-full aspect-[21/9] rounded-[2.5rem] overflow-hidden shadow-2xl shadow-emerald-900/10">
+             <img src={blog.cover_image || `https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=1200`} alt={blog.title} className="w-full h-full object-cover" />
+           </div>
+        </motion.div>
 
-            <article className="prose prose-neutral prose-lg max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-blue-600 hover:prose-a:text-blue-500 prose-img:rounded-xl">
-              {renderNode(blog.content)}
-            </article>
-          </div>
+        {/* CONTENT */}
+        <div className="max-w-3xl mx-auto px-6 relative">
+           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="prose prose-lg prose-slate prose-emerald max-w-none">
+             {blog.content ? (
+               <div dangerouslySetInnerHTML={{ __html: blog.content }} />
+             ) : (
+               <p className="text-slate-500 italic text-center">Content is being updated.</p>
+             )}
+           </motion.div>
+
+           {/* SHARE BUTTON */}
+           <div className="mt-16 pt-8 border-t border-slate-100 flex items-center justify-between">
+              <span className="text-slate-900 font-bold">Share this article</span>
+              <button className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 transition-colors">
+                <Share2 size={18} />
+              </button>
+           </div>
         </div>
-      </div>
-    </>
+      </article>
+    </div>
   );
 }
