@@ -230,39 +230,67 @@ export default function BlogDetail() {
           </div>
         </div>
 
-        {/* ─── Hero Image ─── */}
-        {thumbnailUrl && (
-          <div className="rounded-2xl overflow-hidden bg-neutral-100 mb-7 aspect-video">
-            <img
-              src={thumbnailUrl}
-              alt={blog.title}
-              loading="eager"
-              decoding="async"
-              className="w-full h-full object-cover"
-              onError={e => { e.currentTarget.style.display = "none"; }}
-            />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          {/* ─── Left Column: Hero Image & Meta (Sticky on Desktop) ─── */}
+          <div className="lg:col-span-5 lg:sticky lg:top-24">
+            {thumbnailUrl && (
+              <div className="rounded-2xl overflow-hidden bg-neutral-100 mb-6 aspect-video lg:aspect-[4/3] shadow-sm border border-neutral-100 group">
+                <img
+                  src={thumbnailUrl}
+                  alt={blog.title}
+                  loading="eager"
+                  decoding="async"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  onError={e => { e.currentTarget.style.display = "none"; }}
+                />
+              </div>
+            )}
+            
+            {/* Meta (Desktop) */}
+            <div className="hidden lg:flex flex-col gap-3">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <span className="flex items-center gap-1.5 text-xs font-medium text-neutral-500">
+                  <Clock size={14} className="text-neutral-400" />
+                  {fmtDate(blog.published_at)}
+                </span>
+                <span className="text-neutral-200">·</span>
+                <span className="text-[11px] text-neutral-400 font-mono bg-neutral-50 px-2 py-1 rounded-md">/{blog.path}</span>
+              </div>
+              {blog.status && (
+                <div className="flex items-center">
+                  <span className="text-[10px] uppercase tracking-wider text-emerald-600 font-bold bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
+                    {blog.status}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
-        )}
 
-        {/* ─── Meta ─── */}
-        <div className="flex items-center gap-2.5 flex-wrap mb-5">
-          <span className="text-xs text-neutral-400">{fmtDate(blog.published_at)}</span>
-          <span className="text-neutral-200">·</span>
-          <span className="text-[11px] text-neutral-300 font-mono">/{blog.path}</span>
-          {blog.status && (
-            <>
-              <span className="text-neutral-200">·</span>
-              <span className="text-[10px] uppercase tracking-wider text-emerald-500 font-medium bg-emerald-50 px-2 py-0.5 rounded-full">
-                {blog.status}
+          {/* ─── Right Column: Article content ─── */}
+          <div className="lg:col-span-7 bg-white lg:p-8 lg:rounded-3xl lg:shadow-sm lg:border lg:border-neutral-100">
+            {/* Meta (Mobile) */}
+            <div className="flex lg:hidden items-center gap-2.5 flex-wrap mb-6">
+              <span className="flex items-center gap-1.5 text-xs font-medium text-neutral-500">
+                <Clock size={14} className="text-neutral-400" />
+                {fmtDate(blog.published_at)}
               </span>
-            </>
-          )}
-        </div>
+              <span className="text-neutral-200">·</span>
+              <span className="text-[11px] text-neutral-400 font-mono bg-neutral-50 px-2 py-1 rounded-md">/{blog.path}</span>
+              {blog.status && (
+                <>
+                  <span className="text-neutral-200">·</span>
+                  <span className="text-[10px] uppercase tracking-wider text-emerald-600 font-bold bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
+                    {blog.status}
+                  </span>
+                </>
+              )}
+            </div>
 
-        {/* ─── Article content ─── */}
-        <article className="prose prose-neutral max-w-none">
-          {renderNode(blog.content)}
-        </article>
+            <article className="prose prose-neutral prose-lg max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-blue-600 hover:prose-a:text-blue-500 prose-img:rounded-xl">
+              {renderNode(blog.content)}
+            </article>
+          </div>
+        </div>
       </div>
     </>
   );

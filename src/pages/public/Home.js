@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom';
 import { clientRoute } from '../../constants/routes';
 import { useState, useEffect, useRef } from 'react';
-import { Users, Layers, Star, Headphones, Zap, MessageCircle, Globe, ShieldCheck, ArrowRight } from 'lucide-react';
+import {
+  Users, Layers, Star, Headphones, Zap, MessageCircle, Globe, ShieldCheck,
+  ArrowRight, Rocket, Briefcase, Building2, UserCheck, Check, ChevronDown,
+} from 'lucide-react';
 import ServiceCard from '../../components/public/ServiceCard';
 import AnimatedSection from '../../components/public/AnimatedSection';
 import { ServiceCardSkeleton } from '../../components/public/ServiceSkeleton';
@@ -22,9 +25,108 @@ const whyItems = [
   { title: 'Trusted Nationwide', desc: 'Serving startups, professionals, and small businesses across India.', icon: ShieldCheck },
 ];
 
+// TODO: replace with real segments/CTAs for your service catalog
+const personas = [
+  {
+    title: 'Startups & Founders',
+    desc: 'Company incorporation, GST registration, and ongoing ROC compliance — bundled for new businesses.',
+    icon: Rocket,
+    href: '/services?for=startups',
+  },
+  {
+    title: 'Freelancers & Professionals',
+    desc: 'ITR filing, advance tax planning, and GST for consultants and independent professionals.',
+    icon: Briefcase,
+    href: '/services?for=professionals',
+  },
+  {
+    title: 'Small Businesses',
+    desc: 'GST returns, TDS filing, and annual compliance handled end-to-end so you can focus on operations.',
+    icon: Building2,
+    href: '/services?for=business',
+  },
+  {
+    title: 'Individuals',
+    desc: 'Simple, guided income tax filing with maximum refund checks — no paperwork, no jargon.',
+    icon: UserCheck,
+    href: '/services?for=individuals',
+  },
+];
+
+// TODO: swap in real client testimonials — do not publish placeholder quotes as real
+const testimonials = [
+  {
+    name: 'Ananya Rao',
+    role: 'Founder, Studio Loom',
+    quote: 'Incorporation and GST registration were done in under a week. The tracker meant I never had to chase anyone for updates.',
+    initials: 'AR',
+  },
+  {
+    name: 'Vikram Nair',
+    role: 'Freelance Consultant',
+    quote: "I've filed with three different platforms before. This is the first time the support team actually understood freelance income.",
+    initials: 'VN',
+  },
+  {
+    name: 'Priya Menon',
+    role: 'Director, Menon Textiles',
+    quote: 'Monthly GST returns used to eat a whole afternoon. Now it takes fifteen minutes and someone double-checks it before filing.',
+    initials: 'PM',
+  },
+];
+
+// TODO: replace with real client/partner logos (grayscale SVG/PNG recommended)
+const trustedByLogos = ['Northwind', 'Vertex Labs', 'Solaris', 'Fernbank', 'Cobalt & Co.', 'Marrow'];
+
+const faqs = [
+  {
+    q: 'How long does GST registration take?',
+    a: 'Most GST registrations are completed within 3–7 working days, depending on document verification and government processing times.',
+  },
+  {
+    q: 'Do I need to visit an office to file?',
+    a: 'No. The entire process — document upload, review, and filing — happens online. You can track status in real time from your dashboard.',
+  },
+  {
+    q: 'What if I miss a filing deadline?',
+    a: 'We send reminders well ahead of due dates. If a deadline is close, our support team will flag it and help you file on time to avoid penalties.',
+  },
+  {
+    q: 'Can I switch services after signing up?',
+    a: 'Yes. You can add or change services from your dashboard at any time, and our team will adjust your compliance calendar accordingly.',
+  },
+];
+
+function FAQItem({ faq, isOpen, onToggle }) {
+  return (
+    <div className="border-b border-slate-200">
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between gap-4 py-5 text-left"
+        aria-expanded={isOpen}
+      >
+        <span className="text-base font-semibold text-slate-900">{faq.q}</span>
+        <ChevronDown
+          size={20}
+          className={`shrink-0 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+        />
+      </button>
+      <div
+        className={`grid transition-all duration-200 ease-in-out ${isOpen ? 'grid-rows-[1fr] pb-5' : 'grid-rows-[0fr]'}`}
+        style={{ display: 'grid' }}
+      >
+        <div className="overflow-hidden">
+          <p className="text-slate-600 leading-relaxed text-sm pr-8">{faq.a}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Home() {
   const [featuredServices, setFeaturedServices] = useState([]);
   const [servicesLoading, setServicesLoading] = useState(true);
+  const [openFaq, setOpenFaq] = useState(0);
   const fetched = useRef(false);
 
   useEffect(() => {
@@ -53,23 +155,32 @@ function Home() {
 
   return (
     <>
-      <SEO 
-        title="FinFiler | Expert Financial Compliance Services" 
+      <SEO
+        title="FinFiler | Expert Financial Compliance Services"
         description="Simplify GST registration, company incorporation, and tax filing. Join thousands of businesses in India relying on FinFiler for fast, expert compliance."
       />
 
-      <section className="relative overflow-hidden bg-slate-900 pt-32 pb-20 lg:pt-48 lg:pb-32">
+      {/* HERO */}
+      <section className="relative overflow-hidden bg-slate-900 pt-32 pb-20 lg:pt-40 lg:pb-32">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-indigo-500/20 blur-[120px] rounded-full pointer-events-none" />
         <div className="absolute -bottom-40 right-0 w-[600px] h-[600px] bg-indigo-600/20 blur-[100px] rounded-full pointer-events-none" />
-        
+
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
-            
+
             <AnimatedSection as="div" className="max-w-2xl text-center lg:text-left mx-auto lg:mx-0">
-              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-300 text-sm font-semibold mb-6 border border-indigo-500/20">
-                <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
-                Trusted Financial Services
-              </span>
+              {/* Trust strip — replace 4.8/2,400 with real numbers before shipping */}
+              <div className="inline-flex items-center gap-3 mb-6 flex-wrap justify-center lg:justify-start">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-300 text-sm font-semibold border border-indigo-500/20">
+                  <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
+                  Trusted Financial Services
+                </span>
+                <span className="inline-flex items-center gap-1 text-sm font-semibold text-slate-300">
+                  <Star size={14} className="fill-amber-400 text-amber-400" />
+                  4.8/5 <span className="text-slate-500 font-normal">· 2,400+ reviews</span>
+                </span>
+              </div>
+
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.1] mb-6">
                 Your Partner in
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-indigo-200"> Compliance</span>
@@ -88,6 +199,8 @@ function Home() {
             </AnimatedSection>
 
             <AnimatedSection as="div" delay={0.2} className="relative mx-auto w-full max-w-md lg:max-w-full">
+              {/* NOTE: swap this stat-card stack for a real product screenshot / dashboard
+                  mock once you have one — it reads far more "production" than stat tiles. */}
               <div className="flex flex-col gap-4">
                 <div className="bg-indigo-600 rounded-2xl p-6 text-white shadow-xl shadow-indigo-900/20 transform hover:-translate-y-1 transition-transform">
                   <p className="text-indigo-200 text-sm font-semibold uppercase tracking-wider mb-2">Trusted by</p>
@@ -113,6 +226,23 @@ function Home() {
         </div>
       </section>
 
+      {/* CLIENT LOGO STRIP */}
+      <section className="bg-slate-900 py-10 border-t border-slate-800">
+        <div className="max-w-7xl mx-auto px-6">
+          <p className="text-center text-xs font-semibold uppercase tracking-wider text-slate-500 mb-6">
+            Trusted by teams at
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-4">
+            {trustedByLogos.map((logo) => (
+              <span key={logo} className="text-slate-500 text-lg font-bold tracking-tight opacity-60 hover:opacity-100 transition-opacity">
+                {logo}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* STATS */}
       <section className="bg-white py-12 border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-6">
           <AnimatedSection as="div" className="grid grid-cols-2 lg:grid-cols-4 gap-8">
@@ -132,6 +262,40 @@ function Home() {
         </div>
       </section>
 
+      {/* WHO IT'S FOR */}
+      <AnimatedSection as="section" className="py-20 lg:py-28 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <span className="text-sm font-semibold text-indigo-600 uppercase tracking-wider mb-3 block">Built For You</span>
+            <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">Whoever you are, we've got a path for you</h2>
+            <p className="text-lg text-slate-600">Compliance needs look different at every stage — pick where you fit.</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {personas.map((p) => {
+              const Icon = p.icon;
+              return (
+                <Link
+                  key={p.title}
+                  to={p.href}
+                  className="group bg-slate-50 rounded-2xl p-6 border border-slate-100 hover:border-indigo-200 hover:bg-white hover:shadow-lg hover:shadow-slate-200/60 transition-all flex flex-col"
+                >
+                  <div className="w-11 h-11 flex items-center justify-center rounded-xl bg-indigo-600 text-white mb-5 group-hover:scale-105 transition-transform">
+                    <Icon size={20} strokeWidth={2} />
+                  </div>
+                  <h3 className="text-base font-bold text-slate-900 mb-2">{p.title}</h3>
+                  <p className="text-slate-600 leading-relaxed text-sm mb-4 flex-1">{p.desc}</p>
+                  <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-600">
+                    Explore <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </AnimatedSection>
+
+      {/* SERVICES */}
       <AnimatedSection as="section" className="py-20 lg:py-28 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-2xl mx-auto mb-16">
@@ -139,7 +303,7 @@ function Home() {
             <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">Our Services</h2>
             <p className="text-lg text-slate-600">Everything you need to stay compliant, in one place.</p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
             {servicesLoading
               ? Array.from({ length: 3 }).map((_, i) => <ServiceCardSkeleton key={i} />)
@@ -147,7 +311,7 @@ function Home() {
                   <ServiceCard key={service.service_id} service={service} index={i} />
                 ))}
           </div>
-          
+
           <div className="text-center">
             <Link to="/services" className="inline-flex items-center gap-2 text-indigo-600 font-semibold hover:text-indigo-700 transition-colors">
               See all services <ArrowRight size={18} aria-hidden />
@@ -156,6 +320,7 @@ function Home() {
         </div>
       </AnimatedSection>
 
+      {/* WHY US */}
       <section className="py-20 lg:py-28 bg-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
@@ -168,7 +333,7 @@ function Home() {
             </AnimatedSection>
 
             <AnimatedSection as="div" delay={0.2} className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {whyItems.map((item, i) => {
+              {whyItems.map((item) => {
                 const Icon = item.icon;
                 return (
                   <div key={item.title} className="bg-slate-50 rounded-2xl p-6 border border-slate-100 hover:border-indigo-100 hover:shadow-md transition-all">
@@ -185,18 +350,77 @@ function Home() {
         </div>
       </section>
 
+      {/* TESTIMONIALS */}
+      <AnimatedSection as="section" className="py-20 lg:py-28 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <span className="text-sm font-semibold text-indigo-600 uppercase tracking-wider mb-3 block">Client Stories</span>
+            <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">What our clients say</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {testimonials.map((t) => (
+              <div key={t.name} className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-col">
+                <div className="flex gap-0.5 mb-4">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} size={16} className="fill-amber-400 text-amber-400" />
+                  ))}
+                </div>
+                <p className="text-slate-700 leading-relaxed text-sm mb-6 flex-1">&ldquo;{t.quote}&rdquo;</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center text-sm font-bold shrink-0">
+                    {t.initials}
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-slate-900">{t.name}</p>
+                    <p className="text-xs text-slate-500">{t.role}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </AnimatedSection>
+
+      {/* FAQ */}
+      <AnimatedSection as="section" className="py-20 lg:py-28 bg-white">
+        <div className="max-w-3xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <span className="text-sm font-semibold text-indigo-600 uppercase tracking-wider mb-3 block">FAQ</span>
+            <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">Common questions</h2>
+          </div>
+
+          <div>
+            {faqs.map((faq, i) => (
+              <FAQItem
+                key={faq.q}
+                faq={faq}
+                isOpen={openFaq === i}
+                onToggle={() => setOpenFaq(openFaq === i ? -1 : i)}
+              />
+            ))}
+          </div>
+        </div>
+      </AnimatedSection>
+
+      {/* FINAL CTA */}
       <section className="py-20 lg:py-28 bg-slate-900 relative overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/20 blur-[100px] rounded-full pointer-events-none" />
-        
+
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <AnimatedSection as="div" className="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-3xl p-10 lg:p-16 text-center max-w-4xl mx-auto shadow-2xl shadow-indigo-900/50">
             <h2 className="text-3xl lg:text-5xl font-bold text-white mb-6">Ready to simplify your compliance?</h2>
             <p className="text-lg text-indigo-100 mb-10 max-w-2xl mx-auto">
               Talk to our experts and get started with the right service for your business today. No hidden fees, no paperwork headaches.
             </p>
-            <Link to={clientRoute('/register')} className="inline-flex justify-center items-center px-8 py-4 text-lg font-bold text-indigo-600 bg-white rounded-xl hover:bg-slate-50 transition-colors shadow-lg">
-              Register Now
-            </Link>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link to={clientRoute('/register')} className="inline-flex justify-center items-center px-8 py-4 text-lg font-bold text-indigo-600 bg-white rounded-xl hover:bg-slate-50 transition-colors shadow-lg">
+                Register Now
+              </Link>
+              <span className="inline-flex items-center gap-1.5 text-sm text-indigo-100">
+                <Check size={16} /> No credit card required
+              </span>
+            </div>
           </AnimatedSection>
         </div>
       </section>
