@@ -11,7 +11,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import MainLayout from "./components/layout/Main";
 import PublicWebsiteLayout from "./layouts/PublicWebsiteLayout";
-import LegalPagesLayout from "./layouts/LegalPagesLayout";
+
 import { clientRoute } from "./constants/routes";
 
 // ── Lazy-loaded pages (each becomes its own JS chunk) ──────────────
@@ -80,14 +80,13 @@ function App() {
                   <Route path="/services/:serviceId" element={<PublicServiceDetail />} />
                   <Route path="/about" element={<PublicAbout />} />
                   <Route path="/contact" element={<PublicContact />} />
-                  <Route element={<LegalPagesLayout />}>
-                    <Route path="/privacy-policy" element={<PublicPrivacyPolicy />} />
-                    <Route path="/terms-and-conditions" element={<PublicTermsAndConds />} />
-                    <Route path="/refund-and-cancellation-policy" element={<PublicRefundPolicy />} />
-                    <Route path="/data-deletion-policy" element={<PublicDataDeletion />} />
-                    <Route path="/disclaimer" element={<PublicDisclaimer />} />
-                    <Route path="/grievance-redressal-policy" element={<PublicGrievancePolicy />} />
-                  </Route>
+                  {/* Legal Pages */}
+                  <Route path="/privacy-policy" element={<PublicPrivacyPolicy />} />
+                  <Route path="/terms-and-conditions" element={<PublicTermsAndConds />} />
+                  <Route path="/refund-and-cancellation-policy" element={<PublicRefundPolicy />} />
+                  <Route path="/data-deletion-policy" element={<PublicDataDeletion />} />
+                  <Route path="/disclaimer" element={<PublicDisclaimer />} />
+                  <Route path="/grievance-redressal-policy" element={<PublicGrievancePolicy />} />
                 </Route>
 
                 {/* Client auth */}
