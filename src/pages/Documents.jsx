@@ -15,7 +15,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { apiCall, resolveMediaUrl } from "../utils/apiCall";
-import { getDocumentDownloadName } from "../utils/documentDownload";
+import { downloadLibraryDocument } from "../utils/documentDownload";
 import { buildFirmSelectOptions } from "../utils/firmSelect";
 import { useToast } from "../contexts/ToastContext";
 import SelectField from "../components/common/SelectField";
@@ -95,18 +95,7 @@ const truncateFileName = (fileName = "", maxBaseLength = 28) => {
 
 const downloadDocument = async (doc, toast) => {
   try {
-    const response = await fetch(resolveMediaUrl(doc.file_url));
-    if (!response.ok) throw new Error("Download failed");
-
-    const blob = await response.blob();
-    const objectUrl = URL.createObjectURL(blob);
-    const anchor = window.document.createElement("a");
-    anchor.href = objectUrl;
-    anchor.download = getDocumentDownloadName(doc);
-    window.document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    URL.revokeObjectURL(objectUrl);
+    await downloadLibraryDocument(doc);
   } catch {
     toast.error("Failed to download document.");
   }

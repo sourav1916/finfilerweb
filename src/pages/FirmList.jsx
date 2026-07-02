@@ -122,6 +122,13 @@ export default function FirmList() {
 
   const columns = [
     {
+      key: "serial",
+      label: "#",
+      headerClassName: "w-12 text-center",
+      className: "w-12 text-center text-secondary-foreground tabular-nums",
+      render: (_row, index) => (pageNo - 1) * limit + index + 1,
+    },
+    {
       key: "name",
       label: "Business Name",
       render: (row) => (

@@ -121,7 +121,6 @@ export default function OrderPaymentModal({
       isOpen={isOpen && Boolean(order)}
       onClose={onClose}
       closeDisabled={paying}
-      closeOnBackdrop={!paying}
       maxWidth="max-w-md"
       panelClassName="overflow-hidden rounded-lg border border-border bg-secondary shadow-xl"
     >

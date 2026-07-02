@@ -30,7 +30,6 @@ export default function ConfirmModal({
       isOpen={isOpen}
       onClose={onClose}
       closeDisabled={loading}
-      closeOnBackdrop={!loading}
       maxWidth="max-w-md"
       panelClassName="overflow-hidden rounded-lg border border-border bg-secondary shadow-xl"
     >

@@ -1,4 +1,4 @@
-import { clientRoute } from '../constants/routes';
+import { handleUnauthorized } from './authSession';
 
 const API_BASE = process.env.REACT_APP_API_BASE || 'https://server.finfiler.com/api';
 export const APP_ENV = process.env.REACT_APP_ENV || process.env.NODE_ENV;
@@ -71,15 +71,8 @@ export const apiCall = async (endpoint, method = 'GET', body = null) => {
   try {
     const response = await fetch(url, options);
 
-    // Global 401 Unauthorized handler
     if (response.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('username');
-
-      // Redirect to login page if not already there
-      if (window.location.pathname !== clientRoute('/login')) {
-        window.location.href = clientRoute('/login');
-      }
+      handleUnauthorized();
     }
 
     return response;

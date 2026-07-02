@@ -21,7 +21,7 @@ import FirmFormModal from "../components/firms/FirmFormModal";
 import { OrderCreateSkeleton } from "../components/SkeletonComponent";
 import OrderPaymentModal from "../components/orders/OrderPaymentModal";
 import DocumentLibraryPickerModal from "../components/documents/DocumentLibraryPickerModal";
-import PageHeader, { PageBackLink } from "../components/common/PageHeader";
+import PageHeader from "../components/common/PageHeader";
 
 const formatCurrency = (amount) =>
   new Intl.NumberFormat("en-IN", {
@@ -159,8 +159,20 @@ const validateFieldValue = (key, value) => {
 
 const EMPTY_VALIDATION_ERRORS = {
   firm: "",
+  name: "",
   fields: {},
   documents: {},
+};
+
+const buildDefaultOrderName = (serviceName, firmName) => {
+  const normalizedService = String(serviceName ?? "").trim();
+  const normalizedFirm = String(firmName ?? "").trim();
+
+  if (!normalizedService || !normalizedFirm) {
+    return "";
+  }
+
+  return `${normalizedService} for ${normalizedFirm}`;
 };
 
 const inputBaseClass =
@@ -263,6 +275,19 @@ export default function OrderCreate() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  useEffect(() => {
+    if (!service?.name || !firmId) {
+      return;
+    }
+
+    const selectedFirm = firms.find((firm) => firm.firm_id === firmId);
+    if (!selectedFirm?.name) {
+      return;
+    }
+
+    setOrderName(buildDefaultOrderName(service.name, selectedFirm.name));
+  }, [service?.name, firmId, firms]);
 
   const handleFieldChange = (key) => (event) => {
     const value = event.target.value;
@@ -436,7 +461,8 @@ export default function OrderCreate() {
       return;
     }
 
-    const publicUrl = libraryDoc.public_url || resolveMediaUrl(libraryDoc.file_url);
+    const publicUrl =
+      libraryDoc.public_url || resolveMediaUrl(libraryDoc.file_url);
 
     applyDocumentSelection(libraryPickerTarget, {
       fileName: libraryDoc.name || libraryDoc.file_name,
@@ -572,12 +598,17 @@ export default function OrderCreate() {
   const collectValidationErrors = () => {
     const errors = {
       firm: "",
+      name: "",
       fields: {},
       documents: {},
     };
 
     if (!firmId) {
       errors.firm = "Please select a business.";
+    }
+
+    if (!orderName.trim()) {
+      errors.name = "Order name is required.";
     }
 
     requiredFieldKeys.forEach((key) => {
@@ -606,7 +637,7 @@ export default function OrderCreate() {
 
     const hasFieldErrors = Object.keys(errors.fields).length > 0;
     const hasDocumentErrors = Object.keys(errors.documents).length > 0;
-    const isValid = !errors.firm && !hasFieldErrors && !hasDocumentErrors;
+    const isValid = !errors.firm && !errors.name && !hasFieldErrors && !hasDocumentErrors;
 
     return { isValid, errors };
   };
@@ -651,7 +682,7 @@ export default function OrderCreate() {
       const payload = {
         service_id: service.service_id,
         firm_id: firmId,
-        name: orderName.trim() || undefined,
+        name: orderName.trim(),
         fields: fieldValues,
         documents,
         notes: notes.trim() || undefined,
@@ -695,7 +726,9 @@ export default function OrderCreate() {
     const orderId = createdOrder?.order_id;
     setPaymentModalOpen(false);
     setCreatedOrder(null);
-    navigate(orderId ? clientRoute(`/orders/${orderId}`) : clientRoute("/orders"));
+    navigate(
+      orderId ? clientRoute(`/orders/${orderId}`) : clientRoute("/orders"),
+    );
   };
 
   const handlePaymentSuccess = ({ isFullPayment, remainingAfter }) => {
@@ -711,7 +744,9 @@ export default function OrderCreate() {
 
     setPaymentModalOpen(false);
     setCreatedOrder(null);
-    navigate(orderId ? clientRoute(`/orders/${orderId}`) : clientRoute("/orders"));
+    navigate(
+      orderId ? clientRoute(`/orders/${orderId}`) : clientRoute("/orders"),
+    );
   };
 
   const handleFirmCreated = (firm) => {
@@ -758,8 +793,6 @@ export default function OrderCreate() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <PageBackLink to={clientRoute(`/services/${serviceId}`)}>Back to service</PageBackLink>
-
         <PageHeader
           className="mb-5"
           eyebrow="Place Order"
@@ -814,15 +847,30 @@ export default function OrderCreate() {
 
             <div>
               <label className="mb-1.5 block text-sm font-medium text-primary-foreground">
-                Order Name
+                Order Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 value={orderName}
-                onChange={(event) => setOrderName(event.target.value)}
+                onChange={(event) => {
+                  setOrderName(event.target.value);
+                  if (showValidation) {
+                    setValidationErrors((prev) => ({
+                      ...prev,
+                      name: event.target.value.trim()
+                        ? ""
+                        : "Order name is required.",
+                    }));
+                  }
+                }}
                 placeholder="e.g. GST Registration for ABC Pvt Ltd"
-                className="w-full rounded-xl border border-border bg-primary px-4 py-2.5 text-sm text-primary-foreground outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                className={getInputClass(
+                  Boolean(showValidation && validationErrors.name),
+                )}
               />
+              {showValidation && validationErrors.name && (
+                <p className="mt-1.5 text-xs text-red-500">{validationErrors.name}</p>
+              )}
             </div>
 
             {requiredFieldKeys.length > 0 && (

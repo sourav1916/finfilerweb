@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { apiCall } from "../utils/apiCall";
+import { AUTH_UNAUTHORIZED_EVENT, clearAuthStorage } from "../utils/authSession";
 
 const AuthContext = createContext();
 
@@ -14,13 +15,18 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const clearSession = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
-    localStorage.removeItem("mobile");
-    localStorage.removeItem("user_type");
-    localStorage.removeItem("user");
+    clearAuthStorage();
     setUser(null);
   };
+
+  useEffect(() => {
+    const onUnauthorized = () => {
+      setUser(null);
+    };
+
+    window.addEventListener(AUTH_UNAUTHORIZED_EVENT, onUnauthorized);
+    return () => window.removeEventListener(AUTH_UNAUTHORIZED_EVENT, onUnauthorized);
+  }, []);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -54,7 +60,7 @@ export const AuthProvider = ({ children }) => {
             clearSession();
           }
         } else {
-          if (response.status !== 401) clearSession();
+          clearSession();
         }
       } catch (error) {
         console.error("Server unreachable:", error);

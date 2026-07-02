@@ -17,13 +17,12 @@ import {
   CreditCard,
   CheckCircle2,
 } from "lucide-react";
-import { apiCall, resolveMediaUrl } from "../utils/apiCall";
-import { getDocumentDownloadName } from "../utils/documentDownload";
+import { apiCall } from "../utils/apiCall";
+import { downloadOrderDocument } from "../utils/documentDownload";
 import OrderPaymentModal from "../components/orders/OrderPaymentModal";
 import { downloadPaymentInvoice } from "../utils/razorpay";
 import { useToast } from "../contexts/ToastContext";
 import { DetailSkeleton } from "../components/SkeletonComponent";
-import { PageBackLink } from "../components/common/PageHeader";
 
 const formatCurrency = (amount) =>
   new Intl.NumberFormat("en-IN", {
@@ -73,28 +72,8 @@ const STATUS_COLORS = {
 };
 
 const getStatusColor = (status) =>
-  STATUS_COLORS[status] || "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300";
-
-const downloadDocument = async (fileDoc, toast) => {
-  try {
-    const response = await fetch(resolveMediaUrl(fileDoc.file_url));
-    if (!response.ok) {
-      throw new Error("Download failed");
-    }
-
-    const blob = await response.blob();
-    const objectUrl = URL.createObjectURL(blob);
-    const anchor = window.document.createElement("a");
-    anchor.href = objectUrl;
-    anchor.download = getDocumentDownloadName(fileDoc);
-    window.document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    URL.revokeObjectURL(objectUrl);
-  } catch {
-    toast.error("Failed to download document.");
-  }
-};
+  STATUS_COLORS[status] ||
+  "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300";
 
 function SectionCard({ icon: Icon, title, children, className = "" }) {
   return (
@@ -119,7 +98,9 @@ function PriceLine({ label, value, accent, muted }) {
     <div className="flex items-center justify-between gap-4 py-2.5 text-sm">
       <span
         className={
-          muted ? "text-secondary-foreground" : "font-medium text-primary-foreground"
+          muted
+            ? "text-secondary-foreground"
+            : "font-medium text-primary-foreground"
         }
       >
         {label}
@@ -205,7 +186,9 @@ function PaidPaymentsList({ order, onDownloadInvoice, downloadingPaymentId }) {
 
   return (
     <div className="mt-5 border-t border-border pt-5">
-      <p className="mb-3 text-sm font-semibold text-primary-foreground">Payment history</p>
+      <p className="mb-3 text-sm font-semibold text-primary-foreground">
+        Payment history
+      </p>
       <div className="space-y-3">
         {paidPayments.map((payment) => (
           <div
@@ -252,7 +235,12 @@ function PaidPaymentsList({ order, onDownloadInvoice, downloadingPaymentId }) {
   );
 }
 
-function PaymentSummary({ order, onOpenPayment, onDownloadInvoice, downloadingPaymentId }) {
+function PaymentSummary({
+  order,
+  onOpenPayment,
+  onDownloadInvoice,
+  downloadingPaymentId,
+}) {
   const hasDiscount = Number(order.discount_value) > 0;
   const discountLabel =
     order.discount_type === "percentage"
@@ -270,10 +258,17 @@ function PaymentSummary({ order, onOpenPayment, onDownloadInvoice, downloadingPa
       : Math.max(0, Number(order.fees || 0) - paidAmount);
 
   return (
-    <SectionCard icon={Receipt} title="Payment Summary" className="lg:sticky lg:top-6">
+    <SectionCard
+      icon={Receipt}
+      title="Payment Summary"
+      className="lg:sticky lg:top-6"
+    >
       {order.is_paid && (
         <div className="mb-4 flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 dark:border-emerald-900 dark:bg-emerald-950/40">
-          <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-emerald-600" />
+          <CheckCircle2
+            size={18}
+            className="mt-0.5 shrink-0 text-emerald-600"
+          />
           <div className="min-w-0">
             <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">
               Fully paid
@@ -294,14 +289,17 @@ function PaymentSummary({ order, onOpenPayment, onDownloadInvoice, downloadingPa
             Partially paid
           </p>
           <p className="mt-1 text-xs text-amber-600/90">
-            Paid {formatCurrency(paidAmount)} · Due {formatCurrency(remainingAmount)}
+            Paid {formatCurrency(paidAmount)} · Due{" "}
+            {formatCurrency(remainingAmount)}
           </p>
         </div>
       )}
 
       {paymentFailed && !order.is_paid && (
         <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 dark:border-red-900 dark:bg-red-950/40">
-          <p className="text-sm font-semibold text-red-600 dark:text-red-300">Payment failed</p>
+          <p className="text-sm font-semibold text-red-600 dark:text-red-300">
+            Payment failed
+          </p>
           <p className="mt-0.5 text-xs text-red-500/90 dark:text-red-400">
             {latestPayment.failure_reason || "Please try again."}
           </p>
@@ -370,15 +368,27 @@ function PaymentSummary({ order, onOpenPayment, onDownloadInvoice, downloadingPa
         <div className="flex items-end justify-between gap-3">
           <div>
             <p className="text-xs font-medium uppercase tracking-wide text-indigo-100">
-              {order.is_paid ? "Total paid" : paidAmount > 0 ? "Balance due" : "Total payable"}
+              {order.is_paid
+                ? "Total paid"
+                : paidAmount > 0
+                  ? "Balance due"
+                  : "Total payable"}
             </p>
             <p className="mt-1 text-2xl font-bold tabular-nums sm:text-3xl">
-              {formatCurrency(order.is_paid ? order.fees : paidAmount > 0 ? remainingAmount : order.fees)}
+              {formatCurrency(
+                order.is_paid
+                  ? order.fees
+                  : paidAmount > 0
+                    ? remainingAmount
+                    : order.fees,
+              )}
             </p>
           </div>
           {hasDiscount && (
             <div className="text-right">
-              <p className="text-[11px] font-medium text-indigo-200">Before discount</p>
+              <p className="text-[11px] font-medium text-indigo-200">
+                Before discount
+              </p>
               <p className="text-sm tabular-nums text-indigo-100 line-through">
                 {formatCurrency(order.total_fees)}
               </p>
@@ -432,7 +442,9 @@ function MetaLink({ to, icon: Icon, label, value }) {
           <p className="text-[11px] font-medium uppercase tracking-wide text-secondary-foreground">
             {label}
           </p>
-          <p className="truncate text-sm font-semibold text-primary-foreground">—</p>
+          <p className="truncate text-sm font-semibold text-primary-foreground">
+            —
+          </p>
         </div>
       </div>
     );
@@ -534,15 +546,23 @@ export default function OrderDetails() {
 
   const handleDownload = async (fileDoc) => {
     setDownloadingId(fileDoc.document_id);
-    await downloadDocument(fileDoc, toast);
-    setDownloadingId(null);
+    try {
+      await downloadOrderDocument(orderId, fileDoc);
+    } catch {
+      toast.error("Failed to download document.");
+    } finally {
+      setDownloadingId(null);
+    }
   };
 
   const handleDownloadInvoice = async (payment) => {
     setDownloadingPaymentId(payment.payment_id);
 
     try {
-      const invoice = await downloadPaymentInvoice(order.order_id, payment.payment_id);
+      const invoice = await downloadPaymentInvoice(
+        order.order_id,
+        payment.payment_id,
+      );
       await downloadInvoiceFile(invoice.url, invoice.filename, toast);
       toast.success("Invoice downloaded.");
     } catch (err) {
@@ -557,7 +577,7 @@ export default function OrderDetails() {
       toast.success("Payment successful. Your order is now fully paid.");
     } else {
       toast.success(
-        `Partial payment received. Remaining balance: ${formatCurrency(remainingAfter)}`
+        `Partial payment received. Remaining balance: ${formatCurrency(remainingAfter)}`,
       );
     }
     await fetchDetails();
@@ -569,8 +589,6 @@ export default function OrderDetails() {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <PageBackLink to={clientRoute("/orders")}>Back to orders</PageBackLink>
-
       <header className="mb-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-600">
@@ -593,7 +611,9 @@ export default function OrderDetails() {
             to={clientRoute(`/services/${order.service_id}`)}
             icon={Tag}
             label="Service"
-            value={order.service_id && order.service_name ? order.service_name : null}
+            value={
+              order.service_id && order.service_name ? order.service_name : null
+            }
           />
           <MetaLink
             to={clientRoute(`/firms/${order.firm_id}`)}

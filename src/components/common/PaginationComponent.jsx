@@ -5,7 +5,6 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from 'lucide-react';
-import SelectField from './SelectField';
 
 const Pagination = ({
   currentPage,
@@ -173,19 +172,18 @@ const Pagination = ({
               <span className="text-xs font-medium text-secondary-foreground sm:text-sm">
                 Rows
               </span>
-              <div className="w-[72px]">
-                <SelectField
-                  value={{ value: itemsPerPage, label: String(itemsPerPage) }}
-                  onChange={(selectedOption) =>
-                    onLimitChange(Number(selectedOption.value))
-                  }
-                  options={availableLimits.map((limit) => ({
-                    value: limit,
-                    label: String(limit),
-                  }))}
-                  menuPlacement="auto"
-                />
-              </div>
+              <select
+                value={itemsPerPage}
+                onChange={(event) => onLimitChange(Number(event.target.value))}
+                className="h-8 min-w-[4.5rem] cursor-pointer rounded-lg border border-border bg-secondary px-2.5 text-sm font-semibold text-primary-foreground outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15"
+                aria-label="Rows per page"
+              >
+                {availableLimits.map((limit) => (
+                  <option key={limit} value={limit}>
+                    {limit}
+                  </option>
+                ))}
+              </select>
             </div>
           )}
 
@@ -214,7 +212,7 @@ const Pagination = ({
   );
 };
 
-export const usePagination = (initialPage = 1, initialLimit = 10) => {
+export const usePagination = (initialPage = 1, initialLimit = 20) => {
   const [pagination, setPagination] = useState({
     page: initialPage,
     limit: initialLimit,
